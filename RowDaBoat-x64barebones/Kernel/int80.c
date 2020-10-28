@@ -2,10 +2,12 @@
 #include <stdint.h>
 #include <naiveConsole.h>
 #include <video_driver.h>
+#include <interrupt_routines.h>
+#include <lib.h>
 
 //Software interrupt used for interaction between user and kernel space
 //order of registers in standard rdi -> call number,rsi -> arg1 ,rdx -> arg2 ,rcx -> arg3
-uint64_t interruptAction80Dispatcher(uint64_t callNumber, uint64_t arg1, uint64_t arg2, uint64_t arg3)
+uint64_t int80Dispatcher(uint64_t callNumber, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 {
 
 	switch (callNumber)
@@ -28,7 +30,7 @@ uint64_t interruptAction80Dispatcher(uint64_t callNumber, uint64_t arg1, uint64_
 		break;
     //sys_get_char: gets a char.
 	case 4:
-		sys_get_char((char)arg1);
+		return sys_get_char();
 		break;
     //sys_write_number: prints an int.
 	case 5:
@@ -36,7 +38,7 @@ uint64_t interruptAction80Dispatcher(uint64_t callNumber, uint64_t arg1, uint64_
 		break;
     //sys_print_records: prints all records.
 	case 6:
-		return (uint64_t) sys_print_records();
+		sys_print_records();
 		break;
 	//sys_get_ticks
 	case 7:
@@ -46,13 +48,14 @@ uint64_t interruptAction80Dispatcher(uint64_t callNumber, uint64_t arg1, uint64_
 	case 8:
 		return (uint64_t) sys_get_clock_info((int)arg1);
 		break;
+	}
 
 	return 0;
 }
 
 //SYS_CALL 0
 void sys_exit(int error){
-    return error;
+    
 }
 
 //SYS_CALL 1
@@ -63,7 +66,7 @@ void sys_read(char *buffer, int count)
 	char letter;
 	while (i < count)
 	{
-		letter = getChar();
+		letter = 0;//getChar();
 		if (letter != 0)
 		{
 			*(buffer + i) = letter;
@@ -93,7 +96,7 @@ void sys_put_char(char c)
 //SYS_CALL 4
 char sys_get_char()
 {
-	//return getLastInput();
+	return 'a'; //return getLastInput();
 }
 
 //SYS_CALL 5
@@ -110,27 +113,16 @@ void sys_write_number(int number, int option){
 }
 
 //SYS_CALL 6
-void sys_print_records(
+void sys_print_records(){
 	
 }
 
 //SYS_CALL 7
-uint64_t sys_get_ticks()
-{
-	return getTicks();
+uint64_t sys_get_ticks(){
+	return 0; //getTicks();
 }
 
 //SYS_CALL 8
-uint8_t sys_get_clock_info(int option){
-	switch(option){
-		case 0:
-			return readSeconds();
-		case 1:
-			return readMinutes();
-		case 2:
-			return readHours();	
-	}
-
-	return 0;
-
+uint8_t sys_get_clock_info(){
+	return 0; //ReadClock;
 }

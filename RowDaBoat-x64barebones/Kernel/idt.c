@@ -57,6 +57,7 @@ void loadIDT()
 	//disable interrupts
 	_cli();
 	setupEntry(0x20, (uint64_t) &irq0Handler);  //Interrupt del timertick
+	setupEntry(0x80, (uint64_t)&int80); //Int 80
 	// all bits in one disable that irq
 	// example 00000001 disables irq0
 	// http://stanislavs.org/helppc/int_table.html for more info

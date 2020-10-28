@@ -3,6 +3,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include <int80.h>
 #include <idt.h>
 
 extern uint8_t text;

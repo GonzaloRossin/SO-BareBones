@@ -6,6 +6,8 @@ GLOBAL picSlaveMask
 GLOBAL irq0Handler 
 EXTERN irqDispatcher
 
+
+
 section .text
 
 %macro pushState 0
@@ -104,12 +106,13 @@ irq0Handler:
 
 	iretq
 
+
+EXTERN int80Dispatcher
+GLOBAL int80
 ;int 80h
 ;this one is special because it is used as a
 ;interface between kernel and user space
-extern int80Dispatcher
-GLOBAL interrupt80
-interrupt80:
+int80:
 	sti
 	push rbp
 	mov rbp, rsp

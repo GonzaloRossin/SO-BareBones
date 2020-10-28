@@ -5,6 +5,7 @@
 
 void * memset(void * destination, int32_t character, uint64_t length);
 void * memcpy(void * destination, const void * source, uint64_t length);
+
 void _sti();
 void _cli();
 // change master pic mask
@@ -17,5 +18,7 @@ void picSlaveMask(uint8_t mask);
 char *cpuVendor(char *result);
 
 void irq0Handler();
+
+void int80();
 
 #endif
