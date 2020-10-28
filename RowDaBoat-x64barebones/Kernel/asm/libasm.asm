@@ -103,3 +103,26 @@ irq0Handler:
 	out 20h,al
 
 	iretq
+
+;int 80h
+;this one is special because it is used as a
+;interface between kernel and user space
+extern int80Dispatcher
+GLOBAL interrupt80
+interrupt80:
+	sti
+	push rbp
+	mov rbp, rsp
+
+	call int80Dispatcher
+
+	;save the rax value where the return value will be returned
+	push rax
+	mov al, 20h
+	out 20h, al
+	pop rax
+
+	mov rsp, rbp
+	pop rbp
+
+	iretq
