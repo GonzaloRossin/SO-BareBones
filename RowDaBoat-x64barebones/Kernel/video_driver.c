@@ -1,5 +1,6 @@
-#include<stdint.h>
-#include<video_driver.h>
+#include <stdint.h>
+#include <video_driver.h>
+#include <font.h>
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -42,7 +43,7 @@ struct vbe_mode_info_structure {
 struct vbe_mode_info_structure * screendata=0x0000000000005C00;
 
 void draw_pixel(int x, int y,int color){
-    char * curpos=screendata->framebuffer+(y*screendata->width)+x;
+    char * curpos = screendata->framebuffer+(y*screendata->width)+x;
     int b= color & 0x0000FF;
     int g= (color >> 8) &  0x0000FF;
     int r= (color >> 16) &  0x0000FF;
@@ -52,6 +53,51 @@ void draw_pixel(int x, int y,int color){
     curpos++;
     *curpos=b;
     curpos++;
+}
 
+void draw_rectangle(unsigned int x, unsigned int y, int b, int h, int color){
+	for (int i = 0; i < b; i++)
+	{
+		for (int j = 0; j < h; j++)
+		{
+			draw_pixel(x+i, y+j, color);
+		}
+		
+	}
+	
+}
+
+void draw_square(unsigned int x, unsigned int y, int l, int color){
+	draw_rectangle(x, y, l, l, color);
+}
+
+void draw_char(int x, int y, char character, int fontSize, int fontColor, int backgroundColor){
+	int aux_x = x;
+	int aux_y = y;
+
+	char bitIsPresent;
+
+	unsigned char * toDraw = charBitmap(character);
+
+	for (int i = 0; i < CHAR_HEIGHT; i++)
+	{
+		for (int j = 0; j < CHAR_WIDTH; j++)
+		{
+			bitIsPresent = (1<<(CHAR_WIDTH-j)) & toDraw[i];
+
+			if (bitIsPresent)
+			{
+				draw_square(aux_x, aux_y, fontSize, fontColor);
+			}
+			else
+			{
+				draw_square(aux_x, aux_y, fontSize, backgroundColor);
+			}
+			aux_x+=fontSize;
+		}
+		aux_x = x;
+		aux_y += fontSize;
+	}
+	
 }
 

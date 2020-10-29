@@ -83,20 +83,25 @@ void sys_read(char *buffer, int count)
 //SYS_CALL 2
 void sys_write(char *buffer, int count)
 {
-	ncPrint(buffer);
+	int i;
+
+	for (i = 0; buffer[i] != 0; i++){
+		ncPrintChar(buffer[i]);
+	}
 }
 
 //SYS_CALL 3
 void sys_put_char(char c)
 {
-	if (c != 0)
+	if (c != 0){
 		ncPrintChar(c);
+	}
 }
 
 //SYS_CALL 4
 char sys_get_char()
 {
-	return 'a'; //return getLastInput();
+	return 'a';
 }
 
 //SYS_CALL 5
@@ -114,7 +119,7 @@ void sys_write_number(int number, int option){
 
 //SYS_CALL 6
 void sys_print_records(){
-	
+
 }
 
 //SYS_CALL 7

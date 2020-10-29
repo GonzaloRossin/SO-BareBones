@@ -107,11 +107,9 @@ irq0Handler:
 	iretq
 
 
+;int 80h
 EXTERN int80Dispatcher
 GLOBAL int80
-;int 80h
-;this one is special because it is used as a
-;interface between kernel and user space
 int80:
 	sti
 	push rbp

@@ -1,4 +1,4 @@
-#include <Defs.h>
+#include <defs.h>
 #include <naiveConsole.h>
 #include <idt.h>
 #include <lib.h>
