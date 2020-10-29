@@ -15,3 +15,10 @@ unsigned long getTicks()
 {
 	return ticks;
 }
+// called when there is an 21h interrupt(keyboard interrupt)
+void interruptRoutine2()
+{
+	uint8_t c = get_key(); //Get key
+	ncPrint("hola ");
+	//keyboard_handler(c);
+}

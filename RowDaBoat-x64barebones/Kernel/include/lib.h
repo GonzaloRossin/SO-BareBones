@@ -17,5 +17,5 @@ void picSlaveMask(uint8_t mask);
 char *cpuVendor(char *result);
 
 void irq0Handler();
-
+void irq1Handler();
 #endif

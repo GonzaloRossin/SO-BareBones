@@ -4,6 +4,9 @@ GLOBAL _cli
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 GLOBAL irq0Handler 
+GLOBAL irq1Handler
+GLOBAL get_key
+
 EXTERN irqDispatcher
 
 section .text
@@ -85,7 +88,20 @@ picMasterMask:
     pop rbp
     retn
 ;apply mask to slave pic
+%macro irqHandlerMaster 1
 
+	pushState
+
+	mov rdi, %1 ; pasaje de parametro
+	call irqDispatcher
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
+%endmacro
 picSlaveMask:
 	push    rbp
     mov     rbp, rsp
@@ -96,10 +112,24 @@ picSlaveMask:
 
 ;int 20h
 irq0Handler:
-	mov rdi,0
-	call irqDispatcher
+	irqHandlerMaster 0
 
-	mov al,20h
-	out 20h,al
+;int 21h
+irq1Handler:
+	irqHandlerMaster 1
 
-	iretq
+;basically checks that keyboard has input and then gets that input 
+;if it doesnt have then return 0xffff
+get_key:
+	xor rax,rax
+	in al,64h
+	and al,0x01
+	cmp al,0x01
+	jne readCharFromKeyboard_noData
+
+	in ax,60h
+	mov ah,0x00
+	ret
+readCharFromKeyboard_noData:
+	mov eax,0xffff
+	ret

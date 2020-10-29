@@ -15,6 +15,8 @@ void irqDispatcher(int n)
 	case 0:
 		interruptRoutine1();
 		break;
+	case 1:
+		interruptRoutine2();
 	}
 }
 
@@ -56,7 +58,8 @@ void loadIDT()
 {
 	//disable interrupts
 	_cli();
-	setupEntry(0x20, (uint64_t) &irq0Handler);  //Interrupt del timertick
+	setupEntry(0x20, (uint64_t) &irq0Handler);  //timertick interrupt
+	setupEntry(0x21, (uint64_t)&irq1Handler);    //keyboard interrupt
 	// all bits in one disable that irq
 	// example 00000001 disables irq0
 	// http://stanislavs.org/helppc/int_table.html for more info
