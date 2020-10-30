@@ -5,4 +5,6 @@
 // timer interrupt
 void interruptRoutine1();
 
+unsigned long getTicks();
+
 #endif

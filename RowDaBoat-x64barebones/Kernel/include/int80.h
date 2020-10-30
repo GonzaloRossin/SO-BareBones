@@ -3,15 +3,9 @@
 #include <stdint.h>
 
 // the int 80h dispatcher
-uint64_t int80Dispatcher(uint64_t callNumber, uint64_t arg1, uint64_t arg2, uint64_t arg3);
+uint64_t int80Dispatcher(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx);
 
-void sys_exit(int error);				                        //SYS_CALL 0
-void sys_read(char * buffer, int count);				        //SYS_CALL 1
-void sys_write(char * buffer, int count);						//SYS_CALL 2
-void sys_put_char(char c);										//SYS_CALL 3
-char sys_get_char();									        //SYS_CALL 4
-void sys_write_number(int number, int option);                  //SYS_CALL 5
-void sys_print_records();                                       //SYS_CALL 6
-uint64_t sys_get_ticks();										//SYS_CALL 7
-uint8_t sys_get_clock_info();                                   //SYS_CALL 8
+void sys_read(uint64_t rdi, char * rsi, uint64_t rdx);			//SYS_CALL 0
+void sys_write(uint64_t rdi, char * rsi, uint64_t rdx);			    //SYS_CALL 1
+
 #endif

@@ -3,5 +3,7 @@
 #include <stdint.h>
 
 void loadIDT();
+
 void irqDispatcher(int n);
+
 #endif

@@ -1,15 +1,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <lib.h>
+#include <syscalls.h>
 #include <moduleLoader.h>
-#include <naiveConsole.h>
 #include <int80.h>
 #include <idt.h>
 #include <video_driver.h>
-
-#define FONT_COLOR 0xFFFFFF
-#define FONT_SIZE 3
-#define BACKGROUND_COLOR 0x000000
+#include <font.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -42,60 +39,37 @@ void * getStackBase()
 
 void * initializeKernelBinary()
 {
-	char buffer[10];
-
-	ncPrint("[x64BareBones]");
-	ncNewline();
-
-	ncPrint("CPU Vendor:");
-	ncPrint(cpuVendor(buffer));
-	ncNewline();
-
-	ncPrint("[Loading modules]");
-	ncNewline();
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,
 		sampleDataModuleAddress
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
-
-	ncPrint("[Initializing kernel's binary]");
-	ncNewline();
-
 	clearBSS(&bss, &endOfKernel - &bss);
 
-	ncPrint("  text: 0x");
-	ncPrintHex((uint64_t)&text);
-	ncNewline();
-	ncPrint("  rodata: 0x");
-	ncPrintHex((uint64_t)&rodata);
-	ncNewline();
-	ncPrint("  data: 0x");
-	ncPrintHex((uint64_t)&data);
-	ncNewline();
-	ncPrint("  bss: 0x");
-	ncPrintHex((uint64_t)&bss);
-	ncNewline();
-
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
 	return getStackBase();
 }
 
 int main()
 {	
 	loadIDT();
+	int x = 0;
+	int y = 0;
+	char * word = "hola";
 
-	draw_char(100,100,'a', FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
-
-	while(1){
+	for (int i = 0; i < 100; i++)
+	{
+		if (x >= SCREEN_WIDTH)
+		{
+			x = 0;
+			y+=CHAR_HEIGHT+1;
+		}
 		
+		print_word(x, y, word, 4, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+		x += 5*CHAR_WIDTH;
 	}
+
+	//((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
 }

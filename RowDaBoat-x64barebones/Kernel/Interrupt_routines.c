@@ -1,6 +1,5 @@
 #include <interrupt_routines.h>
 #include <stdint.h>
-#include <naiveConsole.h>
 #include <lib.h>
 
 static unsigned long ticks = 0;

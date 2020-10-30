@@ -40,10 +40,10 @@ struct vbe_mode_info_structure {
 	uint8_t reserved1[206];
 } __attribute__ ((packed));
 
-struct vbe_mode_info_structure * screendata=0x0000000000005C00;
+struct vbe_mode_info_structure * screendata = 0x0000000000005C00;
 
 void draw_pixel(int x, int y,int color){
-    char * curpos = screendata->framebuffer+(y*screendata->width)+x;
+    char * curpos = screendata->framebuffer+((y*screendata->width)+x)*3;
     int b= color & 0x0000FF;
     int g= (color >> 8) &  0x0000FF;
     int r= (color >> 16) &  0x0000FF;
@@ -71,9 +71,9 @@ void draw_square(unsigned int x, unsigned int y, int l, int color){
 	draw_rectangle(x, y, l, l, color);
 }
 
-void draw_char(int x, int y, char character, int fontSize, int fontColor, int backgroundColor){
-	int aux_x = x;
-	int aux_y = y;
+void draw_char(unsigned int x, unsigned int y, char character, int fontSize, int fontColor, int backgroundColor){
+	unsigned int aux_x = x;
+	unsigned int aux_y = y;
 
 	char bitIsPresent;
 
