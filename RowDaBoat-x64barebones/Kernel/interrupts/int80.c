@@ -1,6 +1,6 @@
-#include "interrupts/int80.h"
-#include "drivers/video_driver.h"
-#include "interrupts/interrupt_routines.h"
+#include <int80.h>
+#include <video_driver.h>
+#include <interrupt_routines.h>
 #include <stdint.h>
 #include <font.h>
 
