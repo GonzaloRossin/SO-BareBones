@@ -1,6 +1,8 @@
 #include <interrupt_routines.h>
 #include <stdint.h>
 #include <naiveConsole.h>
+#include <keyboard_driver.h>
+#include <keymap.h>
 #include <lib.h>
 
 static unsigned long ticks = 0;
@@ -19,6 +21,5 @@ unsigned long getTicks()
 void interruptRoutine2()
 {
 	uint8_t c = get_key(); //Get key
-	ncPrint("hola ");
-	//keyboard_handler(c);
+	keyboard_handler(c);
 }

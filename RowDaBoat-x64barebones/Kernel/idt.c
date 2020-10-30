@@ -1,4 +1,4 @@
-#include <Defs.h>
+#include <defs.h>
 #include <naiveConsole.h>
 #include <idt.h>
 #include <lib.h>
@@ -58,12 +58,13 @@ void loadIDT()
 {
 	//disable interrupts
 	_cli();
-	setupEntry(0x20, (uint64_t) &irq0Handler);  //timertick interrupt
-	setupEntry(0x21, (uint64_t)&irq1Handler);    //keyboard interrupt
+	setupEntry(0x20, (uint64_t) &irq0Handler);  //Interrupt del timertick
+	setupEntry(0x21,(uint64_t) &irq1Handler); // Interrupt del teclado
+	setupEntry(0x80, (uint64_t)&int80); //Int 80
 	// all bits in one disable that irq
 	// example 00000001 disables irq0
 	// http://stanislavs.org/helppc/int_table.html for more info
-	picMasterMask(0xFE);
+	picMasterMask(0xFC);
 	// here we disable all slave interrupts
 	picSlaveMask(0x00);
 	// reenable interrupts

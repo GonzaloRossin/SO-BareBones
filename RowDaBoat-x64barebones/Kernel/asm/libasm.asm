@@ -9,6 +9,8 @@ GLOBAL get_key
 
 EXTERN irqDispatcher
 
+
+
 section .text
 
 %macro pushState 0
@@ -113,23 +115,44 @@ picSlaveMask:
 ;int 20h
 irq0Handler:
 	irqHandlerMaster 0
-
 ;int 21h
-irq1Handler:
+irq1Handler
 	irqHandlerMaster 1
 
-;basically checks that keyboard has input and then gets that input 
+;basically checks that keyboard has input and then gets that input
 ;if it doesnt have then return 0xffff
 get_key:
 	xor rax,rax
 	in al,64h
 	and al,0x01
 	cmp al,0x01
-	jne readCharFromKeyboard_noData
+	jne readCharFromKeyboard
 
 	in ax,60h
 	mov ah,0x00
 	ret
-readCharFromKeyboard_noData:
+readCharFromKeyboard:
 	mov eax,0xffff
 	ret
+
+
+;int 80h
+EXTERN int80Dispatcher
+GLOBAL int80
+int80:
+	sti
+	push rbp
+	mov rbp, rsp
+
+	call int80Dispatcher
+
+	;save the rax value where the return value will be returned
+	push rax
+	mov al, 20h
+	out 20h, al
+	pop rax
+
+	mov rsp, rbp
+	pop rbp
+
+	iretq

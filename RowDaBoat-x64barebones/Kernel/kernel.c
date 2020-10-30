@@ -3,7 +3,13 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include <int80.h>
 #include <idt.h>
+#include <video_driver.h>
+
+#define FONT_COLOR 0xFFFFFF
+#define FONT_SIZE 3
+#define BACKGROUND_COLOR 0x000000
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -84,26 +90,12 @@ void * initializeKernelBinary()
 int main()
 {	
 	loadIDT();
-	ncPrint("[Kernel Main]");
-	ncNewline();
-	ncPrint("  Sample code module at 0x");
-	ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	ncNewline();
-	ncPrint("  Calling the sample code module returned: ");
-	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
-	ncNewline();
-	ncNewline();
 
-	ncPrint("  Sample data module at 0x");
-	ncPrintHex((uint64_t)sampleDataModuleAddress);
-	ncNewline();
-	ncPrint("  Sample data module contents: ");
-	ncPrint((char*)sampleDataModuleAddress);
-	ncNewline();
+	//draw_char(100,100,'a', FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
 
-	ncPrint("[Finished]");
 	while(1){
 		
 	}
+
 	return 0;
 }
