@@ -4,8 +4,8 @@
 #define FONT_COLOR 0xFFFFFF
 #define FONT_SIZE 1
 #define BACKGROUND_COLOR 0x000000
-#define LINE_SPACE 3
-#define SCREEN_WIDTH 1000
+#define LINE_SPACE 5
+#define SCREEN_WIDTH 1010
 
 void draw_pixel(int x,int y,int color);
 void draw_rectangle(unsigned int x, unsigned int y, int b, int h, int color);

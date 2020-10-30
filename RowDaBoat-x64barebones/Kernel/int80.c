@@ -34,7 +34,7 @@ void sys_read (uint64_t rdi, char * rsi, uint64_t rdx){
 //SYS_CALL 1
 void sys_write(uint64_t rdi, char * rsi, uint64_t rdx)
 {
-	if (cursor_x + CHAR_WIDTH*FONT_SIZE*rdx >= SCREEN_WIDTH)
+	if (cursor_x + CHAR_WIDTH*FONT_SIZE*rdx > SCREEN_WIDTH)
 	{
 		cursor_x = 0;
 		cursor_y += CHAR_HEIGHT*FONT_SIZE;
@@ -42,6 +42,11 @@ void sys_write(uint64_t rdi, char * rsi, uint64_t rdx)
 	for (int i = 0; i < rdx; i++){
 		draw_char(cursor_x, cursor_y, rsi[i], FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
         cursor_x += CHAR_WIDTH*FONT_SIZE;
+		if (rsi[i]=='h')
+		{
+			cursor_x++;
+		}
+		
 	}
-	cursor_x++;
+	cursor_x += LINE_SPACE*FONT_SIZE;
 }

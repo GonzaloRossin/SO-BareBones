@@ -117,7 +117,7 @@ picSlaveMask:
 irq0Handler:
 	irqHandlerMaster 0
 ;int 21h
-irq1Handler
+irq1Handler:
 	irqHandlerMaster 1
 
 ;basically checks that keyboard has input and then gets that input
