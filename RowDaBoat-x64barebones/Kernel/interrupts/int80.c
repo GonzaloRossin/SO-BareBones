@@ -1,7 +1,7 @@
-#include <int80.h>
+#include "interrupts/int80.h"
+#include "drivers/video_driver.h"
+#include "interrupts/interrupt_routines.h"
 #include <stdint.h>
-#include <video_driver.h>
-#include <interrupt_routines.h>
 #include <font.h>
 
 int cursor_x = 0;

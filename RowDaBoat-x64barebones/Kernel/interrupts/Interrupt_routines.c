@@ -1,6 +1,6 @@
-#include <interrupt_routines.h>
+#include "interrupts/interrupt_routines.h"
 #include <stdint.h>
-#include <keyboard_driver.h>
+#include "drivers/keyboard_driver.h"
 #include <lib.h>
 
 static unsigned long ticks = 0;

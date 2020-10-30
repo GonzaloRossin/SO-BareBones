@@ -1,13 +1,14 @@
 #include <defs.h>
-#include <idt.h>
-#include <lib.h>
-#include <interrupt_routines.h>
+#include "interrupts/idt.h"
+#include "interrupts/int80.h"
+#include "interrupts/interrupts.h"
+#include "drivers/video_driver.h"
+#include "interrupts/interrupt_routines.h"
 
 // TODO: add all type_attr constants here
 #define TATTR_INT_32 0x0E
 #define TATTR_PRE 0x80
 #define TATTR_INTERRRUPT_32 (TATTR_INT_32 | TATTR_PRE)
-
 void irqDispatcher(int n)
 {
 	switch (n)
@@ -22,7 +23,6 @@ void irqDispatcher(int n)
 
 #pragma pack(push)
 #pragma pack(1)
-
 //the struct of a entry in the interrupt descriptor table
 typedef struct idtEntry
 {
@@ -43,7 +43,6 @@ typedef struct idtEntry
 
 // bootloader sets the idt to start at 0 and have 255 entries
 static idtEntry *table = (idtEntry *)0;
-
 static void setupEntry(int index, uint64_t offset)
 {
 
@@ -56,7 +55,6 @@ static void setupEntry(int index, uint64_t offset)
 	table[index].type_attr = TATTR_INTERRRUPT_32;
 	table[index].zero = 0x0;
 }
-
 void loadIDT()
 {
 	//disable interrupts
@@ -64,6 +62,7 @@ void loadIDT()
 	setupEntry(0x20, (uint64_t) &irq0Handler);  //Interrupt del timertick
 	setupEntry(0x21,(uint64_t) &irq1Handler); // Interrupt del teclado
 	setupEntry(0x80, (uint64_t)&int_80); //Int 80
+	
 	// all bits in one disable that irq
 	// example 00000001 disables irq0
 	// http://stanislavs.org/helppc/int_table.html for more info
