@@ -1,6 +1,6 @@
 #include <defs.h>
 #include <idt.h>
-#include <interrupts.h>
+#include <lib.h>
 #include <interrupt_routines.h>
 
 // TODO: add all type_attr constants here

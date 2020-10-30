@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <keyboard_driver.h>
-#include <naiveConsole.h>
+#include <int80.h>
+
 
 
 //Chose 100 as maximum size
@@ -58,7 +59,7 @@ void keyboard_handler(uint8_t code)
 	//If the buffer is already full
 	if (size >= 100)
 	{
-		ncPrint("ERROR: buffer overflow");
+		sys_write(1,"ERROR: buffer overflow",22);
 	}
 
 	if (code < END_OF_PRESSING_KEYS)

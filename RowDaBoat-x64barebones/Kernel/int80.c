@@ -1,5 +1,4 @@
 #include <int80.h>
-#include <syscalls.h>
 #include <stdint.h>
 #include <video_driver.h>
 #include <interrupt_routines.h>
@@ -40,6 +39,9 @@ void sys_write(uint64_t rdi, char * rsi, uint64_t rdx)
 		cursor_x = 0;
 		cursor_y += CHAR_HEIGHT*FONT_SIZE;
 	}
-
-	print_word(cursor_x, cursor_y, (char *) rsi, rdx, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+	for (int i = 0; i < rdx; i++){
+		draw_char(cursor_x, cursor_y, rsi[i], FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+        cursor_x += CHAR_WIDTH*FONT_SIZE;
+	}
+	cursor_x++;
 }

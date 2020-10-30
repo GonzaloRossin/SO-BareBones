@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <lib.h>
-#include <syscalls.h>
 #include <moduleLoader.h>
 #include <int80.h>
 #include <idt.h>
@@ -65,7 +64,7 @@ int main()
 			y+=CHAR_HEIGHT+1;
 		}
 		
-		print_word(x, y, word, 4, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+		sys_write(1,word,4);
 		x += 5*CHAR_WIDTH;
 	}
 
