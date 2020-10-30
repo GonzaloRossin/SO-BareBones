@@ -1,4 +1,15 @@
 GLOBAL cpuVendor
+GLOBAL _sti
+GLOBAL _cli
+GLOBAL picMasterMask
+GLOBAL picSlaveMask
+GLOBAL irq0Handler 
+GLOBAL irq1Handler
+GLOBAL get_key
+
+EXTERN irqDispatcher
+
+
 
 section .text
 
@@ -26,5 +37,78 @@ cpuVendor:
 	pop rbp
 	ret
 
+;enable interrupts
+_sti:
+	sti
+	ret
+;disable interrupts
+_cli:
+	cli
+	ret
+
+picMasterMask:
+	push rbp
+    mov rbp, rsp
+    mov ax, di
+    out	21h,al
+    pop rbp
+    retn
+;apply mask to slave pic
+%macro irqHandlerMaster 1
+
+	pushState
+
+	mov rdi, %1 ; pasaje de parametro
+	call irqDispatcher
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
+%endmacro
+picSlaveMask:
+	push    rbp
+    mov     rbp, rsp
+    mov     ax, di  ; ax = mascara de 16 bits
+    out	0A1h,al
+    pop     rbp
+    retn
+
+;int 20h
+irq0Handler:
+	irqHandlerMaster 0
+;int 21h
+irq1Handler
+	irqHandlerMaster 1
+
+;basically checks that keyboard has input and then gets that input
+;if it doesnt have then return 0xffff
+get_key:
+	xor rax,rax
+	in al,64h
+	and al,0x01
+	cmp al,0x01
+	jne readCharFromKeyboard
+
+	in ax,60h
+	mov ah,0x00
+	ret
+readCharFromKeyboard:
+	mov eax,0xffff
+	ret
 
 
+;int 80h
+EXTERN int80Dispatcher
+GLOBAL int80
+int80:
+	sti
+	push rbp
+	mov rbp, rsp
+
+	call int80Dispatcher
+
+
+	iretq

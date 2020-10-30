@@ -1,5 +1,7 @@
 #include <interrupt_routines.h>
 #include <stdint.h>
+#include <keyboard_driver.h>
+#include <keymap.h>
 #include <lib.h>
 
 static unsigned long ticks = 0;
@@ -13,4 +15,10 @@ void interruptRoutine1()
 unsigned long getTicks()
 {
 	return ticks;
+}
+// called when there is an 21h interrupt(keyboard interrupt)
+void interruptRoutine2()
+{
+	uint8_t c = get_key(); //Get key
+	keyboard_handler(c);
 }
