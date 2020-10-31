@@ -1,18 +1,11 @@
-/* sampleCodeModule.c */
+#include <libasm.h>
 #include <lib.h>
-
-char * v = (char*)0xB8000 + 79 * 2;
-
-char * prueba = "hola";
-
+#include <shell.h>
 
 int main() {
-
-	// ACA HAY QUE PONER LA SHELL
-	print(prueba);
-
-	while(1){
-		
-	}
-	return 0;
+    print("hola",4);
+    while(1){
+        
+    }
+    return 0;
 }

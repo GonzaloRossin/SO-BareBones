@@ -115,16 +115,12 @@ readCharFromKeyboard:
 ;int 80h
 int_80:
 	sti
-	push rbp
-	mov rbp, rsp
-
-	push rcx
-	mov rcx, rax
 	call int80Dispatcher
 
-	pop rcx
-
-	mov rsp, rbp
-	pop rbp 
+	push rax
+	mov al, 20h
+	out 20h, al
+	pop rax
 
 	iretq
+	

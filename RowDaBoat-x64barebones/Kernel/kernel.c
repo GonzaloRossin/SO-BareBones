@@ -52,23 +52,5 @@ void * initializeKernelBinary()
 int main()
 {	
 	loadIDT();
-	int x = 0;
-	int y = 0;
-	char * word = "hola";
-
-	for (int i = 0; i < 100; i++)
-	{
-		if (x >= SCREEN_WIDTH)
-		{
-			x = 0;
-			y+=CHAR_HEIGHT+1;
-		}
-		
-		sys_write(1,word,4);
-		x += 5*CHAR_WIDTH;
-	}
-
-	//((EntryPoint)sampleCodeModuleAddress)();
-
 	return 0;
 }

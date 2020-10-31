@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
-void print(char * c);
+void read(char *buffer, int length);
+void print(char *buffer, int length);
 
 #endif

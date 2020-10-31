@@ -1,16 +1,63 @@
-GLOBAL print
+GLOBAL sys_read
+GLOBAL sys_write
 
 section .text
 
-; void print(char *)
-print:
-    push rbp
-    mov rbp, rsp
+%macro pushState 0
+	push rax
+	push rbx
+	push rcx
+	push rdx
+	push rbp
+	push rdi
+	push rsi
+	push r8
+	push r9
+	push r10
+	push r11
+	push r12
+	push r13
+	push r14
+	push r15
+%endmacro
 
-    mov rax, 1
-    mov rsi, rdi
-    int 80h
-    
-    mov rsp, rbp
-    pop rbp
-    ret
+%macro popState 0
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rsi
+	pop rdi
+	pop rbp
+	pop rdx
+	pop rcx
+	pop rbx
+	pop rax
+%endmacro
+
+
+%macro syscall_adjust 0
+	mov rcx,rdx
+	mov rdx,rsi
+	mov rsi,rdi
+%endmacro
+
+sys_read:
+	pushState
+	syscall_adjust
+	mov rdi,0 ;sys_call read is call number 0
+	int 80h
+	popState
+	ret
+
+sys_write:
+	pushState
+	syscall_adjust
+	mov rdi,1;sys_call write is call number 1
+	int 80h
+	popState
+	ret

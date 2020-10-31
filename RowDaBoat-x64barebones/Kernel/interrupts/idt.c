@@ -66,7 +66,7 @@ void loadIDT()
 	// all bits in one disable that irq
 	// example 00000001 disables irq0
 	// http://stanislavs.org/helppc/int_table.html for more info
-	picMasterMask(0xFC);
+	picMasterMask(0xF8);
 	// here we disable all slave interrupts
 	picSlaveMask(0x00);
 	// reenable interrupts
