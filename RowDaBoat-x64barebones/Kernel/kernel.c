@@ -52,5 +52,7 @@ void * initializeKernelBinary()
 int main()
 {	
 	loadIDT();
+	//Entering sampleCodeModuleAddress in userland
+	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

@@ -101,4 +101,3 @@ void draw_char(unsigned int x,unsigned int y, char character, int fontSize, int 
 	}
 	
 }
-
