@@ -1,5 +1,8 @@
 GLOBAL sys_read
 GLOBAL sys_write
+GLOBAL get_input
+GLOBAL sys_newline
+GLOBAL get_CPUvendor
 
 section .text
 
@@ -58,6 +61,20 @@ sys_write:
 	pushState
 	syscall_adjust
 	mov rdi,1;sys_call write is call number 1
+	int 80h
+	popState
+	ret
+sys_newline:
+	pushState
+	syscall_adjust
+	mov rdi,3
+	int 80h
+	popState
+	ret
+get_CPUvendor:
+	pushState
+	syscall_adjust
+	mov rdi,4
 	int 80h
 	popState
 	ret

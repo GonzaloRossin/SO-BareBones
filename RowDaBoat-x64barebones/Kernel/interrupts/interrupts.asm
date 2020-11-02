@@ -8,7 +8,13 @@ GLOBAL irq1Handler
 GLOBAL get_key
 EXTERN int80Dispatcher
 GLOBAL int_80
+GLOBAL Halt
+GLOBAL exception0
+
 EXTERN irqDispatcher
+EXTERN printRegister
+EXTERN printException
+EXTERN reboot
 
 
 
@@ -59,6 +65,10 @@ _cli:
 	cli
 	ret
 
+;Halt function
+Halt:
+	hlt
+	ret
 picMasterMask:
 	push rbp
     mov rbp, rsp
@@ -123,4 +133,40 @@ int_80:
 	pop rax
 
 	iretq
+
+%macro exception 1
+	;preserve registers
+	push rbp
+	mov rbp,rsp
+	pushState
+	;print exception data
+	mov rdi,%1
+	call printException
+	mov rdi,0;rsi
+	call printRegister
+	mov rdi,1;rax
+	mov rsi,rax
+	call printRegister
+	mov rdi,2;rbx
+	mov rsi,rbx
+	call printRegister
+	mov rdi,3;rcx
+	mov rsi,rcx
+	call printRegister
+	mov rdi,4;rdx
+	mov rsi,rdx
+	call printRegister
+	mov rdi,5;rsp
+	mov rsi,[rbp+32]
+	call printRegister
+	mov rdi,6;rbp
+	mov rsi,[rbp];rbp apunta al push de rbp
+	call printRegister
+	sti
+	call reboot
+	cli
+	hlt
+%endmacro
+exception0:
+	exception 0
 	

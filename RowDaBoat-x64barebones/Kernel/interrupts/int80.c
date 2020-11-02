@@ -1,12 +1,10 @@
 #include <int80.h>
 #include <video_driver.h>
 #include <interrupt_routines.h>
+#include <lib.h>
 #include <keyboard_driver.h>
 #include <stdint.h>
 #include <font.h>
-
-int cursor_x = 0;
-int cursor_y = 0;
 
 //Software interrupt used for interaction between user and kernel space
 uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
@@ -22,8 +20,13 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 	case 1:
 		sys_write((char *) rsi, (int)rdx);
 		break;
+	case 3:
+		sys_newline();
+		break;
+	case 4:
+		sys_cpuInfo((char *) rsi, (uint32_t *) rdx);
+		break;
 	}
-
 	return 0;
 }
 
@@ -50,19 +53,14 @@ void sys_read ( char* rsi, int rdx){
 //SYSCALL 1
 void sys_write( char * rsi, int rdx)
 {
-	if (cursor_x + CHAR_WIDTH*FONT_SIZE*rdx > SCREEN_WIDTH)
-	{
-		cursor_x = 0;
-		cursor_y += CHAR_HEIGHT*FONT_SIZE;
-	}
-	for (int i = 0; i < rdx; i++){
-		draw_char(cursor_x, cursor_y, rsi[i], FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
-        cursor_x += CHAR_WIDTH*FONT_SIZE;
-		if (rsi[i]=='h')
-		{
-			cursor_x++;
-		}
-		
-	}
-	cursor_x += LINE_SPACE*FONT_SIZE;
+	draw_string(rsi,rdx);
 }
+//SYS_CALL 3
+void sys_newline(){
+	newLine();
+}
+//SYS_CALL 4
+void sys_cpuInfo(char * vendor , uint32_t * version){
+    cpuVendor(vendor);
+    cpuVersion(version);
+}	

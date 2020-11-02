@@ -17,8 +17,13 @@ void _cli(void);
 
 void _sti(void);
 
+//Halt function
+void Halt();
+
 void picMasterMask(uint8_t mask);
 
 void picSlaveMask(uint8_t mask);
 
+//exception 0, division by 0
+void exception0();
 #endif

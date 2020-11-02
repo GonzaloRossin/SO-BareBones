@@ -11,4 +11,7 @@ uint8_t get_key();
 
 unsigned long getTicks();
 
+void printRegister(uint8_t reg, uint64_t regData);
+
+void printException(uint8_t exc);
 #endif

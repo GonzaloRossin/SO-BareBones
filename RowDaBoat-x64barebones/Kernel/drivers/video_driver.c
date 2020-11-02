@@ -42,6 +42,8 @@ struct vbe_mode_info_structure {
 
 struct vbe_mode_info_structure * screendata=0x0000000000005C00;
 
+static int cursor_x = 0;
+static int cursor_y = 0;
 
 void draw_pixel(unsigned int x,unsigned int y,int color){
     char * curpos = screendata->framebuffer+((y*screendata->width)+x)*3;
@@ -100,4 +102,25 @@ void draw_char(unsigned int x,unsigned int y, char character, int fontSize, int 
 		aux_y += fontSize;
 	}
 	
+}
+void draw_string(char* buffer,int count){
+	if (cursor_x + CHAR_WIDTH*FONT_SIZE*count > SCREEN_WIDTH)
+	{
+		cursor_x = 0;
+		cursor_y += CHAR_HEIGHT*FONT_SIZE;
+	}
+	for (int i = 0; i < count; i++){
+		draw_char(cursor_x, cursor_y, buffer[i], FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+        cursor_x += CHAR_WIDTH*FONT_SIZE;
+		if (buffer[i]=='h')
+		{
+			cursor_x++;
+		}
+		
+	}
+	cursor_x += LINE_SPACE*FONT_SIZE;
+}
+void newLine(){
+	cursor_x=0;
+	cursor_y +=CHAR_HEIGHT*FONT_SIZE;
 }
