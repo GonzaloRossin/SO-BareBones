@@ -108,7 +108,7 @@ void keyboard_handler(uint8_t code)
 			}
 		}
 		else if(CTRL_LCKD){
-			saveRegs();
+			saveRegs();//Special key CTRL saves registers for Inforeg
 		}
 		//Standard case, just adding the letter.
 		else
