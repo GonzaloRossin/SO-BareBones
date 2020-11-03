@@ -20,7 +20,7 @@ static int startPosition = 0; //To know where in the buffer to start reading fro
 static int endPosition = 0;   //End of the buffer(las position is endPosition-1)
 static int size = 0;
 
-//Short cuts for especial letters
+//Short cuts for special keys
 #define CTRL		0x1D
 #define LSHIFT		0x2A
 #define RSHIFT		0x36
@@ -28,7 +28,6 @@ static int size = 0;
 #define CTRL_UP		0x9D
 #define LSHIFT_UP	0xAA
 #define RSHIFT_UP	0xB6
-#define LETTER_C	0x2E
 
 //Function to handle shift pressed.
 static int LSHIFT_LCKD = 0;
@@ -38,18 +37,18 @@ static int CTRL_LCKD = 0;
 
 void addToBuffer(char charToAdd);
 
-static const char asciiMap[KEYS][2] =
+static const unsigned char asciiMap[KEYS][2] =
     {{0, 0}, {0, 0}, {'1', '!'}, {'2', '@'}, {'3', '#'}, {'4', '$'},
     {'5', '%'}, {'6','~'}, {'7', '&'}, {'8', '*'}, {'9', '('},
-    {'0', ')'}, {'-', '_'}, {'=', '+'}, {0, 0}, {0, 0}, {'q', 'Q'}, 
+    {'0', ')'}, {'-', '_'}, {'=', '+'}, {0x08, 0}, {0, 0}, {'q', 'Q'}, //0x08 is backspace
     {'w', 'W'}, {'e', 'E'}, {'r', 'R'}, {'t', 'T'}, {'y', 'Y'}, 
     {'u', 'U'}, {'i', 'I'}, {'o', 'O'}, {'p', 'P'}, {'[', '{'}, 
-    {']', '}'}, {0, 0}, {0, 0}, {'a', 'A'}, {'s', 'S'}, 
+    {']', '}'}, {0x0A, 0}, {0, 0}, {'a', 'A'}, {'s', 'S'}, // 0x0A is enter 
     {'d', 'D'}, {'f', 'F'}, {'g', 'G'}, {'h', 'H'}, {'j', 'J'},
     {'k', 'K'}, {'l', 'L'}, {';', ':'}, {'\'', '"'}, {'`', '~'},
     {0, 0}, {'\\', '|'}, {'z', 'Z'}, {'x', 'X'}, {'c', 'C'}, 
     {'v', 'V'}, {'b', 'B'}, {'n', 'N'}, {'m', 'M'}, {',', '<'}, 
-    {'.', '>'}, {'/', '?'}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
+    {'.', '>'}, {'/', '?'}, {0, 0}, {0, 0}, {0, 0}, {' ', 0}, {0, 0}};
 
 //Add an element to the buffer.
 void keyboard_handler(uint8_t code)

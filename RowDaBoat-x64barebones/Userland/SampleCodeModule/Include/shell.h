@@ -6,7 +6,8 @@
 #define CTRL 0x1D
 
 void shell();
-void get_CPUinfo();
+void fillCommandList();
+void CPUinfo();
 void inforeg();
 void cleanBuffer();
 void testDivisionBy0Command();

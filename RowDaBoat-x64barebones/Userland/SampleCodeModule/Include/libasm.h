@@ -17,6 +17,10 @@ void newline();
 void getCpuVendor(char * c, uint32_t * v);
 //SYSCALL 5,get infoReg
 void get_InfoReg( uint32_t * reg_pointer);
+//SYSCALL 6
+void put_char( char c);
+//SYSCALL 7
+void putActioncall(int action);
 
 
 #endif

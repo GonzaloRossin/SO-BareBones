@@ -11,6 +11,7 @@ void sys_getMemory(uint8_t mem, uint8_t * v); //sys call 2
 void sys_newline();                         //sys call 3
 void sys_cpuInfo(char * vendor , uint32_t * version);//sys call 4
 void sys_get_InfoReg(uint64_t* rsi);//sys call 5
+void sys_put_char(char rsi); //sys call 6
 void sys_action_call(int rsi);//sys call 7
 
 #endif

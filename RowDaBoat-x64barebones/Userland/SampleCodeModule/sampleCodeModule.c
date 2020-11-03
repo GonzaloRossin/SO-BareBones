@@ -9,12 +9,8 @@
 static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
 static int bufferSize = 0;
 
-void get_CPUinfo();
-void inforeg();
-void testDivisionBy0Command();
-void cleanBuffer();
-
-int main() { 
+int main() {
+    fillCommandList();
     shell();
     return 0;
 }

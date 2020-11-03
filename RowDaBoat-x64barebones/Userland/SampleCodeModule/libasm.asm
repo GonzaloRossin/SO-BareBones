@@ -5,7 +5,8 @@ GLOBAL newline
 GLOBAL get_CPUvendor
 GLOBAL get_InfoReg
 GLOBAL get_Memory
-GLOBAL putChar
+GLOBAL put_char
+GLOBAL putActioncall
 
 section .text
 
@@ -90,6 +91,13 @@ get_InfoReg:
 	pushState
 	syscall_adjust
 	mov rdi,5
+	int 80h
+	popState
+	ret
+put_char:
+	pushState
+	syscall_adjust
+	mov rdi,6
 	int 80h
 	popState
 	ret

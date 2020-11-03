@@ -31,6 +31,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 		break;
 	case 5:
 		sys_get_InfoReg((uint64_t*) rsi);
+		break;
 	case 6:
 		sys_put_char((char) rsi);
 		break;
@@ -69,10 +70,16 @@ void sys_cpuInfo(char * vendor , uint32_t * version){
 void sys_get_InfoReg(uint64_t* rsi){
 	getRegs(rsi);
 }
+//SYS_CALL 6
+void sys_put_char(char rsi){
+	draw_char(rsi);
+}
 //SYS CALL 7
 void sys_action_call(int rsi){
 	switch(rsi){
 		case 0:
 			newLine();
+		case 1:
+			delete_char();
 	}
 }

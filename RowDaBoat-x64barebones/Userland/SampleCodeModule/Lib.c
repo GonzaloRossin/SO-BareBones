@@ -14,12 +14,13 @@ void print(char *buffer)
    sys_write((uint64_t)buffer, (uint64_t)length);
 }
 void putChar(char c){
-   char chartoadd[1];
-   chartoadd[0]=c;
-   print(chartoadd);
+   put_char(c);
 }
 void newLine(){
    newline();
+}
+void actionCall(int action){
+    putActioncall(action);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 int strlen(char *str)
