@@ -171,3 +171,65 @@ void scroll(){
 	cursor_y -= CHAR_HEIGHT*FONT_SIZE;
 	cursor_x = 0;
 }
+
+void clean(){
+	for(int i=0 ; i<=SCREEN_WIDTH ; i++){
+        for(int j=0 ; j<=SCREEN_HEIGHT ; j++){
+            draw_pixel(i, j, BACKGROUND_COLOR);
+        }
+    }
+	cursor_x = 0;
+	cursor_y = 0;
+}
+
+void draw_number(uint64_t value, uint32_t base)
+{
+	char buffer[10] = { '0' };
+	int i = 0;
+    valueToBase(value, buffer, base);
+    while (buffer[i]!=0)
+	{
+		draw_char(buffer[i]);
+	}
+}
+
+void valueToBase(uint64_t value, char * buffer, uint32_t base)
+{
+	char *p = buffer;
+	char *p1, *p2;
+	uint32_t digits = 0;
+
+	//Calculate characters for each digit
+	do
+	{
+		uint32_t remainder = value % base;
+		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+		digits++;
+	}
+	while (value /= base);
+
+	// Terminate string in buffer.
+	*p = 0;
+
+	//Reverse string in buffer.
+	p1 = buffer;
+	p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1 = *p2;
+		*p2 = tmp;
+		p1++;
+		p2--;
+	}
+}
+
+void draw_decimal(uint64_t value)
+{
+	draw_number(value, 10);
+}
+
+void draw_hex(uint64_t value)
+{
+	draw_number(value, 16);
+}

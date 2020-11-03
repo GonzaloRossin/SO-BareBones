@@ -66,6 +66,8 @@ int main()
 	draw_string("scrolled",8);
 	newLine();
 	draw_string("new line",8);
+	clean();
+	draw_string("cleaned",7);
 	//Entering sampleCodeModuleAddress in userland
 	//((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
