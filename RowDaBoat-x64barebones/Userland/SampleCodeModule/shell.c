@@ -107,16 +107,13 @@ int readNewInput()
 
 void shell()
 {
-    print("WELCOME TO mierdaOS, espero que le guste mucho el ajedrez");
-    newLine();
-    newLine();
-    print("ingrese el comando help para comenzar");
-    newLine();
     put_char('>');
     while(1){
         if(readNewInput()){
             CommandHandler();
+            put_char('>');
             cleanBuffer();
+            
         }
     }
 }
