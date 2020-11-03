@@ -44,6 +44,8 @@ struct vbe_mode_info_structure * screendata=0x0000000000005C00;
 
 static int cursor_x = 0;
 static int cursor_y = 0;
+static uint32_t valueToBase(uint64_t value, char * buffer, uint32_t base);
+char buffer[10] = { '0' };
 
 char * get_pixel(unsigned int x, unsigned int y){
 	return screendata->framebuffer+((y*screendata->width)+x)*3;
@@ -184,16 +186,12 @@ void clean(){
 
 void draw_number(uint64_t value, uint32_t base)
 {
-	char buffer[10] = { '0' };
 	int i = 0;
-    valueToBase(value, buffer, base);
-    while (buffer[i]!=0)
-	{
-		draw_char(buffer[i]);
-	}
+    int size = valueToBase(value, buffer, base);
+    draw_string(buffer, size);
 }
 
-void valueToBase(uint64_t value, char * buffer, uint32_t base)
+static uint32_t valueToBase(uint64_t value, char * buffer, uint32_t base)
 {
 	char *p = buffer;
 	char *p1, *p2;
@@ -222,6 +220,8 @@ void valueToBase(uint64_t value, char * buffer, uint32_t base)
 		p1++;
 		p2--;
 	}
+
+	return digits;
 }
 
 void draw_decimal(uint64_t value)

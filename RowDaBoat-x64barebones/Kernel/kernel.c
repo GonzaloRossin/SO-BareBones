@@ -68,6 +68,8 @@ int main()
 	draw_string("new line",8);
 	clean();
 	draw_string("cleaned",7);
+	newLine();
+	draw_hex(0xFFFF);
 	//Entering sampleCodeModuleAddress in userland
 	//((EntryPoint)sampleCodeModuleAddress)();
 	return 0;

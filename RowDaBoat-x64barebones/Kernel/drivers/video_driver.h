@@ -19,7 +19,6 @@ void delete_line();
 void scroll();
 void clean();
 void draw_number(uint64_t value, uint32_t base);
-void valueToBase(uint64_t value, char * buffer, uint32_t base);
 void draw_decimal(uint64_t value);
 void draw_hex(uint64_t value);
 
