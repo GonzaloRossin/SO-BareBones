@@ -42,19 +42,25 @@ void printRegister(uint8_t reg, uint64_t regData)
 	switch (reg)
 	{
 	case 0:
-		draw_string("RSI: ",4);
+		draw_string("RSI: ",5);
 		break;
 	case 1:
-		draw_string("RAX: ",4);
+		draw_string("RAX: ",5);
 		break;
 	case 2:
-		draw_string("RBX: ",4);
+		draw_string("RBX: ",5);
 		break;
 	case 3:
-		draw_string("RCX: ",4);
+		draw_string("RCX: ",5);
 		break;
 	case 4:
-		draw_string("RDX: ",4);
+		draw_string("RDX: ",5);
+		break;
+	case 5:
+		draw_string("RSP: ",5);
+		break;
+	case 6:
+		draw_string("RBP: ",5);
 		break;
 	}
 	draw_hex(regData);
