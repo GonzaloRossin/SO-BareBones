@@ -53,10 +53,19 @@ void * initializeKernelBinary()
 int main()
 {	
 	loadIDT();
-	draw_string("hola", 4);
-	delete_char();
-	draw_char(' ');
-	draw_char('A');
+	for (int i = 0; i < 1000; i++)
+	{
+		draw_string("hola", 4);
+		draw_char(' ');
+	}
+	for (int i = 0; i < 300; i++)
+	{
+		draw_string("casa", 4);
+		draw_char(' ');
+	}
+	draw_string("scrolled",8);
+	newLine();
+	draw_string("new line",8);
 	//Entering sampleCodeModuleAddress in userland
 	//((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
