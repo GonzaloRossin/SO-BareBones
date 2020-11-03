@@ -38,6 +38,12 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 	case 7:
 		sys_action_call((int) rsi);
 		break;
+	case 8:
+		return sys_get_clock((int) rsi);
+		break;
+	case 9:
+		sys_print_num((int)rsi,(int)rdx);
+		break;
 	}
 	return 0;
 }
@@ -46,7 +52,6 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 char sys_read (){
 	return getLastInput();
 }
-
 //SYSCALL 1
 void sys_write( char * rsi, int rdx)
 {
@@ -62,9 +67,9 @@ void sys_newline(){
 	newLine();
 }
 //SYS_CALL 4
-void sys_cpuInfo(char * vendor , uint32_t * version){
-    cpuVendor(vendor);
-    cpuVersion(version);
+void sys_cpuInfo(char* rsi , uint32_t* rdx){
+    cpuVendor(rsi);
+    cpuVersion(rdx);
 }
 //SYS_CALL 5
 void sys_get_InfoReg(uint64_t* rsi){
@@ -81,5 +86,31 @@ void sys_action_call(int rsi){
 			newLine();
 		case 1:
 			delete_char();
+	}
+}
+//SYS_CALL 8
+uint8_t sys_get_clock(int rsi){
+	switch(rsi){
+		case 0:
+			return readSeconds();
+		case 1:
+			return readMinutes();
+		case 2:
+			return readHours();	
+	}
+
+	return 0;
+
+}
+//SYS_CALL 9
+void sys_print_num(int rsi,int rdx){
+	switch (rdx)
+	{
+	case 0:
+		draw_decimal(rsi);
+		break;
+	case 1:
+		draw_hex(rsi);
+		break;
 	}
 }

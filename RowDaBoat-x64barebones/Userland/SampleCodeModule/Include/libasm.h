@@ -14,13 +14,17 @@ void get_Memory(uint8_t mem, uint8_t * v);
 //SYSCALL 3,leaves a goes to the line below
 void newline();
 //SYSCALL 4,get cpuinfo
-void getCpuVendor(char * c, uint32_t * v);
+void get_CPUvendor(char * c, uint32_t * v);
 //SYSCALL 5,get infoReg
 void get_InfoReg( uint32_t * reg_pointer);
 //SYSCALL 6
 void put_char( char c);
 //SYSCALL 7
 void putActioncall(int action);
+//SYSCALL 8
+uint64_t get_RTC(uint64_t c);
+//SYSCALL 9
+void print_num(int num,int base_option);
 
 
 #endif

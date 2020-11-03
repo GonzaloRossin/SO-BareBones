@@ -23,52 +23,47 @@ static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
 static int bufferSize = 0;
 
 
-void CPUinfo(){
-   char CPU[70];
-   char MODEL[70];
-   char FAMILY[70];
-   uint32_t num;
-   get_CPUvendor(CPU, &num);
-   int model = (num & 0xFF0) >> 4;
-   int family = model >> 4;
-   model = model & 0x0f;
-    numToChar(model, MODEL);
-    numToChar(family, FAMILY);
+static void CPUinfo(){
+    char text[70];
+    char text2[70];
+    uint32_t num;
+    get_CPUvendor(text, &num);
+    int modelo = (num & 0xFF0) >> 4;
+    int familia = modelo >> 4;
+    modelo = modelo & 0x0f;
     print("CPU:");
-    print(CPU);
+    print(text);
     newLine();
-    print("Model:");
-    print(MODEL);
+    print("Modelo:");
+    print_num(modelo,0);
     newLine();
-    print("Family:");
-    print(FAMILY);
+    print("Familia:");
+    print_num(familia,0);
     newLine();
 }
-void inforeg(){
+static void inforeg(){
     char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8: ", "r9: ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
     uint64_t v[16] = {0};
     get_InfoReg(v);
-    char text[70];
     newLine();
     for(int i=0;i<16;i++){
-        numToChar(v[i], text);
         print(regs[i]);
-        print(text);
+        print_num(v[i],1);
         newLine();
     }
 }
-void cleanBuffer(){
+static void cleanBuffer(){
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
         terminalBuffer[i] = 0;
     }
     bufferSize = 0;
 }
-void testDivisionBy0Command()
+static void testDivisionBy0Command()
 {
     int a = 4 / 0;
 }
-int readNewInput()
+static int readNewInput()
 {
     
     char chartoadd=getInput();
@@ -104,20 +99,7 @@ int readNewInput()
     //Just in case
     return 0;
 }
-
-void shell()
-{
-    put_char('>');
-    while(1){
-        if(readNewInput()){
-            CommandHandler();
-            put_char('>');
-            cleanBuffer();
-            
-        }
-    }
-}
-void help(){
+static void help(){
     print("Los comandos a disposicion del usuario son los siguientes:");
     newLine();
     newLine();
@@ -127,16 +109,25 @@ void help(){
         newLine();
     }
 }
+static void get_time(){
+    print("current time (UTC): ");
+    print_num(get_RTC(2),0);
+    print(":");
+    print_num(get_RTC(1),0);
+    print(":");
+    print_num(get_RTC(0),0);
+}
 
 void fillCommandList()
 {
-    fillCommand("help",": despliega al usuario los comandos disponibles",&help);
-    fillCommand("inforeg",": Imprime informacion del cpu", &inforeg);
-    fillCommand("get CPUinfo",": Imprime informacion del cpu", &CPUinfo);
-    fillCommand("test divisionby0",": ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
+    fillCommand("help",": Despliega al usuario los comandos disponibles",&help);
+    fillCommand("get_time",": Muestra la hora actual",&get_time);
+    fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros", &inforeg);
+    fillCommand("get_CPUinfo",": Imprime informacion del cpu", &CPUinfo);
+    fillCommand("test divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
 
 }
-void CommandHandler()
+static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
     strncpy(terminalBuffer, potentialCommand, bufferSize);
@@ -164,4 +155,16 @@ void fillCommand(char* name,char *desc, void (*cmdptr)(void))
     strncpy(desc, aux.desc, strlen(desc));
     aux.cmdptr = cmdptr;
     commandList[commandsSize++] = aux;
+}
+void shell()
+{
+    put_char('>');
+    while(1){
+        if(readNewInput()){
+            CommandHandler();
+            put_char('>');
+            cleanBuffer();
+            
+        }
+    }
 }

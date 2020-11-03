@@ -5,6 +5,7 @@ GLOBAL saveRegs
 GLOBAL getRegs
 GLOBAL saveMemory
 GLOBAL getMemory
+GLOBAL readCMOS
 
 section .text
 
@@ -169,6 +170,15 @@ end2: pop rcx
     mov rsp, rbp
     pop rbp
     ret
+;Function to access real time clock
+readCMOS:
+	cli
+	xor rax,rax
+	mov al,dil
+	out 70h,al
+	in al,71h
+	sti
+	ret
 
 section .bss
 regs resq 16
