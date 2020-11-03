@@ -38,6 +38,18 @@ void get_CPUinfo(){
     print(FAMILY);
     newLine();
 }
+void inforeg(){
+    char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8: ", "r9: ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
+    uint64_t v[16] = {0};
+    get_InfoReg(v);
+    char text[70];
+    for(int i=0;i<16;i++){
+        numToChar(v[i], text);
+        print(regs[i]);
+        print(text);
+        newLine();
+    }
+}
 void cleanBuffer(){
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
@@ -48,4 +60,31 @@ void cleanBuffer(){
 void testDivisionBy0Command()
 {
     int a = 4 / 0;
+}
+int readNewInput()
+{
+    
+    char chartoadd=getInput();
+
+    //If there is nothing new or its not a valid character...
+    if (chartoadd == 0)
+    {
+        return 0;
+    }
+    else if(chartoadd=='c'){
+        return 1;
+    }
+    //If its a regular letter.
+    else
+    {
+        if (bufferSize <= 100)
+        {
+            terminalBuffer[bufferSize++] = chartoadd;
+            putChar(chartoadd);
+            return 0;
+        }
+    }
+
+    //Just in case
+    return 0;
 }

@@ -74,9 +74,15 @@ void draw_square(unsigned int x, unsigned int y, int l, int color){
 	draw_rectangle(x, y, l, l, color);
 }
 
-void draw_char(unsigned int x,unsigned int y, char character, int fontSize, int fontColor, int backgroundColor){
-	int aux_x = x;
-	int aux_y = y;
+void draw_char(char character){
+	if (cursor_x + CHAR_WIDTH*FONT_SIZE > SCREEN_WIDTH)
+	{
+		cursor_x = 0;
+		cursor_y += CHAR_HEIGHT*FONT_SIZE;
+	}
+
+	int aux_x = cursor_x;
+	int aux_y = cursor_y;
 
 	char bitIsPresent;
 
@@ -90,37 +96,43 @@ void draw_char(unsigned int x,unsigned int y, char character, int fontSize, int 
 
 			if (bitIsPresent)
 			{
-				draw_square(aux_x, aux_y, fontSize, fontColor);
+				draw_square(aux_x, aux_y, FONT_SIZE, FONT_COLOR);
 			}
 			else
 			{
-				draw_square(aux_x, aux_y, fontSize, backgroundColor);
+				draw_square(aux_x, aux_y, FONT_SIZE, BACKGROUND_COLOR);
 			}
-			aux_x+=fontSize;
+			aux_x+=FONT_SIZE;
 		}
-		aux_x = x;
-		aux_y += fontSize;
+		aux_x = cursor_x;
+		aux_y += FONT_SIZE;
 	}
-	
+	cursor_x += CHAR_WIDTH*FONT_SIZE;
 }
-void draw_string(char* buffer,int count){
+
+void draw_string(char * buffer,int count){
 	if (cursor_x + CHAR_WIDTH*FONT_SIZE*count > SCREEN_WIDTH)
 	{
 		cursor_x = 0;
 		cursor_y += CHAR_HEIGHT*FONT_SIZE;
 	}
 	for (int i = 0; i < count; i++){
-		draw_char(cursor_x, cursor_y, buffer[i], FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
-        cursor_x += CHAR_WIDTH*FONT_SIZE;
-		if (buffer[i]=='h')
-		{
-			cursor_x++;
-		}
-		
+		draw_char(buffer[i]);
 	}
-	cursor_x += LINE_SPACE*FONT_SIZE;
 }
+
 void newLine(){
-	cursor_x=0;
-	cursor_y +=CHAR_HEIGHT*FONT_SIZE;
+	cursor_x = 0;
+	cursor_y += CHAR_HEIGHT*FONT_SIZE;
+}
+
+void delete_char(){
+	if (cursor_x - CHAR_WIDTH*FONT_SIZE < 0)
+	{
+		cursor_x = SCREEN_WIDTH;
+		cursor_y -= CHAR_HEIGHT*FONT_SIZE;
+	}
+	cursor_x -= CHAR_WIDTH*FONT_SIZE;
+	draw_char(' ');
+	cursor_x -= CHAR_WIDTH*FONT_SIZE;
 }

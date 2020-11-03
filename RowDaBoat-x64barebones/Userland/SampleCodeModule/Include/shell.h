@@ -6,5 +6,10 @@
 #define CTRL 0x1D
 
 void shell();
+void get_CPUinfo();
+void inforeg();
+void cleanBuffer();
+void testDivisionBy0Command();
+int readNewInput();
 
 #endif

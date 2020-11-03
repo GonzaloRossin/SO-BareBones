@@ -53,7 +53,11 @@ void * initializeKernelBinary()
 int main()
 {	
 	loadIDT();
+	draw_string("hola", 4);
+	delete_char();
+	draw_char(' ');
+	draw_char('A');
 	//Entering sampleCodeModuleAddress in userland
-	((EntryPoint)sampleCodeModuleAddress)();
+	//((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }
