@@ -1,6 +1,6 @@
 #include <libasm.h>
 #include <shell.h>
-#include <lib.h>
+#include <Lib.h>
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100

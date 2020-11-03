@@ -9,13 +9,12 @@
 static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
 static int bufferSize = 0;
 
-int main() {
-    while(1){
-        if(readNewInput())
-            inforeg();
-    }
+void get_CPUinfo();
+void inforeg();
+void testDivisionBy0Command();
+void cleanBuffer();
+
+int main() { 
+    shell();
     return 0;
 }
-
-
-
