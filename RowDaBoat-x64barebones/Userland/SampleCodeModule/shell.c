@@ -112,6 +112,7 @@ void shell()
     newLine();
     print("ingrese el comando help para comenzar");
     newLine();
+    put_char('>');
     while(1){
         if(readNewInput()){
             CommandHandler();
@@ -121,6 +122,7 @@ void shell()
 }
 void help(){
     print("Los comandos a disposicion del usuario son los siguientes:");
+    newLine();
     newLine();
     for(int i=0;i<commandsSize;i++){
         print(commandList[i].command_name);
@@ -134,14 +136,11 @@ void fillCommandList()
     fillCommand("help",": despliega al usuario los comandos disponibles",&help);
     fillCommand("inforeg",": Imprime informacion del cpu", &inforeg);
     fillCommand("get CPUinfo",": Imprime informacion del cpu", &CPUinfo);
-    fillCommand("testDivisionBy0",": ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
+    fillCommand("test divisionby0",": ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
 
 }
 void CommandHandler()
 {
-
-    //Copy the command into the array. Did this to avoid a bug in which in some cases the buffer
-    //represented more chars that it should.
     char potentialCommand[MAX_COMDESC] = {0};
     strncpy(terminalBuffer, potentialCommand, bufferSize);
 
@@ -150,8 +149,6 @@ void CommandHandler()
         if (strcmp(potentialCommand, commandList[i].command_name))
         {
             (commandList[i].cmdptr)();
-
-            //After executing the command we print a newLine and exit.
             newLine();
             return;
         }

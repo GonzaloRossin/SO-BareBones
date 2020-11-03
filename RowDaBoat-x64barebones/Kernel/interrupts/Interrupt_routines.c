@@ -42,22 +42,22 @@ void printRegister(uint8_t reg, uint64_t regData)
 	switch (reg)
 	{
 	case 0:
-		draw_string("RSI:",4);
+		draw_string("RSI: ",4);
 		break;
 	case 1:
-		draw_string("RAX:",4);
+		draw_string("RAX: ",4);
 		break;
 	case 2:
-		draw_string("RBX:",4);
+		draw_string("RBX: ",4);
 		break;
 	case 3:
-		draw_string("RCX:",4);
+		draw_string("RCX: ",4);
 		break;
 	case 4:
-		draw_string("RDX:",4);
+		draw_string("RDX: ",4);
 		break;
 	}
-	//ncPrintHex(regData);
+	draw_hex(regData);
 	newLine();
 }
 void loader();

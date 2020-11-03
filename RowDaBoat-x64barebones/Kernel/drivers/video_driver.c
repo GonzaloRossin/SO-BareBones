@@ -45,6 +45,10 @@ struct vbe_mode_info_structure * screendata=0x0000000000005C00;
 static int cursor_x = 0;
 static int cursor_y = 0;
 
+char * get_pixel(unsigned int x, unsigned int y){
+	return screendata->framebuffer+((y*screendata->width)+x)*3;
+}
+
 void draw_pixel(unsigned int x,unsigned int y,int color){
     char * curpos = screendata->framebuffer+((y*screendata->width)+x)*3;
     int b= color & 0x0000FF;
@@ -79,6 +83,9 @@ void draw_char(char character){
 	{
 		cursor_x = 0;
 		cursor_y += CHAR_HEIGHT*FONT_SIZE;
+		if (cursor_y >= SCREEN_HEIGHT){
+		scroll();
+		}
 	}
 
 	int aux_x = cursor_x;
@@ -115,6 +122,9 @@ void draw_string(char * buffer,int count){
 	{
 		cursor_x = 0;
 		cursor_y += CHAR_HEIGHT*FONT_SIZE;
+		if (cursor_y >= SCREEN_HEIGHT){
+		scroll();
+		}
 	}
 	for (int i = 0; i < count; i++){
 		draw_char(buffer[i]);
@@ -124,10 +134,13 @@ void draw_string(char * buffer,int count){
 void newLine(){
 	cursor_x = 0;
 	cursor_y += CHAR_HEIGHT*FONT_SIZE;
+	if (cursor_y >= SCREEN_HEIGHT){
+		scroll();
+	}
 }
 
 void delete_char(){
-	if (cursor_x - CHAR_WIDTH*FONT_SIZE < 0)
+	if (cursor_x == 0)
 	{
 		cursor_x = SCREEN_WIDTH;
 		cursor_y -= CHAR_HEIGHT*FONT_SIZE;
@@ -135,4 +148,87 @@ void delete_char(){
 	cursor_x -= CHAR_WIDTH*FONT_SIZE;
 	draw_char(' ');
 	cursor_x -= CHAR_WIDTH*FONT_SIZE;
+}
+
+void delete_line(){
+	while (cursor_x > 0)
+	{
+		delete_char();
+	}
+}
+
+void scroll(){
+  
+    for(int i=0 ; i<SCREEN_WIDTH ; i++){
+        for(int j=0 ; j<SCREEN_HEIGHT ; j++){
+            char * current = get_pixel( i, j);
+            char * replace = get_pixel( i, j+CHAR_HEIGHT*FONT_SIZE);
+            current[0] = replace[0];
+            current[1] = replace[1];
+            current[2] = replace[2];
+        }
+    }
+	cursor_y -= CHAR_HEIGHT*FONT_SIZE;
+	cursor_x = 0;
+}
+
+void clean(){
+	for(int i=0 ; i<=SCREEN_WIDTH ; i++){
+        for(int j=0 ; j<=SCREEN_HEIGHT ; j++){
+            draw_pixel(i, j, BACKGROUND_COLOR);
+        }
+    }
+	cursor_x = 0;
+	cursor_y = 0;
+}
+
+void draw_number(uint64_t value, uint32_t base)
+{
+	char buffer[10] = { '0' };
+	int i = 0;
+    valueToBase(value, buffer, base);
+    while (buffer[i]!=0)
+	{
+		draw_char(buffer[i]);
+	}
+}
+
+void valueToBase(uint64_t value, char * buffer, uint32_t base)
+{
+	char *p = buffer;
+	char *p1, *p2;
+	uint32_t digits = 0;
+
+	//Calculate characters for each digit
+	do
+	{
+		uint32_t remainder = value % base;
+		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+		digits++;
+	}
+	while (value /= base);
+
+	// Terminate string in buffer.
+	*p = 0;
+
+	//Reverse string in buffer.
+	p1 = buffer;
+	p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1 = *p2;
+		*p2 = tmp;
+		p1++;
+		p2--;
+	}
+}
+void draw_decimal(uint64_t value)
+{
+	draw_number(value, 10);
+}
+
+void draw_hex(uint64_t value)
+{
+	draw_number(value, 16);
 }
