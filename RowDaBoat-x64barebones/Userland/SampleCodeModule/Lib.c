@@ -3,9 +3,9 @@
 #include <stdint.h>
 
 
-void read(char *buffer, int length)
+char getInput()
 {
-   sys_read((uint64_t)buffer, (uint64_t)length);
+   return read();
 }
 
 void print(char *buffer)
@@ -18,6 +18,10 @@ void putChar(char c){
    chartoadd[0]=c;
    print(chartoadd);
 }
+void newLine(){
+   newline();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 int strlen(char *str)
 {
    int i = 0;
@@ -100,6 +104,4 @@ void numToChar(double num, char * c){
     }
     c[i] = 0;
 }
-void newLine(){
-   sys_newline();
-}
+

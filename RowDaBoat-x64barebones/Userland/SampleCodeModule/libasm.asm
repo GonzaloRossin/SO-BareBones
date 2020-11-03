@@ -1,13 +1,13 @@
-GLOBAL sys_read
+GLOBAL read
 GLOBAL sys_write
 GLOBAL get_input
-GLOBAL sys_newline
+GLOBAL newline
 GLOBAL get_CPUvendor
+GLOBAL get_InfoReg
 
 section .text
 
 %macro pushState 0
-	push rax
 	push rbx
 	push rcx
 	push rdx
@@ -39,7 +39,6 @@ section .text
 	pop rdx
 	pop rcx
 	pop rbx
-	pop rax
 %endmacro
 
 
@@ -49,7 +48,7 @@ section .text
 	mov rsi,rdi
 %endmacro
 
-sys_read:
+read:
 	pushState
 	syscall_adjust
 	mov rdi,0 ;sys_call read is call number 0
@@ -64,7 +63,7 @@ sys_write:
 	int 80h
 	popState
 	ret
-sys_newline:
+newline:
 	pushState
 	syscall_adjust
 	mov rdi,3
@@ -75,6 +74,13 @@ get_CPUvendor:
 	pushState
 	syscall_adjust
 	mov rdi,4
+	int 80h
+	popState
+	ret
+get_InfoReg:
+	pushState
+	syscall_adjust
+	mov rdi,5
 	int 80h
 	popState
 	ret

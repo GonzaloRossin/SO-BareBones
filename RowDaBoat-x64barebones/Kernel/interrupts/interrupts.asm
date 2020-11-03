@@ -167,6 +167,9 @@ int_80:
 	cli
 	hlt
 %endmacro
+
+;division by zero exception
+GLOBAL exception0
 exception0:
 	exception 0
 	

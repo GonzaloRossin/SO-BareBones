@@ -56,14 +56,7 @@ void printRegister(uint8_t reg, uint64_t regData)
 	case 4:
 		draw_string("RDX:",4);
 		break;
-	case 5:
-		draw_string("RSP:",4);
-		break;
-	case 6:
-		draw_string("RBP:",4);
-		break;
 	}
-	//print register
 	//ncPrintHex(regData);
 	newLine();
 }

@@ -14,7 +14,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 	{
 	//sys_read. Just reads from the keyboard and copies to the buffer.
 	case 0:
-		sys_read( (char *) rsi, (int)rdx);
+		return (uint64_t) sys_read();
 		break;
 	// sys_write: writes stdout the content of buffer.
 	case 1:
@@ -26,28 +26,15 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 	case 4:
 		sys_cpuInfo((char *) rsi, (uint32_t *) rdx);
 		break;
+	case 5:
+		sys_get_InfoReg((uint64_t*) rsi);
 	}
 	return 0;
 }
 
 //SYSCALL 0
-void sys_read ( char* rsi, int rdx){
-	int i = 0;
-	char letter;
-	while (i < rdx)
-	{
-		letter = getChar();
-		if (letter != 0)
-		{
-			*(rsi + i) = letter;
-			i++;
-		}
-		else
-		{
-			//If there is nothing on the buffer we stop until we get an interruption.
-			//haltFunction();
-		}
-	}
+char sys_read (){
+	return getLastInput();
 }
 
 //SYSCALL 1
@@ -63,4 +50,8 @@ void sys_newline(){
 void sys_cpuInfo(char * vendor , uint32_t * version){
     cpuVendor(vendor);
     cpuVersion(version);
-}	
+}
+//SYS_CALL 5
+void sys_get_InfoReg(uint64_t* rsi){
+	getRegs(rsi);
+}

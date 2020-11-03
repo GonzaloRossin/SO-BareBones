@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <keyboard_driver.h>
 #include <int80.h>
+#include <lib.h>
 
 
 
@@ -68,7 +69,7 @@ void keyboard_handler(uint8_t code)
 		switch (code)
 		{
 		case CTRL:
-			CTRL_LCKD = 0; //temporal
+			CTRL_LCKD = 1;
 			break;
 		case CAPS:
 			CAPS_LCKD = !CAPS_LCKD;
@@ -105,6 +106,9 @@ void keyboard_handler(uint8_t code)
 			{
 				addToBuffer(toUpperCase(charToAdd));
 			}
+		}
+		else if(CTRL_LCKD){
+			saveRegs();
 		}
 		//Standard case, just adding the letter.
 		else

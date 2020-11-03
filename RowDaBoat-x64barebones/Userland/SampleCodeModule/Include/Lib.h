@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void read(char *buffer, int length);
+char getInput();
 void print(char *buffer);
 void putChar(char c);
 int strlen(char *str);
