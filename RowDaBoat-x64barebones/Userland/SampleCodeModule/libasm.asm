@@ -1,4 +1,4 @@
-GLOBAL read
+GLOBAL read_input
 GLOBAL sys_write
 GLOBAL get_input
 GLOBAL newline
@@ -53,7 +53,7 @@ section .text
 	mov rsi,rdi
 %endmacro
 
-read:
+read_input:
 	pushState
 	syscall_adjust
 	mov rdi,0 ;sys_call  0

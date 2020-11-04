@@ -26,4 +26,6 @@ void picSlaveMask(uint8_t mask);
 
 //exception 0, division by 0
 void exception0();
+//exception 6, invalid operation
+void exception6();
 #endif

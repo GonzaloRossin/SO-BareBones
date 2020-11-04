@@ -10,6 +10,7 @@ EXTERN int80Dispatcher
 GLOBAL int_80
 GLOBAL Halt
 GLOBAL exception0
+GLOBAL exception6
 
 EXTERN irqDispatcher
 EXTERN printRegister
@@ -169,7 +170,9 @@ int_80:
 %endmacro
 
 ;division by zero exception
-GLOBAL exception0
 exception0:
 	exception 0
+;invalid operation exception
+exception6:
+	exception 6
 	

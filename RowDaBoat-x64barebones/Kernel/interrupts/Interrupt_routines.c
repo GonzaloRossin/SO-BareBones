@@ -32,6 +32,8 @@ void printException(uint8_t exc)
 	case 0:
 		draw_string("Excepcion 0:division por cero",29);
 		break;
+	case 6:
+		draw_string("Excepcion 6:operacion invalida",30);
 	}
 	newLine();
 }

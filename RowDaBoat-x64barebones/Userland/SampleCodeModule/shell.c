@@ -66,7 +66,7 @@ static void testDivisionBy0Command()
 static int readNewInput()
 {
     
-    char chartoadd=getInput();
+    char chartoadd=read_input();
 
     //If there is nothing new or its not a valid character...
     if (chartoadd == 0)
@@ -117,6 +117,12 @@ static void get_time(){
     print(":");
     print_num(get_RTC(0),0);
 }
+void testIvalidOpCodeCommand()
+{
+    void (*punt)(void) = (void *)0x400000;
+    *((uint64_t *)punt) = 0xffffffff;
+    (punt)();
+}
 
 void fillCommandList()
 {
@@ -124,7 +130,8 @@ void fillCommandList()
     fillCommand("get_time",": Muestra la hora actual",&get_time);
     fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros", &inforeg);
     fillCommand("get_CPUinfo",": Imprime informacion del cpu", &CPUinfo);
-    fillCommand("test divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
+    fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
+    fillCommand("test_invalidop",": Ejemplo de excepcion por operación invalida" ,&testIvalidOpCodeCommand);
 
 }
 static void CommandHandler()
