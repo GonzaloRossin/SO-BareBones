@@ -25,6 +25,8 @@ uint64_t get_RTC(uint64_t c);
 void print_num(int num,int base_option);
 //SYSCALL 10
 void clearScreen();
+//SYSCALL 11
+void sys_draw(int i, uint64_t matrix);
 
 
 #endif

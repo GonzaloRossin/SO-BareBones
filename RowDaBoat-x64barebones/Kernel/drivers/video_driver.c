@@ -80,11 +80,19 @@ void draw_square(unsigned int x, unsigned int y, int l, int color){
 	draw_rectangle(x, y, l, l, color);
 }
 
-void draw_char(char character){
-	if (cursor_x + CHAR_WIDTH*FONT_SIZE > SCREEN_WIDTH)
+void draw_char(char caracter){
+	draw_char_personalized(caracter, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+}
+
+void draw_char_sized(char caracter, int fontsize){
+	draw_char_personalized(caracter, fontsize, FONT_COLOR, BACKGROUND_COLOR);
+}
+
+void draw_char_personalized(char character, int fontsize, int fontcolor, int backgroundcolor){
+	if (cursor_x + CHAR_WIDTH*fontsize > SCREEN_WIDTH)
 	{
 		cursor_x = 0;
-		cursor_y += CHAR_HEIGHT*FONT_SIZE;
+		cursor_y += CHAR_HEIGHT*fontsize;
 		if (cursor_y >= SCREEN_HEIGHT){
 		scroll();
 		}
@@ -101,22 +109,22 @@ void draw_char(char character){
 	{
 		for (int j = 0; j < CHAR_WIDTH; j++)
 		{
-			bitIsPresent = (1<<(CHAR_WIDTH-j)) & toDraw[i];
+			bitIsPresent = (1<<(CHAR_WIDTH-j-1)) & toDraw[i];
 
 			if (bitIsPresent)
 			{
-				draw_square(aux_x, aux_y, FONT_SIZE, FONT_COLOR);
+				draw_square(aux_x, aux_y, fontsize, fontcolor);
 			}
 			else
 			{
-				draw_square(aux_x, aux_y, FONT_SIZE, BACKGROUND_COLOR);
+				draw_square(aux_x, aux_y, fontsize, backgroundcolor);
 			}
-			aux_x+=FONT_SIZE;
+			aux_x+=fontsize;
 		}
 		aux_x = cursor_x;
-		aux_y += FONT_SIZE;
+		aux_y += fontsize;
 	}
-	cursor_x += CHAR_WIDTH*FONT_SIZE;
+	cursor_x += CHAR_WIDTH*fontsize;
 }
 
 void draw_string(char * buffer,int count){
@@ -186,7 +194,6 @@ void clean(){
 
 void draw_number(uint64_t value, uint32_t base)
 {
-	int i = 0;
     int size = valueToBase(value, buffer, base);
     draw_string(buffer, size);
 }
@@ -231,4 +238,43 @@ void draw_decimal(uint64_t value)
 void draw_hex(uint64_t value)
 {
 	draw_number(value, 16);
+}
+
+void draw_matrix(unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor, int contourcolor){
+	if (cursor_x + width*draw_size > SCREEN_WIDTH)
+	{
+		cursor_x = 0;
+		cursor_y += height*draw_size;
+		if (cursor_y >= SCREEN_HEIGHT){
+			scroll();
+		}
+	}
+
+	int aux_x = cursor_x;
+	int aux_y = cursor_y;
+
+	char bitIsPresent;
+
+	unsigned char * toDraw = matrix;
+
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			bitIsPresent = (1<<(width-j-1)) & toDraw[i];
+
+			if (bitIsPresent)
+			{
+				draw_square(aux_x, aux_y, draw_size, color);			
+			}
+			else
+			{
+				draw_square(aux_x, aux_y, draw_size, backgroundcolor);
+			}
+			aux_x+=draw_size;
+		}
+		aux_x = cursor_x;
+		aux_y += draw_size;
+	}
+	cursor_x += width*draw_size;
 }

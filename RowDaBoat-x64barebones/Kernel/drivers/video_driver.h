@@ -12,6 +12,8 @@ void draw_pixel(unsigned int x, unsigned int y,int color);
 void draw_rectangle(unsigned int x, unsigned int y, int b, int h, int color);
 void draw_square(unsigned int x, unsigned int y, int l, int color);
 void draw_char(char character);
+void draw_char_sized(char caracter, int fontsize);
+void draw_char_personalized(char character, int fontsize, int fontcolor, int backgroundcolor);
 void draw_string(char* buffer,int count);
 void newLine();
 void delete_char();
@@ -21,6 +23,7 @@ void clean();
 void draw_number(uint64_t value, uint32_t base);
 void draw_decimal(uint64_t value);
 void draw_hex(uint64_t value);
+void draw_matrix(unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor, int contourcolor);
 
 
 #endif

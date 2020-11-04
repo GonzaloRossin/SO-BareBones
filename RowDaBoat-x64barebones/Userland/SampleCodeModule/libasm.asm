@@ -10,6 +10,7 @@ GLOBAL putActioncall
 GLOBAL get_RTC
 GLOBAL print_num
 GLOBAL clearScreen
+GLOBAL sys_draw
 
 section .text
 
@@ -65,49 +66,49 @@ read_input:
 sys_write:
 	pushState
 	syscall_adjust
-	mov rdi,1;sys_call 1
+	mov rdi,1 ;sys_call 1
 	int 80h
 	popState
 	ret
 get_Memory:
     pushState
 	syscall_adjust
-    mov rdi,2;sys_call 2
+    mov rdi,2 ;sys_call 2
     int 80h
     popState
     ret
 newline:
 	pushState
 	syscall_adjust
-	mov rdi,3;sys_call 3
+	mov rdi,3 ;sys_call 3
 	int 80h
 	popState
 	ret
 get_CPUvendor:
 	pushState
 	syscall_adjust
-	mov rdi,4;sys_call 4
+	mov rdi,4 ;sys_call 4
 	int 80h
 	popState
 	ret
 get_InfoReg:
 	pushState
 	syscall_adjust
-	mov rdi,5;sys_call 5
+	mov rdi,5 ;sys_call 5
 	int 80h
 	popState
 	ret
 put_char:
 	pushState
 	syscall_adjust
-	mov rdi,6;sys_call 6
+	mov rdi,6 ;sys_call 6
 	int 80h
 	popState
 	ret
 putActioncall:
 	pushState
 	syscall_adjust
-	mov rdi,7;sys_call 7
+	mov rdi,7 ;sys_call 7
 	int 80h
 	popState
 	ret
@@ -118,18 +119,26 @@ get_RTC:;syscall to acces time from real time clock
 	int 80h
 	popState
 	ret
-print_num
+print_num:
 	pushState
 	syscall_adjust
-	mov rdi,9; sys_call 9
+	mov rdi,9 ;sys_call 9
 	int 80h
 	popState
 	ret
 clearScreen:
 	pushState
 	syscall_adjust
-	mov rdi,10;sys_call 10
+	mov rdi,10 ;sys_call 10
 	int 80h
 	popState
 	ret
+sys_draw:
+	pushState
+	syscall_adjust
+	mov rdi,11 ;sys_call 11
+	int 80h
+	popState
+	ret
+
 
