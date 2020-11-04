@@ -9,6 +9,7 @@ GLOBAL put_char
 GLOBAL putActioncall
 GLOBAL get_RTC
 GLOBAL print_num
+GLOBAL clearScreen
 
 section .text
 
@@ -120,7 +121,14 @@ get_RTC:;syscall to acces time from real time clock
 print_num
 	pushState
 	syscall_adjust
-	mov rdi,9
+	mov rdi,9; sys_call 9
+	int 80h
+	popState
+	ret
+clearScreen:
+	pushState
+	syscall_adjust
+	mov rdi,10;sys_call 10
 	int 80h
 	popState
 	ret

@@ -15,5 +15,6 @@ void sys_put_char(char rsi); //sys call 6
 void sys_action_call(int rsi);//sys call 7
 uint8_t sys_get_clock(int rsi);//sys call 8
 void sys_print_num(int rsi,int rdx);//sys call 9
+void sys_clear_screen();//sys call 10
 
 #endif

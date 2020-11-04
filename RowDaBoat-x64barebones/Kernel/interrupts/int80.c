@@ -44,6 +44,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 	case 9:
 		sys_print_num((int)rsi,(int)rdx);
 		break;
+	case 10:
+		sys_clear_screen();
+		break;
 	}
 	return 0;
 }
@@ -113,4 +116,8 @@ void sys_print_num(int rsi,int rdx){
 		draw_hex(rsi);
 		break;
 	}
+}
+//SYS_CALL 10
+void sys_clear_screen(){
+	clean();
 }

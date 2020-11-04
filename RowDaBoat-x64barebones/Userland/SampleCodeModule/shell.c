@@ -117,11 +117,14 @@ static void get_time(){
     print(":");
     print_num(get_RTC(0),0);
 }
-void testIvalidOpCodeCommand()
+static void testIvalidOpCodeCommand()
 {
     void (*punt)(void) = (void *)0x400000;
     *((uint64_t *)punt) = 0xffffffff;
     (punt)();
+}
+static void clear(){
+   clearScreen();
 }
 
 void fillCommandList()
@@ -132,6 +135,7 @@ void fillCommandList()
     fillCommand("get_CPUinfo",": Imprime informacion del cpu", &CPUinfo);
     fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
     fillCommand("test_invalidop",": Ejemplo de excepcion por operación invalida" ,&testIvalidOpCodeCommand);
+    fillCommand("clear",": borra lo que haya en la pantalla",&clear);
 
 }
 static void CommandHandler()
