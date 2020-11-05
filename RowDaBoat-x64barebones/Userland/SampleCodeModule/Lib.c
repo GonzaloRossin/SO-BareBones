@@ -18,6 +18,9 @@ void newLine(){
 void actionCall(int action){
     putActioncall(action);
 }
+void draw(int option, matrix_struct * m){
+    sys_draw(option, (uint64_t) m);
+}
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 int strlen(char *str)
 {

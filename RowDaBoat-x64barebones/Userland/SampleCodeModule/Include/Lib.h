@@ -13,4 +13,24 @@ void numToChar(double num, char * c);
 void putChar(char c);
 void actionCall(int action);
 uint8_t* strToNumHex(char * str);
+
+//Structure for drawing
+//#pragma pack(push)
+//#pragma pack(1)
+typedef struct matrix_struct
+{
+	int x;
+	int y;
+	unsigned char * matrix;
+	int width;
+	int height;
+	int draw_size;
+	int color;
+	int backgroundcolor;
+	int contourcolor;
+} matrix_struct;
+//#pragma pack(push)
+
+void draw(int option, matrix_struct * m);
+
 #endif

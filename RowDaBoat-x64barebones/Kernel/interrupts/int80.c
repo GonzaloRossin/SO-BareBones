@@ -7,7 +7,7 @@
 #include <font.h>
 
 //Software interrupt used for interaction between user and kernel space
-uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
+uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 {
 
 	switch (rdi)
@@ -43,6 +43,12 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 		break;
 	case 9:
 		sys_print_num((int)rsi,(int)rdx);
+		break;
+	case 10:
+		sys_clear_screen();
+		break;
+	case 11:
+		sys_draw((int) rsi, (matrix_struct *) rdx);
 		break;
 	}
 	return 0;
@@ -116,3 +122,21 @@ void sys_print_num(int rsi,int rdx){
 		break;
 	}
 }
+//SYS_CALL 10
+void sys_clear_screen(){
+	clean();
+}
+//SYS_CALL 11
+void sys_draw(int rsi, matrix_struct * rdx){
+	switch (rsi)
+	{
+	case 0:
+		draw_matrix(rdx->x, rdx->y, rdx->matrix, rdx->width, rdx->height, rdx->draw_size, rdx->color, rdx->backgroundcolor, rdx->contourcolor);
+		break;
+	case 1:
+		draw_char_personalized(rdx->x, rdx->y, rdx->matrix, rdx->draw_size, rdx->color, rdx->backgroundcolor);
+		break;
+	}
+}
+
+

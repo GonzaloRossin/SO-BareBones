@@ -1,5 +1,6 @@
-#define CHESS_PIECE_WIDTH 8
-#define CHESS_PIECE_HEIGHT 8
+#define CHESS_SQUARE_WIDTH 8
+#define CHESS_SQUARE_HEIGHT 16
+#define CHESS_DRAW_SIZE 5
 
 #define ________ 0x00
 #define _______X 0x01
@@ -258,4 +259,4 @@
 #define XXXXXXX_ 0xFE
 #define XXXXXXXX 0xFF
 
-unsigned char * chessBitmap(int color, int piece);
+unsigned char * chessBitmap(int piece, int side);
