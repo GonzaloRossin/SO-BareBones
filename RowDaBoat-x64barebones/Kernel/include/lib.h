@@ -16,7 +16,7 @@ void saveRegs();
 
 void getRegs(uint64_t * v);
 
-void saveMemory(uint8_t mem);
+void saveMemory(uint8_t* mem);
 
 void getMemory(uint8_t * v);
 

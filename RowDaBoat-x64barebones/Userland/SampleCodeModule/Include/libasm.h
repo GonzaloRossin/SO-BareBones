@@ -8,7 +8,7 @@ char read_input();
 //SYSCALL 1 writes in screen content from buffer.
 void sys_write(uint64_t buffer, uint64_t count);
 //SYSCALL 2
-void get_Memory(uint8_t mem, uint8_t * v); 
+void get_Memory(uint8_t* mem, uint8_t * v); 
 //SYSCALL 3,leaves a goes to the line below
 void newline();
 //SYSCALL 4,get cpuinfo
