@@ -137,7 +137,8 @@ saveMemory:
     push rcx
     mov rcx, 0
 
-.ciclo:   cmp rcx, 32
+.ciclo:   
+    cmp rcx, 32
     je .end 
     mov al, [rdi + rcx]
     mov [v + rcx], al
@@ -158,14 +159,16 @@ getMemory:
     push rcx
     mov rcx, 0
 
-ciclo2:   cmp rcx, 32
+ciclo2:   
+    cmp rcx, 32
     je end2
     mov al, [v + rcx]
     mov [rdi + rcx], al
     inc rcx
     jmp ciclo2
 
-end2: pop rcx
+end2: 
+    pop rcx
     
     mov rsp, rbp
     pop rbp
