@@ -81,7 +81,16 @@ void draw_square(unsigned int x, unsigned int y, int l, int color){
 }
 
 void draw_char(char caracter){
+	if (cursor_x + CHAR_WIDTH*FONT_SIZE > SCREEN_WIDTH)
+	{
+		cursor_x = 0;
+		cursor_y += CHAR_HEIGHT*FONT_SIZE;
+		if (cursor_y >= SCREEN_HEIGHT){
+		scroll(CHAR_HEIGHT*FONT_SIZE);
+		}
+	}
 	draw_char_personalized(cursor_x, cursor_y, caracter, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+	cursor_x += CHAR_WIDTH*FONT_SIZE;
 }
 
 void draw_char_personalized(int x, int y, char character, int fontsize, int fontcolor, int backgroundcolor){
@@ -120,7 +129,6 @@ void draw_char_personalized(int x, int y, char character, int fontsize, int font
 		aux_x = x;
 		aux_y += fontsize;
 	}
-	x += CHAR_WIDTH*fontsize;
 }
 
 void draw_string_personalized(int x, int y, char * buffer, int count, int fontsize, int fontcolor, int backgroundcolor){
@@ -138,6 +146,14 @@ void draw_string_personalized(int x, int y, char * buffer, int count, int fontsi
 }
 
 void draw_string(char * buffer, int count){
+	if (cursor_x + CHAR_WIDTH*FONT_SIZE*count > SCREEN_WIDTH)
+	{
+		cursor_x = 0;
+		cursor_y += CHAR_HEIGHT*FONT_SIZE;
+		if (cursor_y >= SCREEN_HEIGHT){
+		scroll(FONT_SIZE);
+		}
+	}
 	draw_string_personalized(cursor_x, cursor_y, buffer, count, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
 }
 
