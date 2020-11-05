@@ -5,6 +5,8 @@
 // Structure for drawing
 typedef struct matrix_struct
 {
+    int x;
+    int y;
 	unsigned char * matrix;
 	int width;
 	int height;

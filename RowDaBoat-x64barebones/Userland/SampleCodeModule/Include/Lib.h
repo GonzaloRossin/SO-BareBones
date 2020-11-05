@@ -18,6 +18,8 @@ void actionCall(int action);
 //#pragma pack(1)
 typedef struct matrix_struct
 {
+	int x;
+	int y;
 	unsigned char * matrix;
 	int width;
 	int height;

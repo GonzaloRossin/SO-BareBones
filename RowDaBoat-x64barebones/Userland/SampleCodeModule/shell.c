@@ -1,6 +1,7 @@
 #include <libasm.h>
 #include <shell.h>
 #include <Lib.h>
+#include <chesslib.h>
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
@@ -136,7 +137,7 @@ void fillCommandList()
     fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
     fillCommand("test_invalidop",": Ejemplo de excepcion por operación invalida" ,&testIvalidOpCodeCommand);
     fillCommand("clear",": borra lo que haya en la pantalla",&clear);
-
+    fillCommand("chess",": Juego de ajedrez", &initialize_chess);
 }
 static void CommandHandler()
 {

@@ -22,5 +22,6 @@ int main() {
     shell();
     */
     initialize_chess();
+    turn_board();
     return 0;
 }

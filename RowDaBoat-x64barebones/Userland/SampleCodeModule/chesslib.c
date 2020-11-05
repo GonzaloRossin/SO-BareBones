@@ -17,36 +17,23 @@
 #define QUEEN 5
 #define KING 6
 
-typedef struct chess_square
-{
-    int color;
-    int backgroundcolor;
-    int piece;
-}chess_square;
+int inicial_x = 180;
+int inicial_y = 60;
 
-chess_square board[8][8] = {'0'};
+chess_square board[8][8];
 matrix_struct * m;
 
-void draw_square(int color, int backgroundcolor, int piece){
-    m->matrix = chessBitmap(piece, 0);
-    m->width = CHESS_SQUARE_WIDTH;
-    m->height = CHESS_SQUARE_HEIGHT;
-    m->draw_size = CHESS_DRAW_SIZE;
-    m->color = color;
-    m->backgroundcolor = backgroundcolor;
-    m->contourcolor = CONTOUR_COLOR;
-    draw(0, m);
-    m->matrix = chessBitmap(piece, 1);
-    draw(0,m);
-}
-
 void initialize_chess(){
+    int x = inicial_x;
+    int y = inicial_y;
     // Set the pieces on the board
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
         {
             chess_square * aux = &board[i][j];
+            aux->x = x;
+            aux->y = y;
             if (i==1 || i==6)
             {
                 aux->piece = PAWN;
@@ -95,23 +82,54 @@ void initialize_chess(){
             {
                 aux->backgroundcolor = BACKGROUND_COLOR2;
             }
-            
-            
+            x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE*2;
         }
+        x = inicial_x;
+        y += CHESS_SQUARE_HEIGHT*CHESS_DRAW_SIZE;
     }
     draw_board();
 }
 
 void draw_board(){
-    // draw_letters PONER LAS LETRAS DE LAS COLUMNAS ACA O AL FINAL
+    // PONER ACA LETRAS DE COLUMNAS
     for (int i = 0; i < 8; i++)
     {
         // draw_number PONER EL NUMERO DE FILA
         for (int j = 0; j < 8; j++)
         {
-            chess_square * square = &board[i][j];
-            draw_square(square->color, square->backgroundcolor, square->piece);
+            draw_square(board[i][j]);
         }
-        //draw_jump SALTAR A FILA DE ABAJO
     }
+}
+
+void draw_square(chess_square square){
+    m->x = square.x;
+    m->y = square.y;
+    m->matrix = chessBitmap(square.piece, 0);
+    m->width = CHESS_SQUARE_WIDTH;
+    m->height = CHESS_SQUARE_HEIGHT;
+    m->draw_size = CHESS_DRAW_SIZE;
+    m->color = square.color;
+    m->backgroundcolor = square.backgroundcolor;
+    m->contourcolor = CONTOUR_COLOR;
+    draw(0, m);
+    m->x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE;
+    m->matrix = chessBitmap(square.piece, 1);
+    draw(0,m);
+}
+
+void turn_board(){
+    for (int i = 0; i < 4; i++)
+    {
+        // draw_number PONER EL NUMERO DE FILA
+        for (int j = 0; j < 8; j++)
+        {
+            chess_square aux = board[i][j];
+            board[i][j].x = board[7-i][7-j].x;
+            board[i][j].y = board[7-i][7-j].y;
+            board[7-i][7-j].x = aux.x;
+            board[7-i][7-j].y = aux.y;
+        }
+    }
+    draw_board();
 }
