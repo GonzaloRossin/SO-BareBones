@@ -22,7 +22,7 @@ void clean();
 void draw_number(uint64_t value, uint32_t base);
 void draw_decimal(uint64_t value);
 void draw_hex(uint64_t value);
-void draw_matrix(int x, int y, unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor, int contourcolor);
+void draw_matrix(int x, int y, unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor);
 
 
 #endif

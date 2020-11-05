@@ -256,7 +256,7 @@ void draw_hex(uint64_t value)
 	draw_number(value, 16);
 }
 
-void draw_matrix(int x, int y, unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor, int contourcolor){
+void draw_matrix(int x, int y, unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor){
 	if (x + width*draw_size > SCREEN_WIDTH || y + height*draw_size > SCREEN_HEIGHT)
 	{
 		return;

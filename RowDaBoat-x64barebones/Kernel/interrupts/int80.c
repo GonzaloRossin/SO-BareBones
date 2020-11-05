@@ -129,10 +129,10 @@ void sys_draw(int rsi, matrix_struct * rdx){
 	switch (rsi)
 	{
 	case 0:
-		draw_matrix(rdx->x, rdx->y, rdx->matrix, rdx->width, rdx->height, rdx->draw_size, rdx->color, rdx->backgroundcolor, rdx->contourcolor);
+		draw_matrix(rdx->x, rdx->y, rdx->matrix, rdx->width, rdx->height, rdx->draw_size, rdx->color, rdx->backgroundcolor);
 		break;
 	case 1:
-		draw_char_personalized(rdx->x, rdx->y, rdx->matrix, rdx->draw_size, rdx->color, rdx->backgroundcolor);
+		draw_char_personalized(rdx->x, rdx->y, rdx->caracter, rdx->draw_size, rdx->color, rdx->backgroundcolor);
 		break;
 	}
 }

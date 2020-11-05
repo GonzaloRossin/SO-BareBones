@@ -8,12 +8,12 @@ typedef struct matrix_struct
     int x;
     int y;
 	unsigned char * matrix;
+    char caracter;
 	int width;
 	int height;
 	int draw_size;
 	int color;
     int backgroundcolor;
-    int contourcolor;
 } matrix_struct;
 
 // the int 80h dispatcher

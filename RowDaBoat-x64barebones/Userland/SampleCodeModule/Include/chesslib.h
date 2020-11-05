@@ -7,6 +7,8 @@ typedef struct chess_square
 {
     int x;
     int y;
+    int row;
+    char column;
     int color;
     int backgroundcolor;
     int piece;
