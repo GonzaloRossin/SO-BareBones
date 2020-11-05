@@ -64,7 +64,7 @@ void sys_write( char * rsi, int rdx)
 	draw_string(rsi,rdx);
 }
 //SYSCALL 2
-void sys_getMemory(uint8_t rsi, uint8_t* rdx){
+void sys_getMemory(uint8_t* rsi, uint8_t* rdx){
     saveMemory(rsi);
     getMemory(rdx);
 }
@@ -90,8 +90,10 @@ void sys_action_call(int rsi){
 	switch(rsi){
 		case 0:
 			newLine();
+			break;
 		case 1:
 			delete_char();
+			break;
 	}
 }
 //SYS_CALL 8
