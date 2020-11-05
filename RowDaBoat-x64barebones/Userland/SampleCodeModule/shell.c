@@ -52,6 +52,18 @@ static void inforeg(){
         newLine();
     }
 }
+static void printMem(uint8_t* mem){
+    uint8_t vec[32] = {0};
+    get_Memory(mem, vec);
+    for(int i=0;i<32;i++){
+        if(i!=0 && i%4==0){
+            newLine();
+        }
+        print_num(vec[i],1);
+        print("  ");
+    } 
+    newLine();
+}
 static void cleanBuffer(){
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
@@ -131,18 +143,17 @@ void fillCommandList()
 {
     fillCommand("help",": Despliega al usuario los comandos disponibles",&help);
     fillCommand("get_time",": Muestra la hora actual",&get_time);
-    fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros", &inforeg);
+    fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros (con ctrl se guardan los registros)", &inforeg);
     fillCommand("get_CPUinfo",": Imprime informacion del cpu", &CPUinfo);
     fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
-    fillCommand("test_invalidop",": Ejemplo de excepcion por operación invalida" ,&testIvalidOpCodeCommand);
-    fillCommand("clear",": borra lo que haya en la pantalla",&clear);
+    fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida" ,&testIvalidOpCodeCommand);
+    fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem);
 
 }
 static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
-    strncpy(terminalBuffer, potentialCommand, bufferSize);
-
+    strncpy(terminalBuffer, potentialCommand,0, bufferSize);
     for (int i = 0; i < commandsSize; i++)
     {
         if (strcmp(potentialCommand, commandList[i].command_name))
@@ -152,7 +163,15 @@ static void CommandHandler()
             return;
         }
     }
-
+    char printmemcommand[MAX_COMDESC]={0};
+    char arg[MAX_COMDESC] = {0};
+    strncpy(potentialCommand,printmemcommand,0,9);
+    if(strcmp(printmemcommand,"printMem ")){
+        strncpy(potentialCommand,arg,11,strlen(potentialCommand));
+        uint8_t* pointer=strToNumHex(arg);
+        printMem(pointer);
+        return;
+    }
     //If command not found
     print("Not a valid command: ");
     print(potentialCommand);
@@ -162,8 +181,8 @@ static void CommandHandler()
 void fillCommand(char* name,char *desc, void (*cmdptr)(void))
 {
     command aux;
-    strncpy(name,aux.command_name,strlen(name));
-    strncpy(desc, aux.desc, strlen(desc));
+    strncpy(name,aux.command_name,0,strlen(name));
+    strncpy(desc, aux.desc,0, strlen(desc));
     aux.cmdptr = cmdptr;
     commandList[commandsSize++] = aux;
 }
@@ -175,7 +194,6 @@ void shell()
             CommandHandler();
             put_char('>');
             cleanBuffer();
-            
         }
     }
 }

@@ -44,9 +44,6 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax)
 	case 9:
 		sys_print_num((int)rsi,(int)rdx);
 		break;
-	case 10:
-		sys_clear_screen();
-		break;
 	}
 	return 0;
 }
@@ -61,7 +58,7 @@ void sys_write( char * rsi, int rdx)
 	draw_string(rsi,rdx);
 }
 //SYSCALL 2
-void sys_getMemory(uint8_t rsi, uint8_t* rdx){
+void sys_getMemory(uint8_t* rsi, uint8_t* rdx){
     saveMemory(rsi);
     getMemory(rdx);
 }
@@ -87,8 +84,10 @@ void sys_action_call(int rsi){
 	switch(rsi){
 		case 0:
 			newLine();
+			break;
 		case 1:
 			delete_char();
+			break;
 	}
 }
 //SYS_CALL 8
@@ -116,8 +115,4 @@ void sys_print_num(int rsi,int rdx){
 		draw_hex(rsi);
 		break;
 	}
-}
-//SYS_CALL 10
-void sys_clear_screen(){
-	clean();
 }

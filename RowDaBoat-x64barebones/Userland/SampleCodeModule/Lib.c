@@ -46,15 +46,33 @@ int strcmp(const char *str1, const char *str2)
    return 1;
 }
 
-void strncpy(char *source, char *dest, int size)
+void strncpy(char *source, char *dest, int index, int size)
 {
-   int i = 0;
+   int i = index;
+   int j=0;
    while (i < size && source[i] != 0)
    {
-      dest[i] = source[i];
+      dest[j++] = source[i];
       i++;
    }
-   dest[i] = 0;
+   dest[j] = 0;
 }
-
-
+uint8_t* strToNumHex(char * str){
+   int errorFlag = 0;
+	uint64_t number = 0;
+	unsigned int len = 0;
+	while(*str != 0 && *str != ' ' && !errorFlag) {
+		number *= 16; //Multiplico por 16 para correr todo un lugar a la izquierda
+		if(*str >= '0' && *str <= '9')
+			number += (*str - '0');
+		else if(*str >= 'A' && *str <= 'F')
+			number += (*str - 'A');
+		else
+			number += (*str - 'a');
+		str++;
+		len++;
+	}
+	if(len > 16)
+		errorFlag = 1;
+	return (uint8_t *)number;
+}
