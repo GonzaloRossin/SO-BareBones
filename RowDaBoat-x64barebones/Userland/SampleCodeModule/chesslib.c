@@ -16,19 +16,23 @@
 #define QUEEN 5
 #define KING 6
 
-#define inicial_x 300
-#define inicial_y 30
+#define initial_x 300
+#define initial_y 30
+
+#define INDEX_SIZE 2
 
 chess_square board[8][8];
+matrix_struct rows[8]={[0 ... 7] = {0,0,0,0,0,0,INDEX_SIZE,WHITE,BLACK}};
+matrix_struct columns[8]={[0 ... 7] = {0,0,0,0,0,0,INDEX_SIZE,WHITE,BLACK}};
+
 matrix_struct matrix = {0,0,0,0,CHESS_SQUARE_WIDTH, CHESS_SQUARE_HEIGHT, CHESS_DRAW_SIZE, 0, 0};
-matrix_struct pos = {inicial_x,inicial_y,0,0,0,0,2,WHITE,BLACK};
-matrix_struct * m = &matrix;
-matrix_struct * p = &pos;
+//matrix_struct pos = {initial_x,initial_y,0,0,0,0,2,WHITE,BLACK};
+matrix_struct * p;
 
 void initialize_chess(){
     clearScreen();
-    int x = inicial_x;
-    int y = inicial_y;
+    int x = initial_x;
+    int y = initial_y;
     // Set the pieces on the board
     for (int i = 0; i < 8; i++)
     {
@@ -36,14 +40,16 @@ void initialize_chess(){
         if (i == 0)
         {
             x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE-8;
-            for (char i = 65; i < 73; i++)
+            for (int z = 0; z < 8; z++)
             {
+                p = &columns[z];
                 p->x = x;
-                p->caracter = i;
+                p->y = initial_y;
+                p->caracter = 65+z;
                 x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE*2;
                 draw(1, p);
             }
-            x = inicial_x;
+            x = initial_x;
             y += 16*3;         
         }
         
@@ -52,8 +58,8 @@ void initialize_chess(){
             chess_square * aux = &board[i][j];
             aux->x = x;
             aux->y = y;
-            aux->row = j+1;
-            aux->column = 'a'+i;
+            aux->row = 8-i;
+            aux->column = 'a'+j;
             if (i==1 || i==6)
             {
                 aux->piece = PAWN;
@@ -105,22 +111,21 @@ void initialize_chess(){
             x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE*2;
         }
         // Draw row tag
+        p = &rows[i];
         p->x = x+16*2;
         p->y = y+CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE-16;
-        p->caracter = 49+i;
+        p->caracter = 56-i;
         draw(1,p);
         // Jump line
-        x = inicial_x;
+        x = initial_x;
         y += CHESS_SQUARE_HEIGHT*CHESS_DRAW_SIZE;
     }
     draw_board();
 }
 
 void draw_board(){
-    // PONER ACA LETRAS DE COLUMNAS
     for (int i = 0; i < 8; i++)
     {
-        // draw_number PONER EL NUMERO DE FILA
         for (int j = 0; j < 8; j++)
         {
             draw_square(board[i][j]);
@@ -129,6 +134,7 @@ void draw_board(){
 }
 
 void draw_square(chess_square square){
+    matrix_struct * m = &matrix;
     m->x = square.x;
     m->y = square.y;
     m->matrix = chessBitmap(square.piece, 0);
@@ -140,10 +146,28 @@ void draw_square(chess_square square){
     draw(0,m);
 }
 
+void draw_tags(){
+    for (int i = 0; i < 8; i++)
+    {
+        p = &rows[i];
+        draw(1, p);
+        p = &columns[i];
+        draw(1, p);
+    }
+    
+}
+
 void turn_board(){
     for (int i = 0; i < 4; i++)
     {
-        // draw_number PONER EL NUMERO DE FILA
+        matrix_struct aux = rows[i];
+        rows[i].caracter = rows[7-i].caracter;
+        rows[7-i].caracter = aux.caracter;
+
+        aux = columns[i];
+        columns[i].caracter = columns[7-i].caracter;
+        columns[7-i].caracter = aux.caracter;
+
         for (int j = 0; j < 8; j++)
         {
             chess_square aux = board[i][j];
@@ -153,5 +177,61 @@ void turn_board(){
             board[7-i][7-j].y = aux.y;
         }
     }
+    draw_tags();
     draw_board();
+}
+
+void turn_board_90(){    
+    for (int i = 0; i < 8; i++)
+    {
+        matrix_struct aux = rows[i];
+        rows[i].caracter = columns[i].caracter;
+        columns[i].caracter = aux.caracter;
+
+        for (int j = 0; j < i; j++)
+        {
+            chess_square aux = board[i][j];
+            board[i][j].x = board[j][i].x;
+            board[i][j].y = board[j][i].y;
+            board[j][i].x = aux.x;
+            board[j][i].y = aux.y;
+        }
+    }
+    draw_tags();
+    draw_board();
+}
+
+int validate(chess_square origin, chess_square destiny){
+    switch (origin.piece)
+    {
+    case NO_PIECE:
+        return -1;
+        break;
+    case PAWN:
+        if ( destiny.column==origin.column )
+        {
+            int dist = destiny.row-origin.row;
+            if (dist == 1)
+            {
+                return 0;
+            }
+            if (dist == 2 && origin.row == 2)
+            {
+                return 0;
+            }
+            
+        }
+        return -1;
+        break;
+    }
+    return -1;
+}
+
+void swap(chess_square origin, chess_square destiny){
+    chess_square aux = origin;
+
+    origin.x = destiny.x;
+    origin.y = destiny.y;
+    destiny.x = aux.x;
+    destiny.y = aux.y;
 }
