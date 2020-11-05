@@ -94,6 +94,9 @@ void sys_action_call(int rsi){
 		case 1:
 			delete_char();
 			break;
+		case 3:
+			delete_line();
+			break;
 	}
 }
 //SYS_CALL 8

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <libasm.h>
 #include <Lib.h>
+#include <shell.h>
 
 #define BACKGROUND_COLOR1 0x9AE1CD
 #define BACKGROUND_COLOR2 0x3F7E7A
@@ -24,6 +25,24 @@ matrix_struct matrix = {0,0,0,0,CHESS_SQUARE_WIDTH, CHESS_SQUARE_HEIGHT, CHESS_D
 matrix_struct pos = {inicial_x,inicial_y,0,0,0,0,2,WHITE,BLACK};
 matrix_struct * m = &matrix;
 matrix_struct * p = &pos;
+
+//Buffer to store the input from the keyboard.
+#define BUFFER 50
+#define MAX_COMMANDS 10
+#define MAX_DESC 50
+
+typedef struct chesscommand
+{
+    char command_name[MAX_DESC];
+    char desc[MAX_DESC];
+    void (*cmdptr)(void);
+} chesscommand;
+
+static chesscommand commandList[MAX_COMMANDS];
+static int commandsSize = 0;
+
+static char buffer[BUFFER+ 1] = {0}; //Non cyclic buffer
+static int buffer_size = 0;
 
 void initialize_chess(){
     clearScreen();
@@ -114,6 +133,7 @@ void initialize_chess(){
         y += CHESS_SQUARE_HEIGHT*CHESS_DRAW_SIZE;
     }
     draw_board();
+    minishell();
 }
 
 void draw_board(){
@@ -154,4 +174,71 @@ void turn_board(){
         }
     }
     draw_board();
+    minishell();
+}
+static int readChessInput()
+{
+    
+    char chartoadd=read_input();
+
+    //If there is nothing new or its not a valid character...
+    if (chartoadd == 0)
+    {
+        return 0;
+    }
+    else if(chartoadd==ENTER){
+        putActioncall(3);
+        return 1;
+    }
+    else if(chartoadd==BACKSPACE){
+        if (buffer_size > 0)
+        {
+            buffer[--buffer_size] = 0;
+            putActioncall(1);
+        }
+        return 0;
+    }
+    //If its a regular letter.
+    else
+    {
+        if (buffer_size <= 100)
+        {
+            buffer[buffer_size++] = chartoadd;
+            putChar(chartoadd);
+            return 0;
+        }
+    }
+
+    //Just in case
+    return 0;
+}
+static void cleanChessBuffer(){
+    for (int i = 0; i < BUFFER; i++)
+    {
+       buffer[i] = 0;
+    }
+    buffer_size = 0;
+}
+// void CommandHandlerChess(){
+//     char potentialCommand[BUFFER] = {0};
+//     strncpy(buffer, potentialCommand,0, buffer_size);
+//     for (int i = 0; i < command_size && potentialCommand[i]!= ' '; i++)
+//     {
+//         if (strcmp(potentialCommand, commandList[i].command_name))
+//         {
+//             (commandList[i].cmdptr)();
+//             newLine();
+//             return;
+//         }
+//     }
+// }
+void minishell(){
+    put_char('>');
+    while(1){
+        if(readChessInput()){
+            //CommandHandlerChess();
+            put_char('>');
+            cleanChessBuffer();
+        }
+    }
 }
