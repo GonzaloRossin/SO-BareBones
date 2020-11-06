@@ -146,6 +146,7 @@ void sys_draw(int rsi, matrix_struct * rdx){
 		break;
 	}
 }
+//SYS_CALL 12
 unsigned long sys_get_seconds(){
 	return getSeconds();
 }

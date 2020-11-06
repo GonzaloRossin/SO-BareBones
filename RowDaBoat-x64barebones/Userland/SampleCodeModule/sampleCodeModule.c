@@ -13,7 +13,7 @@ static int bufferSize = 0;
 
 
 int main() {
-    /*
+    
     fillCommandList();
     print("WELCOME TO chessOS, espero que le guste mucho el ajedrez");
     newLine();
@@ -21,7 +21,7 @@ int main() {
     print("ingrese el comando help para comenzar");
     newLine();
     shell();
-    matrix_struct * m;
+    /*matrix_struct * m;
             m->x = TIME_X;
             m->y = TIME_Y;
             m->draw_size = 1;
@@ -34,7 +34,5 @@ int main() {
                 m->x+=8;
             }
     */
-    initialize_chess();
-    urn_board_90();
     return 0;
 }

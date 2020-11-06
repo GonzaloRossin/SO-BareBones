@@ -124,11 +124,11 @@ static void help(){
 }
 static void get_time(){
     print("current time (UTC): ");
-    print_num(get_RTC(2),0);
+    print_num(get_RTC(2),0);//horas
     print(":");
-    print_num(get_RTC(1),0);
+    print_num(get_RTC(1),0);//minutos
     print(":");
-    print_num(get_RTC(0),0);
+    print_num(get_RTC(0),0);//segundos
 }
 static void testIvalidOpCodeCommand()
 {

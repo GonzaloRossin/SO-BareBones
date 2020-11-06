@@ -60,6 +60,7 @@ void draw_square(chess_square square){
     draw(0,m);
 }
 
+
 void turn_board(){
     for (int i = 0; i < 4; i++)
     {
@@ -79,6 +80,7 @@ void turn_board(){
 void initialize_chess(){
     int x = initial_x;
     int y = initial_y;
+    clearScreen();
     // Set the pieces on the board
     for (int i = 0; i < 8; i++)
     {
@@ -167,29 +169,10 @@ void initialize_chess(){
         y += CHESS_SQUARE_HEIGHT*CHESS_DRAW_SIZE;
     }
     draw_board();
+    fillCommandsChess();
+    mini_shell();
 }
 
-void draw_board(){
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            draw_square(board[i][j]);
-        }
-    }
-}
-
-void draw_square(chess_square square){
-    m->x = square.x;
-    m->y = square.y;
-    m->matrix = chessBitmap(square.piece, 0);
-    m->color = square.color;
-    m->backgroundcolor = square.backgroundcolor;
-    draw(0, m);
-    m->x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE;
-    m->matrix = chessBitmap(square.piece, 1);
-    draw(0,m);
-}
 
 void draw_tags(){
     for (int i = 0; i < 8; i++)
