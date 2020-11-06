@@ -52,6 +52,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 		break;
 	case 12:
 		return sys_get_seconds();
+	case 13:
+		sys_cursor((int) rsi, (int) rdx);
+		break;
 	}
 	return 0;
 }
@@ -149,6 +152,18 @@ void sys_draw(int rsi, matrix_struct * rdx){
 //SYS_CALL 12
 unsigned long sys_get_seconds(){
 	return getSeconds();
+}
+
+//SYS_CALL 13
+void sys_cursor(int rsi, int rdx){
+	if (rsi > 0 && rdx > 0 && rsi < SCREEN_WIDTH && rdx < SCREEN_HEIGHT)
+	{
+		set_cursor(rsi, rdx);
+	}
+	else if (rsi==-1 && rdx ==-1)
+	{
+		return_last_cursor();
+	}
 }
 
 

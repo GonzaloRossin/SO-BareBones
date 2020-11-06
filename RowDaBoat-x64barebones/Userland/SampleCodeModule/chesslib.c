@@ -19,14 +19,14 @@
 #define QUEEN 5
 #define KING 6
 
-#define initial_x 300
-#define initial_y 30
+#define initial_x 460
+#define initial_y 150
 
-#define INDEX_SIZE 2
+#define INDEX_SIZE 1.5
 #define TIME_X 50
 #define TIME_Y 500
 
-chess_square board[8][8];
+chess_square board[8][8]={{0}};
 matrix_struct rows[8]={[0 ... 7] = {0,0,0,0,0,0,0,0,INDEX_SIZE,WHITE,BLACK}};
 matrix_struct columns[8]={[0 ... 7] = {0,0,0,0,0,0,0,0,INDEX_SIZE,WHITE,BLACK}};
 
@@ -87,7 +87,7 @@ void initialize_chess(){
         // Draw column tags
         if (i == 0)
         {
-            x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE-8;
+            x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE-8*INDEX_SIZE/2;
             for (int z = 0; z < 8; z++)
             {
                 p = &columns[z];
@@ -98,7 +98,7 @@ void initialize_chess(){
                 draw(1, p);
             }
             x = initial_x;
-            y += 16*3;         
+            y += 16*(INDEX_SIZE);         
         }
         
         for (int j = 0; j < 8; j++)
@@ -160,8 +160,8 @@ void initialize_chess(){
         }
         // Draw row tag
         p = &rows[i];
-        p->x = x+16*2;
-        p->y = y+CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE-16;
+        p->x = x+8*INDEX_SIZE;
+        p->y = y+CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE-8*INDEX_SIZE;
         p->caracter = 56-i;
         draw(1,p);
         // Jump line
@@ -214,11 +214,11 @@ void turn_board_90(){
     for (int i = 0; i < 8; i++)
     {   
         aux[i] = columns[i].caracter;
-        columns[i].caracter = rows[i].caracter;
+        columns[i].caracter = rows[7-i].caracter;
     }
     for (int i = 0; i < 8; i++)
     {   
-        rows[i].caracter = aux[7-i];
+        rows[i].caracter = aux[i];
     }      
     for (int i = 0; i < 4; i++)
     {
@@ -240,12 +240,16 @@ void turn_board_90(){
 }
 
 void turn_board_normal(){  
+    char aux[8];
     for (int i = 0; i < 8; i++)
-    {
-        matrix_struct aux = rows[i];
-        rows[i].caracter = columns[8-i].caracter;
-        columns[8-i].caracter = aux.caracter;
+    {   
+        aux[i] = columns[i].caracter;
+        columns[i].caracter = rows[i].caracter;
     }
+    for (int i = 0; i < 8; i++)
+    {   
+        rows[i].caracter = aux[7-i];
+    } 
       
     for (int i = 0; i < 4; i++)
     {
@@ -270,9 +274,6 @@ chess_square * get_board_tile(int row, char column){
     return &board[8-row][column-'a'];
 }
 
-int abs(int i){
-    return i >= 0 ? i : -i;
-}
 // returns 0 if its ok, -1 if there's an obstacle adn -2 if movement is not valid.
 int obstacles(chess_square origin, chess_square destiny){
     if (origin.column == destiny.column)
@@ -358,12 +359,24 @@ int obstacles(chess_square origin, chess_square destiny){
 
 // return 0 if valid movement
 int validate_move(chess_square origin, chess_square destiny){
+    // Inavlida movimiento a la misma casilla
     if (origin.row == destiny.row || origin.column == destiny.column)
     {
         return -1;
     }
     int dist_row = destiny.row - origin.row;
     int dist_column = destiny.column - origin.column;
+    // Invalida movimiento sobre una pieza del mismo color, a excepcion del enroque.
+    if (origin.color == destiny.color)
+    {
+        // Verifica enroque.
+        if (origin.piece == KING && destiny.piece == ROOK )
+        {
+            //return castling(origin, destiny);
+        }
+        return -1;    
+    }
+    
     switch (origin.piece)
     {
     case NO_PIECE:
@@ -385,13 +398,19 @@ int validate_move(chess_square origin, chess_square destiny){
         break;
 
     case KNIGHT:
+        if (dist_row!=0 && dist_column!=0 && abs(dist_row)+abs(dist_column)==3)
+        {
+            return 0;
+        }
         break;
+
     case BISHOP:
         if (abs(dist_row) == abs(dist_column))
         {
             return obstacles(origin, destiny);
         }
         break;
+
     case ROOK:
         if (dist_column==0 || dist_row==0)
         {
@@ -402,7 +421,12 @@ int validate_move(chess_square origin, chess_square destiny){
     case QUEEN:
         return obstacles(origin, destiny);
         break;
+
     case KING:
+        if (dist_column+dist_row==1 || (dist_column==1&&dist_row==1))
+        {
+            //return check(destiny);
+        }
         break;
     }
     return -1;
