@@ -9,7 +9,8 @@ void interruptRoutine2();
 // asm code used for interruptRoutine2
 uint8_t get_key();
 
-unsigned long getTicks();
+unsigned long getSeconds();
+
 
 void printRegister(uint8_t reg, uint64_t regData);
 

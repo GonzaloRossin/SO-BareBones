@@ -104,7 +104,7 @@ static int readNewInput()
         if (bufferSize <= 100)
         {
             terminalBuffer[bufferSize++] = chartoadd;
-            putChar(chartoadd);
+            put_char(chartoadd);
             return 0;
         }
     }

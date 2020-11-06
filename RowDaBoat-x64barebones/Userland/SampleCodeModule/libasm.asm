@@ -11,6 +11,7 @@ GLOBAL get_RTC
 GLOBAL print_num
 GLOBAL clearScreen
 GLOBAL sys_draw
+GLOBAL get_seconds
 
 section .text
 
@@ -137,6 +138,13 @@ sys_draw:
 	pushState
 	syscall_adjust
 	mov rdi,11 ;sys_call 11
+	int 80h
+	popState
+	ret
+get_seconds:
+	pushState
+	syscall_adjust
+	mov rdi,12;sys_call 12
 	int 80h
 	popState
 	ret

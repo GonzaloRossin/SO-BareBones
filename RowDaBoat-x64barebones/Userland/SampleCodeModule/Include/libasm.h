@@ -27,6 +27,8 @@ void print_num(int num,int base_option);
 void clearScreen();
 //SYSCALL 11
 void sys_draw(int i, uint64_t matrix);
+//SYSCALL 12
+unsigned long get_seconds();
 
 
 #endif
