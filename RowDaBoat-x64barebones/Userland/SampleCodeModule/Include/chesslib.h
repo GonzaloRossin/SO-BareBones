@@ -25,7 +25,8 @@ void turn_board_normal();
 chess_square * get_board_tile(int row, char column);
 int obstacles(chess_square * origin, chess_square * destiny);
 int validate_move(chess_square * origin, chess_square * destiny);
-int move(int row1, char column1, int row2, char column2);
+int validate_player(chess_square * origin, int player_color);
+void move(int row1, char column1, int row2, char column2);
 void castling_move(chess_square * origin,  chess_square * destiny);
 
 #endif

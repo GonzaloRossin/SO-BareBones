@@ -363,11 +363,12 @@ int obstacles(chess_square * origin, chess_square * destiny){
 
 // return 0 if valid movement, 1 if castling valid movement, 2 if al paso movement, -1 if invalid
 int validate_move(chess_square * origin, chess_square * destiny){
-    // Inavlida movimiento a la misma casilla
-    if (origin->row == destiny->row || origin->column == destiny->column)
+    // Inavlida movimiento a la misma casilla o si no se esta moviendo una pieza.
+    if (origin->piece == NO_PIECE || (origin->row == destiny->row && origin->column == destiny->column))
     {
         return -1;
     }
+    /*
     // Invalida movimiento sobre una pieza del mismo color, a excepcion del enroque.
     if (origin->color == destiny->color)
     {
@@ -378,6 +379,7 @@ int validate_move(chess_square * origin, chess_square * destiny){
         }
         return -1;    
     }
+    */
     
     int dist_row = destiny->row - origin->row;
     int dist_column = destiny->column - origin->column;
@@ -460,33 +462,19 @@ int validate_move(chess_square * origin, chess_square * destiny){
     return -1;
 }
 
-int move(int row1, char column1, int row2, char column2){
+int validate_player(chess_square * origin, int player_color){
+    return origin->color == player_color;
+}
+
+void move(int row1, char column1, int row2, char column2){
     chess_square * origin = get_board_tile(row1, column1);
     chess_square * destiny = get_board_tile(row2, column2);
-
-    /*
-    int validate = validate_move(origin, destiny);
-    if (validate < 0){
-        return -1;
-    }
-    if (validate == 1)
-    {
-        castling_move(origin, destiny);
-        return 0;
-    }
-    if (validate == 2)
-    {
-        //al_paso_move(origin, destiny);
-        return 0;
-    }
-    */
     
     destiny->piece = origin->piece;
     destiny->color = origin->color;
     origin->piece = NO_PIECE;
     origin->color = 0;
     draw_board();
-    return 0;
 }
 
 void castling_move(chess_square * origin,  chess_square * destiny){

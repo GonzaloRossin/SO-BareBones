@@ -9,13 +9,13 @@
 #define MAX_DESC 50
 #define TIMER_X 850
 #define TIMER_Y 40
-#define GAME_DURATION_IN_SECONDS 5
+#define GAME_DURATION_IN_SECONDS 1800
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
 #define BACKGROUND_COLOR1 0x0000FF
 
-#define ISROW(c) (( (c <= 'h'&& c>='a') || (c<='H' && c>='A'))  ? 1 : 0)
-#define ISCOL(c) ( (c>='0' && c<='8') ? 1 : 0)
+#define ISCOL(c) (( (c <= 'h'&& c>='a') || (c<='H' && c>='A'))  ? 1 : 0)
+#define ISROW(c) ( (c>='0' && c<='8') ? 1 : 0)
 
 matrix_struct * timermatrix;
 
@@ -34,6 +34,7 @@ typedef struct playertime{
 typedef struct player{
     char* name;
     playertime timer;
+    int color;
 }player;
 
 static int FLAG_START=0;
@@ -85,8 +86,10 @@ void start(){
         aux.timer.time_reference=get_seconds();
         players[i]=aux;
     }
-    players[0].name="player 1:";
-    players[1].name="player 2:";
+    players[0].name="player 1 : ";
+    players[1].name="player 2 : ";
+    players[0].color = 0xFFFFFF;
+    players[1].color = 0x000000;
     FLAG_START=1;
     currentplayer=0;
 }
@@ -97,16 +100,6 @@ void playerswap(){
         currentplayer=1;
     players[currentplayer].timer.time_reference=get_seconds();
     
-}
-static void chess_help(){
-    print("Los comandos a disposicion del usuario son los siguientes:");
-    newLine();
-    newLine();
-    for(int i=0;i<command_size;i++){
-        print(chess_commands[i].command_name);
-        print(chess_commands[i].desc);
-        newLine();
-    }
 }
 static int readChessInput()
 {
@@ -167,7 +160,6 @@ void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
 void fillChessList()
 {
     fillChessCommand("start",": inicia el tiempo y el juego",&start);
-    fillChessCommand("help",": muestra comandos disponibles",&chess_help);
     fillChessCommand("restart",": reinicia el juego",&restartgame);
 }
 int CommandHandlerChess(){
@@ -181,39 +173,69 @@ int CommandHandlerChess(){
             putActioncall(3);
             return 0;
         }
-        if(potentialCommand[2]==' '){
-            char* source;
-            char* finalposition;
-            strncpy(potentialCommand,source,0,2);
-            strncpy(potentialCommand,finalposition,3,strlen(potentialCommand));
-            if(validateMove(source,finalposition)){
-                //printlog(source,finalposition);
+        else if(ISCOL(potentialCommand[0]) && ISROW(potentialCommand[1]) && potentialCommand[2]=='-' && ISCOL(potentialCommand[3]) && ISROW(potentialCommand[4])){
+            chess_square * origin = get_board_tile(potentialCommand[1]-'0', potentialCommand[0]);
+            chess_square * destiny = get_board_tile(potentialCommand[4]-'0', potentialCommand[3]);
+            if (validate_player(origin, players[currentplayer].color)==0)
+            {
+                print("Invalid Piece");
+                return 0;
+            }
+            int validate = validate_move(origin, destiny);
+            if (validate < 0){
+                print("Invalid Move");
+                return 0;
+            }
+            if (validate == 0)
+            {
+                move(origin->row, origin->column, destiny->row, destiny->column);
                 return 1;
             }
-            print("invalid positions");
-            return 0;
-        }
+            if (validate == 1)
+            {
+                castling_move(origin, destiny);
+                return 1;
+            }
+            if (validate == 2)
+            {
+                //al_paso_move(origin, destiny);
+                return 1;
+            }
+        } 
     }
-}
-int validateMove(char* source, char* end){
-    if(ISROW(source[0]) && ISROW(end[0])){
-        if(ISCOL(source[1]) && ISCOL(end[1]))
-            return 1;
-    }
+    print("Invalid command");
     return 0;
 }
+
 void printlog(char* source,char* destiny){
 
-    sys_cursor(0,500);
+    /*
+    sys_cursor(log_x,log_y);
     print(players[currentplayer].name);
     print(source);
     print("--->");
     print(destiny);
-
+    sys_cursor(-1, -1);
+    log_X += 8*cant;
+    if (log_x > 400)
+    {
+        log_y += 16;
+    }
+    */
 }
 void mini_shell(){
     print("WELCOME TO CHESS, press help to view commands");
     newline();
+    print("Los comandos a disposicion del usuario son los siguientes:");
+    newLine();
+    newLine();
+    for(int i=0;i<command_size;i++){
+        print(chess_commands[i].command_name);
+        print(chess_commands[i].desc);
+        newLine();
+    }
+    print("Para mover un pieza debe ");
+
     put_char('>');
     while(1 && !FLAG_END){
         if(FLAG_START){
@@ -221,6 +243,7 @@ void mini_shell(){
         }
         if(readChessInput()){
             if(CommandHandlerChess()){
+                print("swap");
                 playerswap();
             }
             put_char('>');
