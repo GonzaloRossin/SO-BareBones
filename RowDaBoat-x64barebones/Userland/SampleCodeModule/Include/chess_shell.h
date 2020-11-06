@@ -4,6 +4,6 @@
 
 
 void mini_shell();
-void fillCommandsChess();
+void fillChessList();
 
 #endif

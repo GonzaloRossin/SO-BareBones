@@ -169,7 +169,7 @@ void initialize_chess(){
         y += CHESS_SQUARE_HEIGHT*CHESS_DRAW_SIZE;
     }
     draw_board();
-    fillCommandsChess();
+    fillChessList();
     mini_shell();
 }
 

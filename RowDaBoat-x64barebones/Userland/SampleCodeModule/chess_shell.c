@@ -9,7 +9,7 @@
 #define MAX_DESC 50
 #define TIMER_X 850
 #define TIMER_Y 40
-#define GAME_DURATION_IN_SECONDS 10
+#define GAME_DURATION_IN_SECONDS 5
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
 #define BACKGROUND_COLOR1 0x0000FF
@@ -148,6 +148,11 @@ static void cleanChessBuffer(){
     }
     buffer_size = 0;
 }
+void restartgame(){
+    FLAG_START=0;
+    FLAG_END=0;
+    initialize_chess();
+}
 void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
 {
     chesscommand aux;
@@ -156,11 +161,11 @@ void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
     aux.cmdptr = cmdptr;
     chess_commands[command_size++] = aux;
 }
-void fillCommandsChess()
+void fillChessList()
 {
     fillChessCommand("start",": inicia el tiempo y el juego",&start);
     fillChessCommand("help",": muestra comandos disponibles",&chess_help);
-
+    fillChessCommand("restart",": reinicia el juego",&restartgame);
 }
 int CommandHandlerChess(){
     char potentialCommand[BUFFER] = {0};
@@ -191,7 +196,6 @@ void mini_shell(){
         }
         if(readChessInput()){
             if(CommandHandlerChess()){
-                start();
                 playerswap();
             }
             put_char('>');
@@ -203,5 +207,14 @@ void mini_shell(){
     newLine();
     playerswap();
     print("gana el jugador: ");
-    print(players[currentplayer].name);
+    print(players[!currentplayer].name);
+    newLine();
+    put_char('>');
+    while(1){
+        if(readChessInput()){
+            CommandHandlerChess();
+            put_char('>');
+            cleanChessBuffer();
+        }
+    }
 }
