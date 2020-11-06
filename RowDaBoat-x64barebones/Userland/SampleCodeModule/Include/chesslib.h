@@ -23,8 +23,9 @@ void turn_board_180();
 void turn_board_90();
 void turn_board_normal();
 chess_square * get_board_tile(int row, char column);
-int obstacles(chess_square origin, chess_square destiny);
-int validate_move(chess_square origin, chess_square destiny);
-void minishell();
+int obstacles(chess_square * origin, chess_square * destiny);
+int validate_move(chess_square * origin, chess_square * destiny);
+int move(int row1, char column1, int row2, char column2);
+void castling_move(chess_square * origin,  chess_square * destiny);
 
 #endif

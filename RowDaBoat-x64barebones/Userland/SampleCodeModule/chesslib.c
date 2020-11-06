@@ -271,15 +271,19 @@ void turn_board_normal(){
 }
 
 chess_square * get_board_tile(int row, char column){
+    if (column < 'a')
+    {
+        return &board[8-row][column-'A'];
+    }
     return &board[8-row][column-'a'];
 }
 
-// returns 0 if its ok, -1 if there's an obstacle adn -2 if movement is not valid.
-int obstacles(chess_square origin, chess_square destiny){
-    if (origin.column == destiny.column)
+// returns 0 if its ok, -1 if there's an obstacle, -2 if movement is not valid.
+int obstacles(chess_square * origin, chess_square * destiny){
+    if (origin->column == destiny->column)
     {
-        int dist = destiny.row - origin.row;
-        int row = origin.row;
+        int dist = destiny->row - origin->row;
+        int row = origin->row;
         for (int i = 0; i < abs(dist)-1; i++)
         {  
             if (dist>0)
@@ -289,7 +293,7 @@ int obstacles(chess_square origin, chess_square destiny){
             {
                 row--;
             }
-            chess_square * aux = get_board_tile(row, origin.column);
+            chess_square * aux = get_board_tile(row, origin->column);
             if (aux->piece != 0)
             {
                 return -1;
@@ -297,10 +301,10 @@ int obstacles(chess_square origin, chess_square destiny){
         }
         return 0;
     }
-    else if (origin.row == destiny.row)
+    else if (origin->row == destiny->row)
     {
-        int dist = destiny.column - origin.column;
-        int column = origin.column;
+        int dist = destiny->column - origin->column;
+        int column = origin->column;
         for (int i = 0; i < abs(dist)-1; i++)
         {  
             if (dist>0)
@@ -310,7 +314,7 @@ int obstacles(chess_square origin, chess_square destiny){
             {
                 column--;
             }
-            chess_square * aux = get_board_tile(origin.row, column);
+            chess_square * aux = get_board_tile(origin->row, column);
             if (aux->piece != 0)
             {
                 return -1;
@@ -320,16 +324,16 @@ int obstacles(chess_square origin, chess_square destiny){
     }
     else
     {
-        int dist_row = destiny.row - origin.row;
-        int dist_column = destiny.column - origin.column;
+        int dist_row = destiny->row - origin->row;
+        int dist_column = destiny->column - origin->column;
         if (abs(dist_row)!=abs(dist_column))
         {
-            // Not a valid movement to search obstacles()
+            // Not a valid movement to search in obstacles()
             return -2;
         }
         
-        int row = origin.row;
-        int column = origin.column;
+        int row = origin->row;
+        int column = origin->column;
 
         for (int i = 0; i < abs(dist_column)-1; i++)
         {  
@@ -357,42 +361,43 @@ int obstacles(chess_square origin, chess_square destiny){
     }
 }
 
-// return 0 if valid movement
-int validate_move(chess_square origin, chess_square destiny){
+// return 0 if valid movement, 1 if castling valid movement, 2 if al paso movement, -1 if invalid
+int validate_move(chess_square * origin, chess_square * destiny){
     // Inavlida movimiento a la misma casilla
-    if (origin.row == destiny.row || origin.column == destiny.column)
+    if (origin->row == destiny->row || origin->column == destiny->column)
     {
         return -1;
     }
     // Invalida movimiento sobre una pieza del mismo color, a excepcion del enroque.
-    if (origin.color == destiny.color)
+    if (origin->color == destiny->color)
     {
         // Verifica enroque.
-        if (origin.piece == KING && destiny.piece == ROOK )
+        if (origin->piece == KING && destiny->piece == ROOK && origin->moves == 0 && destiny->moves == 0 && obstacles(origin, destiny) == 0)
         {
-            //return castling(origin, destiny);
+            return 1;
         }
         return -1;    
     }
     
-    int dist_row = destiny.row - origin.row;
-    int dist_column = destiny.column - origin.column;
+    int dist_row = destiny->row - origin->row;
+    int dist_column = destiny->column - origin->column;
 
-    switch (origin.piece)
+    switch (origin->piece)
     {
     case NO_PIECE:
         break;
 
     case PAWN:
-        if ( dist_column == 0 && destiny.piece == 0 )
+        // Movimiento de avance de peon
+        if ( dist_column == 0 && destiny->piece == 0 )
         {
-            if (origin.color == WHITE)
+            if (origin->color == WHITE)
             {
                 if (dist_row == 1 )
                 {
                     return 0;
                 }
-                if (dist_row == 2 && origin.moves == 0)
+                if (dist_row == 2 && origin->moves == 0)
                 {
                     return obstacles(origin, destiny);
                 }
@@ -403,17 +408,18 @@ int validate_move(chess_square origin, chess_square destiny){
                 {
                     return 0;
                 }
-                if (dist_row == -2 && origin.moves == 0)
+                if (dist_row == -2 && origin->moves == 0)
                 {
                     return obstacles(origin, destiny);
                 }
             }     
         }
-        if (origin.color == WHITE && abs(dist_column) == 1 && dist_row == 1 && destiny.piece != 0)
+        // Movimiento para comer piezas del peon
+        if (origin->color == WHITE && abs(dist_column) == 1 && dist_row == 1 && destiny->piece != 0)
         {
             return 0;
         }
-        if (origin.color == BLACK && abs(dist_column) == 1 && dist_row == -1 && destiny.piece != 0)
+        if (origin->color == BLACK && abs(dist_column) == 1 && dist_row == -1 && destiny->piece != 0)
         {
             return 0;
         }
@@ -454,19 +460,45 @@ int validate_move(chess_square origin, chess_square destiny){
     return -1;
 }
 
-int move(chess_square origin, chess_square destiny){
+int move(int row1, char column1, int row2, char column2){
+    chess_square * origin = get_board_tile(row1, column1);
+    chess_square * destiny = get_board_tile(row2, column2);
+
+    /*
     int validate = validate_move(origin, destiny);
     if (validate < 0){
         return -1;
     }
     if (validate == 1)
     {
-        //castling_move(origin, destiny);
+        castling_move(origin, destiny);
+        return 0;
     }
-    chess_square * o = get_board_tile(origin.row, origin.column);
-    chess_square * d = get_board_tile(destiny.row, destiny.column);
-    destiny.piece = origin.piece;
-    destiny.color = origin.color;
-    origin.piece = NO_PIECE;
-    origin.color = 0;
+    if (validate == 2)
+    {
+        //al_paso_move(origin, destiny);
+        return 0;
+    }
+    */
+    
+    destiny->piece = origin->piece;
+    destiny->color = origin->color;
+    origin->piece = NO_PIECE;
+    origin->color = 0;
+    draw_board();
+    return 0;
 }
+
+void castling_move(chess_square * origin,  chess_square * destiny){
+    if (origin->column < destiny->column)
+    {
+        move(origin->row, origin->column, origin->row, origin->column-2);
+        move(destiny->row, destiny->column, destiny->row, destiny->column+3);
+    }
+    else
+    {
+        move(origin->row, origin->column, origin->row, origin->column+2);
+        move(destiny->row, destiny->column, destiny->row, destiny->column-2);
+    }
+}
+

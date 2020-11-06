@@ -13,7 +13,6 @@ static int bufferSize = 0;
 
 
 int main() {
-    
     fillCommandList();
     print("WELCOME TO chessOS, espero que le guste mucho el ajedrez");
     newLine();
