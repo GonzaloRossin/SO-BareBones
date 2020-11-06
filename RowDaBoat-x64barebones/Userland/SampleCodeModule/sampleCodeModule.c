@@ -20,20 +20,7 @@ int main() {
     print("ingrese el comando help para comenzar");
     newLine();
     shell();
-    matrix_struct * m;
-            m->x = TIME_X;
-            m->y = TIME_Y;
-            m->draw_size = 1;
-            m->color = 0xFFFFFF;
-            m->backgroundcolor = 0x000000;
-            for (int i = 0; i < 4; i++)
-            {
-                m->caracter = '0' + tiempo[i];
-                draw(1, m);
-                m->x+=8;
-            }
     */
     initialize_chess();
-    urn_board_90();
     return 0;
 }

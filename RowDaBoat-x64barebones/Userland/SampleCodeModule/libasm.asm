@@ -11,6 +11,7 @@ GLOBAL get_RTC
 GLOBAL print_num
 GLOBAL clearScreen
 GLOBAL sys_draw
+GLOBAL sys_cursor
 
 section .text
 
@@ -141,4 +142,12 @@ sys_draw:
 	popState
 	ret
 
+
+sys_cursor:
+	pushState
+	syscall_adjust
+	mov rdi, 13
+	int 80h
+	popState
+	ret
 

@@ -12,6 +12,7 @@ typedef struct chess_square
     int color;
     int backgroundcolor;
     int piece;
+    int moves;
 }chess_square;
 
 void draw_square(chess_square square);
@@ -21,7 +22,6 @@ void draw_tags();
 void turn_board_180();
 void turn_board_90();
 void turn_board_normal();
-int abs(int i);
 chess_square * get_board_tile(int row, char column);
 int obstacles(chess_square origin, chess_square destiny);
 int validate_move(chess_square origin, chess_square destiny);

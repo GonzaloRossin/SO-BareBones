@@ -44,6 +44,8 @@ struct vbe_mode_info_structure * screendata=0x0000000000005C00;
 
 static int cursor_x = 0;
 static int cursor_y = 0;
+static int aux_x = 0;
+static int aux_y = 0;
 static uint32_t valueToBase(uint64_t value, char * buffer, uint32_t base);
 char buffer[10] = { '0' };
 
@@ -293,4 +295,16 @@ void draw_matrix(int x, int y, unsigned char * matrix, int width, int height, in
 		aux_x = x;
 		aux_y += draw_size;
 	}
+}
+
+void set_cursor(int x, int y){
+	aux_x = cursor_x;
+	aux_y = cursor_y;
+	cursor_x = x;
+	cursor_y = y;
+}
+
+void return_last_cursor(){
+	cursor_x = aux_x;
+	cursor_y = aux_y;
 }

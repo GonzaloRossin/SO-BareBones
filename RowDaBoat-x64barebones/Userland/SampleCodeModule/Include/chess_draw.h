@@ -1,6 +1,6 @@
 #define CHESS_SQUARE_WIDTH 8
 #define CHESS_SQUARE_HEIGHT 16
-#define CHESS_DRAW_SIZE 5
+#define CHESS_DRAW_SIZE 4
 
 #define ________ 0x00
 #define _______X 0x01

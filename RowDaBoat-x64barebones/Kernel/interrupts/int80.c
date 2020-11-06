@@ -50,6 +50,11 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 11:
 		sys_draw((int) rsi, (matrix_struct *) rdx);
 		break;
+
+
+	case 13:
+		sys_cursor((int) rsi, (int) rdx);
+		break;
 	}
 	return 0;
 }
@@ -142,6 +147,18 @@ void sys_draw(int rsi, matrix_struct * rdx){
 	case 2:
 		draw_string_personalized(rdx->x, rdx->y, rdx->buffer, rdx->count, rdx->draw_size, rdx->color, rdx->backgroundcolor);
 		break;
+	}
+}
+
+//SYS_CALL 13
+void sys_cursor(int rsi, int rdx){
+	if (rsi > 0 && rdx > 0 && rsi < SCREEN_WIDTH && rdx < SCREEN_HEIGHT)
+	{
+		set_cursor(rsi, rdx);
+	}
+	else if (rsi==-1 && rdx ==-1)
+	{
+		return_last_cursor();
 	}
 }
 

@@ -13,6 +13,7 @@ void numToChar(double num, char * c);
 void putChar(char c);
 void actionCall(int action);
 uint8_t * strToNumHex(char * str);
+int abs(int i);
 
 typedef struct matrix_struct
 {
@@ -30,5 +31,6 @@ typedef struct matrix_struct
 } matrix_struct;
 
 void draw(int option, matrix_struct * m);
+void set_cursor(int x, int y);
 
 #endif

@@ -21,6 +21,9 @@ void actionCall(int action){
 void draw(int option, matrix_struct * m){
     sys_draw(option, (uint64_t) m);
 }
+void set_cursor(int x, int y){
+   sys_cursor(x,y);
+}
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 int strlen(char *str)
 {
@@ -78,4 +81,8 @@ uint8_t* strToNumHex(char * str){
 	if(len > 16)
 		errorFlag = 1;
 	return (uint8_t *)number;
+}
+
+int abs(int i){
+    return i >= 0 ? i : -i;
 }
