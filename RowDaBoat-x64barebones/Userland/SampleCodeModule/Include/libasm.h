@@ -29,8 +29,6 @@ void clearScreen();
 void sys_draw(int i, uint64_t matrix);
 //SYSCALL 12
 unsigned long get_seconds();
-
-
 //SYSCALL 13
 void sys_cursor(int x, int y);
 
