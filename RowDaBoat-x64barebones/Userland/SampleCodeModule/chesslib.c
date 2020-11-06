@@ -356,8 +356,6 @@ int validate_move(chess_square origin, chess_square destiny){
     {
         return -1;
     }
-    int dist_row = destiny.row - origin.row;
-    int dist_column = destiny.column - origin.column;
     // Invalida movimiento sobre una pieza del mismo color, a excepcion del enroque.
     if (origin.color == destiny.color)
     {
@@ -369,23 +367,47 @@ int validate_move(chess_square origin, chess_square destiny){
         return -1;    
     }
     
+    int dist_row = destiny.row - origin.row;
+    int dist_column = destiny.column - origin.column;
+
     switch (origin.piece)
     {
     case NO_PIECE:
         break;
 
     case PAWN:
-        if ( dist_column == 0 )
+        if ( dist_column == 0 && destiny.piece == 0 )
         {
-            if (dist_row == 1)
+            if (origin.color == WHITE)
             {
-                return 0;
+                if (dist_row == 1 )
+                {
+                    return 0;
+                }
+                if (dist_row == 2 && origin.moves == 0)
+                {
+                    return obstacles(origin, destiny);
+                }
             }
-            if (dist_row == 2)
+            else
             {
-                return 0;
-            }
-            
+                if (dist_row == -1)
+                {
+                    return 0;
+                }
+                if (dist_row == -2 && origin.moves == 0)
+                {
+                    return obstacles(origin, destiny);
+                }
+            }     
+        }
+        if (origin.color == WHITE && abs(dist_column) == 1 && dist_row == 1 && destiny.piece != 0)
+        {
+            return 0;
+        }
+        if (origin.color == BLACK && abs(dist_column) == 1 && dist_row == -1 && destiny.piece != 0)
+        {
+            return 0;
         }
         break;
 
@@ -422,6 +444,23 @@ int validate_move(chess_square origin, chess_square destiny){
         break;
     }
     return -1;
+}
+
+int move(chess_square origin, chess_square destiny){
+    int validate = validate_move(origin, destiny);
+    if (validate < 0){
+        return -1;
+    }
+    if (validate == 1)
+    {
+        //castling_move(origin, destiny);
+    }
+    chess_square * o = get_board_tile(origin.row, origin.column);
+    chess_square * d = get_board_tile(destiny.row, destiny.column);
+    destiny.piece = origin.piece;
+    destiny.color = origin.color;
+    origin.piece = NO_PIECE;
+    origin.color = 0;
 }
 
 static int readChessInput()

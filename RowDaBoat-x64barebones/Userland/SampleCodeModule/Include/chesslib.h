@@ -25,7 +25,6 @@ void turn_board_normal();
 chess_square * get_board_tile(int row, char column);
 int obstacles(chess_square origin, chess_square destiny);
 int validate_move(chess_square origin, chess_square destiny);
-void swap(chess_square origin, chess_square destiny);
 void minishell();
 
 #endif
