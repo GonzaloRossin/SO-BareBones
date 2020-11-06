@@ -9,6 +9,8 @@ typedef struct matrix_struct
     int y;
 	unsigned char * matrix;
     char caracter;
+	char * buffer;
+	int count;
 	int width;
 	int height;
 	int draw_size;

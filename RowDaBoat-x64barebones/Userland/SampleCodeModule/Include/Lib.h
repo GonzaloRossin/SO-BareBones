@@ -12,7 +12,7 @@ void newLine();
 void numToChar(double num, char * c);
 void putChar(char c);
 void actionCall(int action);
-uint8_t* strToNumHex(char * str);
+uint8_t * strToNumHex(char * str);
 
 typedef struct matrix_struct
 {
@@ -20,6 +20,8 @@ typedef struct matrix_struct
 	int y;
 	unsigned char * matrix;
 	char caracter;
+	char * buffer;
+	int count;
 	int width;
 	int height;
 	int draw_size;
