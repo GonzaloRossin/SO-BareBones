@@ -22,6 +22,8 @@
 #define initial_y 30
 
 #define INDEX_SIZE 2
+#define TIME_X 50
+#define TIME_Y 500
 
 chess_square board[8][8];
 matrix_struct rows[8]={[0 ... 7] = {0,0,0,0,0,0,0,0,INDEX_SIZE,WHITE,BLACK}};
