@@ -18,9 +18,14 @@ void draw_square(chess_square square);
 void initialize_chess();
 void draw_board();
 void draw_tags();
-void turn_board();
+void turn_board_180();
 void turn_board_90();
-int validate(chess_square origin, chess_square destiny);
+void turn_board_normal();
+int abs(int i);
+chess_square * get_board_tile(int row, char column);
+int obstacles(chess_square origin, chess_square destiny);
+int validate_move(chess_square origin, chess_square destiny);
 void swap(chess_square origin, chess_square destiny);
+void minishell();
 
 #endif

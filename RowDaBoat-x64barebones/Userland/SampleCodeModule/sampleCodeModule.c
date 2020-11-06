@@ -12,6 +12,7 @@ static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
 static int bufferSize = 0;
 
 int main() {
+    /*
     fillCommandList();
     print("WELCOME TO chessOS, espero que le guste mucho el ajedrez");
     newLine();
@@ -19,5 +20,8 @@ int main() {
     print("ingrese el comando help para comenzar");
     newLine();
     shell();
+    */
+    initialize_chess();
+    turn_board_90();
     return 0;
 }

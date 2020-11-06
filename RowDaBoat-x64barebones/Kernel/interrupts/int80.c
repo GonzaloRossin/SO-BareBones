@@ -139,6 +139,9 @@ void sys_draw(int rsi, matrix_struct * rdx){
 	case 1:
 		draw_char_personalized(rdx->x, rdx->y, rdx->caracter, rdx->draw_size, rdx->color, rdx->backgroundcolor);
 		break;
+	case 2:
+		draw_string_personalized(rdx->x, rdx->y, rdx->buffer, rdx->count, rdx->draw_size, rdx->color, rdx->backgroundcolor);
+		break;
 	}
 }
 
