@@ -50,8 +50,8 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 11:
 		sys_draw((int) rsi, (matrix_struct *) rdx);
 		break;
-
-
+	case 12:
+		return sys_get_seconds();
 	case 13:
 		sys_cursor((int) rsi, (int) rdx);
 		break;
@@ -148,6 +148,10 @@ void sys_draw(int rsi, matrix_struct * rdx){
 		draw_string_personalized(rdx->x, rdx->y, rdx->buffer, rdx->count, rdx->draw_size, rdx->color, rdx->backgroundcolor);
 		break;
 	}
+}
+//SYS_CALL 12
+unsigned long sys_get_seconds(){
+	return getSeconds();
 }
 
 //SYS_CALL 13

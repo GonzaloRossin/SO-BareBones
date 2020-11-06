@@ -33,6 +33,7 @@ uint8_t sys_get_clock(int rsi);//sys call 8
 void sys_print_num(int rsi,int rdx);//sys call 9
 void sys_clear_screen();//sys call 10
 void sys_draw(int rsi, matrix_struct * rdx);//sys call 11
+unsigned long sys_get_seconds();//sys call 12
 
 void sys_cursor(int rsi, int rdx);//sys call 13
 

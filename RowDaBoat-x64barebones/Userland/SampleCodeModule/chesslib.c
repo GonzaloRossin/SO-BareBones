@@ -1,5 +1,6 @@
 #include <chesslib.h>
 #include <chess_draw.h>
+#include <chess_shell.h>
 #include <stdint.h>
 #include <libasm.h>
 #include <Lib.h>
@@ -33,27 +34,53 @@ matrix_struct matrix = {0,0,0,0,0,0,CHESS_SQUARE_WIDTH, CHESS_SQUARE_HEIGHT, CHE
 matrix_struct * m = &matrix;
 matrix_struct * p;
 
-//Buffer to store the input from the keyboard.
-#define BUFFER 50
-#define MAX_COMMANDS 10
-#define MAX_DESC 50
 
-typedef struct chesscommand
-{
-    char command_name[MAX_DESC];
-    char desc[MAX_DESC];
-    void (*cmdptr)(void);
-} chesscommand;
 
-static chesscommand commandList[MAX_COMMANDS];
-static int commandsSize = 0;
+void draw_board(){
+    // PONER ACA LETRAS DE COLUMNAS
+    for (int i = 0; i < 8; i++)
+    {
+        // draw_number PONER EL NUMERO DE FILA
+        for (int j = 0; j < 8; j++)
+        {
+            draw_square(board[i][j]);
+        }
+    }
+}
 
-static char buffer[BUFFER+ 1] = {0}; //Non cyclic buffer
-static int buffer_size = 0;
+void draw_square(chess_square square){
+    m->x = square.x;
+    m->y = square.y;
+    m->matrix = chessBitmap(square.piece, 0);
+    m->color = square.color;
+    m->backgroundcolor = square.backgroundcolor;
+    draw(0, m);
+    m->x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE;
+    m->matrix = chessBitmap(square.piece, 1);
+    draw(0,m);
+}
+
+
+void turn_board(){
+    for (int i = 0; i < 4; i++)
+    {
+        // draw_number PONER EL NUMERO DE FILA
+        for (int j = 0; j < 8; j++)
+        {
+            chess_square aux = board[i][j];
+            board[i][j].x = board[7-i][7-j].x;
+            board[i][j].y = board[7-i][7-j].y;
+            board[7-i][7-j].x = aux.x;
+            board[7-i][7-j].y = aux.y;
+        }
+    }
+    draw_board();
+}
 
 void initialize_chess(){
     int x = initial_x;
     int y = initial_y;
+    clearScreen();
     // Set the pieces on the board
     for (int i = 0; i < 8; i++)
     {
@@ -142,29 +169,10 @@ void initialize_chess(){
         y += CHESS_SQUARE_HEIGHT*CHESS_DRAW_SIZE;
     }
     draw_board();
+    fillCommandsChess();
+    mini_shell();
 }
 
-void draw_board(){
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            draw_square(board[i][j]);
-        }
-    }
-}
-
-void draw_square(chess_square square){
-    m->x = square.x;
-    m->y = square.y;
-    m->matrix = chessBitmap(square.piece, 0);
-    m->color = square.color;
-    m->backgroundcolor = square.backgroundcolor;
-    draw(0, m);
-    m->x += CHESS_SQUARE_WIDTH*CHESS_DRAW_SIZE;
-    m->matrix = chessBitmap(square.piece, 1);
-    draw(0,m);
-}
 
 void draw_tags(){
     for (int i = 0; i < 8; i++)
@@ -461,71 +469,4 @@ int move(chess_square origin, chess_square destiny){
     destiny.color = origin.color;
     origin.piece = NO_PIECE;
     origin.color = 0;
-}
-
-static int readChessInput()
-{
-    
-    char chartoadd=read_input();
-
-    //If there is nothing new or its not a valid character...
-    if (chartoadd == 0)
-    {
-        return 0;
-    }
-    else if(chartoadd==ENTER){
-        putActioncall(3);
-        return 1;
-    }
-    else if(chartoadd==BACKSPACE){
-        if (buffer_size > 0)
-        {
-            buffer[--buffer_size] = 0;
-            putActioncall(1);
-        }
-        return 0;
-    }
-    //If its a regular letter.
-    else
-    {
-        if (buffer_size <= 100)
-        {
-            buffer[buffer_size++] = chartoadd;
-            putChar(chartoadd);
-            return 0;
-        }
-    }
-
-    //Just in case
-    return 0;
-}
-static void cleanChessBuffer(){
-    for (int i = 0; i < BUFFER; i++)
-    {
-       buffer[i] = 0;
-    }
-    buffer_size = 0;
-}
-// void CommandHandlerChess(){
-//     char potentialCommand[BUFFER] = {0};
-//     strncpy(buffer, potentialCommand,0, buffer_size);
-//     for (int i = 0; i < command_size && potentialCommand[i]!= ' '; i++)
-//     {
-//         if (strcmp(potentialCommand, commandList[i].command_name))
-//         {
-//             (commandList[i].cmdptr)();
-//             newLine();
-//             return;
-//         }
-//     }
-// }
-void minishell(){
-    put_char('>');
-    while(1){
-        if(readChessInput()){
-            //CommandHandlerChess();
-            put_char('>');
-            cleanChessBuffer();
-        }
-    }
 }

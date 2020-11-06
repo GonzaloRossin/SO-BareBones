@@ -82,7 +82,6 @@ uint8_t* strToNumHex(char * str){
 		errorFlag = 1;
 	return (uint8_t *)number;
 }
-
 int abs(int i){
     return i >= 0 ? i : -i;
 }

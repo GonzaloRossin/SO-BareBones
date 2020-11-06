@@ -6,16 +6,19 @@
 #include <video_driver.h>
 
 static unsigned long ticks = 0;
+static unsigned long seconds=0;
 // called every 55ms. Increases the ticks counter
 void interruptRoutine1()
 {
 	ticks++;
+	if(ticks%18==0)
+		seconds++;
 }
 
 // returns the amount of ticks
-unsigned long getTicks()
+unsigned long getSeconds()
 {
-	return ticks;
+	return seconds;
 }
 // called when there is an 21h interrupt(keyboard interrupt)
 void interruptRoutine2()
