@@ -7,8 +7,8 @@
 #define BUFFER 50
 #define MAX_COMMANDS 10
 #define MAX_DESC 50
-#define TIMER_X 25
-#define TIMER_Y 100
+#define TIMER_X 850
+#define TIMER_Y 40
 #define GAME_DURATION_IN_SECONDS 10
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
@@ -82,8 +82,8 @@ void start(){
         aux.timer.time_reference=get_seconds();
         players[i]=aux;
     }
-    players[0].name="player 2:";
-    players[1].name="player 1:";
+    players[0].name="player 1:";
+    players[1].name="player 2:";
     FLAG_START=1;
     currentplayer=0;
 }
@@ -162,7 +162,7 @@ void fillCommandsChess()
     fillChessCommand("help",": muestra comandos disponibles",&chess_help);
 
 }
-void CommandHandlerChess(){
+int CommandHandlerChess(){
     char potentialCommand[BUFFER] = {0};
     strncpy(buffer, potentialCommand,0, buffer_size);
     for (int i = 0; i < command_size; i++)
@@ -171,14 +171,14 @@ void CommandHandlerChess(){
         {
             (chess_commands[i].cmdptr)();
             putActioncall(3);
-            return;
+            return 0;
         }
-        if(potentialCommand[i]==' '){
+        if(potentialCommand[2]==' '){
             char* source;
             char* finalposition;
             strncpy(potentialCommand,source,0,i);
             strncpy(potentialCommand,finalposition,i+1,strlen(potentialCommand));
-            return;
+            return 1;
         }
     }
 }
@@ -190,8 +190,10 @@ void mini_shell(){
             decrecetime();
         }
         if(readChessInput()){
-            CommandHandlerChess();
-            playerswap();
+            if(CommandHandlerChess()){
+                start();
+                playerswap();
+            }
             put_char('>');
             cleanChessBuffer();
         }
