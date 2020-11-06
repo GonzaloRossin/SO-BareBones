@@ -9,10 +9,13 @@
 #define MAX_DESC 50
 #define TIMER_X 850
 #define TIMER_Y 40
-#define GAME_DURATION_IN_SECONDS 10
+#define GAME_DURATION_IN_SECONDS 5
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
 #define BACKGROUND_COLOR1 0x0000FF
+
+#define ISROW(c) (( (c <= 'h'&& c>='a') || (c<='H' && c>='A'))  ? 1 : 0)
+#define ISCOL(c) ( (c>='0' && c<='8') ? 1 : 0)
 
 matrix_struct * timermatrix;
 
@@ -148,6 +151,11 @@ static void cleanChessBuffer(){
     }
     buffer_size = 0;
 }
+void restartgame(){
+    FLAG_START=0;
+    FLAG_END=0;
+    initialize_chess();
+}
 void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
 {
     chesscommand aux;
@@ -156,11 +164,11 @@ void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
     aux.cmdptr = cmdptr;
     chess_commands[command_size++] = aux;
 }
-void fillCommandsChess()
+void fillChessList()
 {
     fillChessCommand("start",": inicia el tiempo y el juego",&start);
     fillChessCommand("help",": muestra comandos disponibles",&chess_help);
-
+    fillChessCommand("restart",": reinicia el juego",&restartgame);
 }
 int CommandHandlerChess(){
     char potentialCommand[BUFFER] = {0};
@@ -176,14 +184,36 @@ int CommandHandlerChess(){
         if(potentialCommand[2]==' '){
             char* source;
             char* finalposition;
-            strncpy(potentialCommand,source,0,i);
-            strncpy(potentialCommand,finalposition,i+1,strlen(potentialCommand));
-            return 1;
+            strncpy(potentialCommand,source,0,2);
+            strncpy(potentialCommand,finalposition,3,strlen(potentialCommand));
+            if(validateMove(source,finalposition)){
+                //printlog(source,finalposition);
+                return 1;
+            }
+            print("invalid positions");
+            return 0;
         }
     }
 }
+int validateMove(char* source, char* end){
+    if(ISROW(source[0]) && ISROW(end[0])){
+        if(ISCOL(source[1]) && ISCOL(end[1]))
+            return 1;
+    }
+    return 0;
+}
+void printlog(char* source,char* destiny){
 
+    sys_cursor(0,500);
+    print(players[currentplayer].name);
+    print(source);
+    print("--->");
+    print(destiny);
+
+}
 void mini_shell(){
+    print("WELCOME TO CHESS, press help to view commands");
+    newline();
     put_char('>');
     while(1 && !FLAG_END){
         if(FLAG_START){
@@ -191,7 +221,6 @@ void mini_shell(){
         }
         if(readChessInput()){
             if(CommandHandlerChess()){
-                start();
                 playerswap();
             }
             put_char('>');
@@ -201,7 +230,16 @@ void mini_shell(){
     sys_cursor(0,0);
     print("JUEGO FINALIZADO");
     newLine();
-    playerswap();
     print("gana el jugador: ");
-    print(players[currentplayer].name);
+    print(players[!currentplayer].name);
+    putActioncall(1);
+    newLine();
+    put_char('>');
+    while(1){
+        if(readChessInput()){
+            CommandHandlerChess();
+            put_char('>');
+            cleanChessBuffer();
+        }
+    }
 }
