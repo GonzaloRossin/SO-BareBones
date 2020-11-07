@@ -12,7 +12,8 @@ typedef struct chess_square
     int color;
     int backgroundcolor;
     int piece;
-    int moves;
+    int flag_castling;
+    int flag_alpaso;
 }chess_square;
 
 void draw_square(chess_square square);
@@ -26,7 +27,9 @@ chess_square * get_board_tile(int row, char column);
 int obstacles(chess_square * origin, chess_square * destiny);
 int validate_move(chess_square * origin, chess_square * destiny);
 int validate_player(chess_square * origin, int player_color);
-void move(int row1, char column1, int row2, char column2);
+int validate_check(chess_square * place, int color);
+int move(chess_square * origin, chess_square * destiny);
 void castling_move(chess_square * origin,  chess_square * destiny);
+void al_paso_move(chess_square * origin, chess_square * destiny);
 
 #endif

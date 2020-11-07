@@ -21,7 +21,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 		sys_write((char *) rsi, (int)rdx);
 		break;
 	case 2:
-		sys_getMemory((uint8_t) rsi, (uint8_t*) rdx);
+		sys_getMemory((uint8_t*) rsi, (uint8_t*) rdx);
 		break;
 	case 3:
 		sys_newline();

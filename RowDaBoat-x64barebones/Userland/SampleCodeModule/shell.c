@@ -42,6 +42,7 @@ static void CPUinfo(){
     print_num(familia,0);
     newLine();
 }
+
 static void inforeg(){
     char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8: ", "r9: ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
     uint64_t v[16] = {0};
@@ -53,6 +54,7 @@ static void inforeg(){
         newLine();
     }
 }
+
 static void printMem(uint8_t* mem){
     uint8_t vec[32] = {0};
     get_Memory(mem, vec);
@@ -65,6 +67,7 @@ static void printMem(uint8_t* mem){
     } 
     newLine();
 }
+
 static void cleanBuffer(){
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
@@ -130,14 +133,21 @@ static void get_time(){
     print(":");
     print_num(get_RTC(0),0);//segundos
 }
+
 static void testIvalidOpCodeCommand()
 {
     void (*punt)(void) = (void *)0x400000;
     *((uint64_t *)punt) = 0xffffffff;
     (punt)();
 }
-static void clear(){
-   clearScreen();
+
+void fillCommand(char* name,char *desc, void (*cmdptr)())
+{
+    command aux;
+    strncpy(name,aux.command_name,0,strlen(name));
+    strncpy(desc, aux.desc,0, strlen(desc));
+    aux.cmdptr = cmdptr;
+    commandList[commandsSize++] = aux;
 }
 
 void fillCommandList()
@@ -177,15 +187,6 @@ static void CommandHandler()
     print("Not a valid command: ");
     print(potentialCommand);
     newLine();
-}
-
-void fillCommand(char* name,char *desc, void (*cmdptr)(void))
-{
-    command aux;
-    strncpy(name,aux.command_name,0,strlen(name));
-    strncpy(desc, aux.desc,0, strlen(desc));
-    aux.cmdptr = cmdptr;
-    commandList[commandsSize++] = aux;
 }
 void shell()
 {
