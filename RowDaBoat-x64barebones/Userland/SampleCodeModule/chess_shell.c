@@ -36,9 +36,20 @@ typedef struct player{
     playertime timer;
     int color;
 }player;
+typedef struct log{
+    char from[2];
+    char to[2];
+    char* playername;
+    int order;
+}log;
+
+static log loghistory[100];
+static int count=0;
 
 static int FLAG_START=0;
 static int FLAG_END=0;
+static int LOG_X=5;
+static int LOG_Y=150;
 static player players[2];
 static int currentplayer;
 
@@ -182,6 +193,13 @@ int CommandHandlerChess(){
                 return 0;
             }
             int validate = validate_move(origin, destiny);
+            if(validate>=0){
+                char movefrom[3]={0};
+                char moveto[3]={0};
+                strncpy(potentialCommand,movefrom,0,2);
+                strncpy(potentialCommand,moveto,3,5);
+                printlog(movefrom,moveto);
+            }
             if (validate < 0){
                 print("Invalid Move");
                 return 0;
@@ -209,26 +227,18 @@ int CommandHandlerChess(){
 
 void printlog(char* source,char* destiny){
 
-    /*
-    sys_cursor(log_x,log_y);
+    if(LOG_Y>=600){
+        LOG_Y=150;
+    }
+    sys_cursor(LOG_X,LOG_Y);
     print(players[currentplayer].name);
     print(source);
     print("--->");
     print(destiny);
     sys_cursor(-1, -1);
-    log_X += 8*cant;
-    if (log_x > 400)
-    {
-        log_y += 16;
-    }
-    */
+    LOG_Y+=16;
 }
 void mini_shell(){
-    print("WELCOME TO CHESS, press help to view commands");
-    newline();
-    print("Los comandos a disposicion del usuario son los siguientes:");
-    newLine();
-    newLine();
     for(int i=0;i<command_size;i++){
         print(chess_commands[i].command_name);
         print(chess_commands[i].desc);
@@ -243,7 +253,6 @@ void mini_shell(){
         }
         if(readChessInput()){
             if(CommandHandlerChess()){
-                print("swap");
                 playerswap();
             }
             put_char('>');
