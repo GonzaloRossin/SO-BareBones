@@ -9,7 +9,9 @@
 #define MAX_DESC 50
 #define TIMER_X 850
 #define TIMER_Y 40
-#define GAME_DURATION_IN_SECONDS 1800
+#define ERROR_X 5
+#define ERROR_Y 130
+#define GAME_DURATION_IN_SECONDS 5
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
 #define BACKGROUND_COLOR1 0x0000FF
@@ -36,9 +38,20 @@ typedef struct player{
     playertime timer;
     int color;
 }player;
+typedef struct log{
+    char from[2];
+    char to[2];
+    char* playername;
+    int order;
+}log;
+
+static log loghistory[100];
+static int count=0;
 
 static int FLAG_START=0;
 static int FLAG_END=0;
+static int LOG_X=5;
+static int LOG_Y=170;
 static player players[2];
 static int currentplayer;
 
@@ -147,6 +160,7 @@ static void cleanChessBuffer(){
 void restartgame(){
     FLAG_START=0;
     FLAG_END=0;
+    command_size=0;
     initialize_chess();
 }
 void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
@@ -178,12 +192,26 @@ int CommandHandlerChess(){
             chess_square * destiny = get_board_tile(potentialCommand[4]-'0', potentialCommand[3]);
             if (validate_player(origin, players[currentplayer].color)==0)
             {
+                sys_cursor(ERROR_X,ERROR_Y);
                 print("Invalid Piece");
+                sys_cursor(-1,-1);
                 return 0;
             }
             int validate = validate_move(origin, destiny);
+            if(validate>=0){
+                char movefrom[3]={0};
+                char moveto[3]={0};
+                strncpy(potentialCommand,movefrom,0,2);
+                strncpy(potentialCommand,moveto,3,5);
+                sys_cursor(150,ERROR_Y); //PARA BORRAR EL MENSAJE DE ERROR CUANDO EL MOVIMIENTO ES VALIDO
+                putActioncall(3);
+                sys_cursor(-1,-1);
+                printlog(movefrom,moveto);
+            }
             if (validate < 0){
+                sys_cursor(ERROR_X,ERROR_Y);
                 print("Invalid Move");
+                sys_cursor(-1,-1);
                 return 0;
             }
             if (validate == 0)
@@ -204,25 +232,24 @@ int CommandHandlerChess(){
             }
         } 
     }
+    sys_cursor(ERROR_X,ERROR_Y);
     print("Invalid command");
+    sys_cursor(-1,-1);
     return 0;
 }
 
 void printlog(char* source,char* destiny){
 
-    /*
-    sys_cursor(log_x,log_y);
+    if(LOG_Y>=600){
+        LOG_Y=150;
+    }
+    sys_cursor(LOG_X,LOG_Y);
     print(players[currentplayer].name);
     print(source);
     print("--->");
     print(destiny);
     sys_cursor(-1, -1);
-    log_X += 8*cant;
-    if (log_x > 400)
-    {
-        log_y += 16;
-    }
-    */
+    LOG_Y+=16;
 }
 void mini_shell(){
     print("WELCOME TO CHESS");
@@ -235,34 +262,40 @@ void mini_shell(){
         print(chess_commands[i].desc);
         newLine();
     }
+<<<<<<< HEAD
     newLine();
     print("Para mover un pieza debe escribir en formato origen - destino");
     newLine();
     print("Por ejemplo: a1-a2 o A1-A2");
     newLine();
+=======
+    print("Para mover un pieza debe escribir la casilla a desplazar+\"-\"+casilla de destino");
+>>>>>>> 9e9954ee4c5566ed11f8cd681d9d2d4d8bb721c3
     newLine();
     put_char('>');
+    sys_cursor(5,150);
+    print("Log:");
+    sys_cursor(-1,-1);
     while(1 && !FLAG_END){
         if(FLAG_START){
             decrecetime();
         }
         if(readChessInput()){
             if(CommandHandlerChess()){
-                print("swap");
                 playerswap();
             }
             put_char('>');
             cleanChessBuffer();
         }
     }
-    sys_cursor(0,0);
-    print("JUEGO FINALIZADO");
-    newLine();
+    sys_cursor(ERROR_X,ERROR_Y);
+    print("JUEGO FINALIZADO, ");
     print("gana el jugador: ");
     print(players[!currentplayer].name);
-    putActioncall(1);
-    newLine();
-    put_char('>');
+    for(int i=0;i<2;i++){
+        putActioncall(1);
+    }
+    sys_cursor(-1,-1);
     while(1){
         if(readChessInput()){
             CommandHandlerChess();
