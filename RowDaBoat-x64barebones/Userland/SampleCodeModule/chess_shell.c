@@ -137,6 +137,10 @@ static int readChessInput()
         }
         return 0;
     }
+    else if(chartoadd==ESC){
+        //tecla especial reservada
+        return 0;
+    }
     //If its a regular letter.
     else
     {
@@ -252,6 +256,7 @@ void printlog(char* source,char* destiny){
         }
         LOG_Y=170;
     }
+    
     sys_cursor(LOG_X,LOG_Y);
     print(players[currentplayer].name);
     print(source);
