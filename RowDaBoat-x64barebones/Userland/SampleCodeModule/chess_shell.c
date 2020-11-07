@@ -9,6 +9,8 @@
 #define MAX_DESC 50
 #define TIMER_X 850
 #define TIMER_Y 40
+#define ERROR_X 5
+#define ERROR_Y 130
 #define GAME_DURATION_IN_SECONDS 1800
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
@@ -49,7 +51,7 @@ static int count=0;
 static int FLAG_START=0;
 static int FLAG_END=0;
 static int LOG_X=5;
-static int LOG_Y=150;
+static int LOG_Y=170;
 static player players[2];
 static int currentplayer;
 
@@ -189,7 +191,9 @@ int CommandHandlerChess(){
             chess_square * destiny = get_board_tile(potentialCommand[4]-'0', potentialCommand[3]);
             if (validate_player(origin, players[currentplayer].color)==0)
             {
+                sys_cursor(ERROR_X,ERROR_Y);
                 print("Invalid Piece");
+                sys_cursor(-1,-1);
                 return 0;
             }
             int validate = validate_move(origin, destiny);
@@ -198,10 +202,15 @@ int CommandHandlerChess(){
                 char moveto[3]={0};
                 strncpy(potentialCommand,movefrom,0,2);
                 strncpy(potentialCommand,moveto,3,5);
+                sys_cursor(150,ERROR_Y); //PARA BORRAR EL MENSAJE DE ERROR CUANDO EL MOVIMIENTO ES VALIDO
+                putActioncall(3);
+                sys_cursor(-1,-1);
                 printlog(movefrom,moveto);
             }
             if (validate < 0){
+                sys_cursor(ERROR_X,ERROR_Y);
                 print("Invalid Move");
+                sys_cursor(-1,-1);
                 return 0;
             }
             if (validate == 0)
@@ -221,7 +230,9 @@ int CommandHandlerChess(){
             }
         } 
     }
+    sys_cursor(ERROR_X,ERROR_Y);
     print("Invalid command");
+    sys_cursor(-1,-1);
     return 0;
 }
 
@@ -244,9 +255,12 @@ void mini_shell(){
         print(chess_commands[i].desc);
         newLine();
     }
-    print("Para mover un pieza debe ");
-
+    print("Para mover un pieza debe escribir la casilla a desplazar+\"-\"+casilla de destino");
+    newLine();
     put_char('>');
+    sys_cursor(5,150);
+    print("Log:");
+    sys_cursor(-1,-1);
     while(1 && !FLAG_END){
         if(FLAG_START){
             decrecetime();
