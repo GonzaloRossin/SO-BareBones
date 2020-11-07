@@ -170,11 +170,6 @@ void initialize_chess(){
     }
     draw_board();
     fillChessList();
-    print("WELCOME TO CHESS, press help to view commands");
-    newline();
-    print("Los comandos a disposicion del usuario son los siguientes:");
-    newLine();
-    newLine();
     mini_shell();
 }
 

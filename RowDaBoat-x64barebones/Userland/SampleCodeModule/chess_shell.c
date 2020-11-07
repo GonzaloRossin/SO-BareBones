@@ -11,7 +11,7 @@
 #define TIMER_Y 40
 #define ERROR_X 5
 #define ERROR_Y 130
-#define GAME_DURATION_IN_SECONDS 1800
+#define GAME_DURATION_IN_SECONDS 5
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
 #define BACKGROUND_COLOR1 0x0000FF
@@ -160,6 +160,7 @@ static void cleanChessBuffer(){
 void restartgame(){
     FLAG_START=0;
     FLAG_END=0;
+    command_size=0;
     initialize_chess();
 }
 void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
@@ -250,6 +251,11 @@ void printlog(char* source,char* destiny){
     LOG_Y+=16;
 }
 void mini_shell(){
+    print("WELCOME TO CHESS, press help to view commands");
+    newline();
+    print("Los comandos a disposicion del usuario son los siguientes:");
+    newLine();
+    newLine();
     for(int i=0;i<command_size;i++){
         print(chess_commands[i].command_name);
         print(chess_commands[i].desc);
@@ -273,14 +279,14 @@ void mini_shell(){
             cleanChessBuffer();
         }
     }
-    sys_cursor(0,0);
-    print("JUEGO FINALIZADO");
-    newLine();
+    sys_cursor(ERROR_X,ERROR_Y);
+    print("JUEGO FINALIZADO, ");
     print("gana el jugador: ");
     print(players[!currentplayer].name);
-    putActioncall(1);
-    newLine();
-    put_char('>');
+    for(int i=0;i<2;i++){
+        putActioncall(1);
+    }
+    sys_cursor(-1,-1);
     while(1){
         if(readChessInput()){
             CommandHandlerChess();
