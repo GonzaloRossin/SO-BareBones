@@ -18,7 +18,7 @@ void draw_string_personalized(int x, int y, char * buffer, int count, int fontsi
 void newLine();
 void delete_char();
 void delete_line();
-void scroll(int fontsize);
+void scroll(int size);
 void clean();
 void draw_number(uint64_t value, uint32_t base);
 void draw_decimal(uint64_t value);

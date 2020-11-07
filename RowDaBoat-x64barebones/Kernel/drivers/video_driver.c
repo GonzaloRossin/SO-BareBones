@@ -190,12 +190,12 @@ void delete_line(){
 	}
 }
 
-void scroll(int fontsize){
+void scroll(int size){
   
     for(int i=0 ; i<SCREEN_WIDTH ; i++){
-        for(int j=0 ; j<SCREEN_HEIGHT ; j++){
+        for(int j=0 ; j<SCREEN_HEIGHT-CHAR_HEIGHT*size ; j++){
             char * current = get_pixel( i, j);
-            char * replace = get_pixel( i, j+CHAR_HEIGHT*fontsize);
+            char * replace = get_pixel( i, j+CHAR_HEIGHT*size);
             current[0] = replace[0];
             current[1] = replace[1];
             current[2] = replace[2];

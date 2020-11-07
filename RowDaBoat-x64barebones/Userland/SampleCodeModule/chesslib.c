@@ -34,7 +34,7 @@ matrix_struct matrix = {0,0,0,0,0,0,CHESS_SQUARE_WIDTH, CHESS_SQUARE_HEIGHT, CHE
 matrix_struct * m = &matrix;
 matrix_struct * p;
 
-
+chess_square * casilla_al_paso;
 
 void draw_board(){
     // PONER ACA LETRAS DE COLUMNAS
@@ -361,7 +361,7 @@ int obstacles(chess_square * origin, chess_square * destiny){
     }
 }
 
-// return 0 if valid movement, 1 if castling valid movement, 2 if al paso movement, -1 if invalid
+// Retorna: 0 valid movement, 1 castling valid movement, 2 al paso movement, -1 invalid, -2 check warning
 int validate_move(chess_square * origin, chess_square * destiny){
     // Inavlida movimiento a la misma casilla o si no se esta moviendo una pieza.
     if (origin->piece == NO_PIECE || (origin->row == destiny->row && origin->column == destiny->column))
@@ -372,7 +372,7 @@ int validate_move(chess_square * origin, chess_square * destiny){
     if (origin->color == destiny->color && destiny->piece!=NO_PIECE)
     {
         // Verifica enroque.
-        if (origin->piece == KING && destiny->piece == ROOK && origin->moves == 0 && destiny->moves == 0 && obstacles(origin, destiny) == 0)
+        if (origin->piece == KING && destiny->piece == ROOK && origin->flag_castling == 0 && destiny->flag_castling == 0 && obstacles(origin, destiny) == 0)
         {
             return 1;
         }
@@ -389,7 +389,7 @@ int validate_move(chess_square * origin, chess_square * destiny){
 
     case PAWN:
         // Movimiento de avance de peon
-        if ( dist_column == 0 && destiny->piece == 0 )
+        if ( dist_column == 0 && destiny->piece == NO_PIECE )
         {
             if (origin->color == WHITE)
             {
@@ -397,7 +397,7 @@ int validate_move(chess_square * origin, chess_square * destiny){
                 {
                     return 0;
                 }
-                if (dist_row == 2 && origin->row != 2)
+                if (dist_row == 2 && origin->row == 2)
                 {
                     return obstacles(origin, destiny);
                 }
@@ -408,20 +408,36 @@ int validate_move(chess_square * origin, chess_square * destiny){
                 {
                     return 0;
                 }
-                if (dist_row == -2 && origin->row != 7)
+                if (dist_row == -2 && origin->row == 7)
                 {
                     return obstacles(origin, destiny);
                 }
             }     
         }
-        // Movimiento para comer piezas del peon
-        if (origin->color == WHITE && abs(dist_column) == 1 && dist_row == 1 && destiny->piece != 0)
+        // Movimiento para comer piezas del peon + chequeo de peon al paso.
+        if (origin->color == WHITE && abs(dist_column) == 1 && dist_row == 1)
         {
-            return 0;
+            chess_square * aux = get_board_tile(destiny->row-1, destiny->column);
+            if (aux->piece==PAWN && aux->color == BLACK && aux->flag_alpaso == 1)
+            {
+                return 2;
+            }
+            if (destiny->piece != 0)
+            {
+                return 0;
+            }
         }
-        if (origin->color == BLACK && abs(dist_column) == 1 && dist_row == -1 && destiny->piece != 0)
+        if (origin->color == BLACK && abs(dist_column) == 1 && dist_row == -1)
         {
-            return 0;
+            chess_square * aux = get_board_tile(destiny->row+1, destiny->column);
+            if (aux->piece==PAWN && aux->color == WHITE && aux->flag_alpaso == 1)
+            {
+                return 2;
+            }
+            if (destiny->piece != 0)
+            {
+                return 0;
+            }
         }
         break;
 
@@ -464,16 +480,25 @@ int validate_player(chess_square * origin, int player_color){
     return origin->color == player_color;
 }
 
-void move(int row1, char column1, int row2, char column2){
-    chess_square * origin = get_board_tile(row1, column1);
-    chess_square * destiny = get_board_tile(row2, column2);
+int move(chess_square * origin, chess_square * destiny){
+    casilla_al_paso->flag_alpaso = 0;
+    if (destiny->piece == KING)
+    {
+        return 1;
+    }
+    if (origin->piece == PAWN && abs(destiny->row-origin->row)==2)
+    {
+        casilla_al_paso = destiny;
+        casilla_al_paso->flag_alpaso = 1;
+    }
     
     destiny->piece = origin->piece;
     destiny->color = origin->color;
     origin->piece = NO_PIECE;
     origin->color = 0;
-    origin->moves++;
+    origin->flag_castling++;
     draw_board();
+    return 0;
 }
 
 // Retorna -1 si hay jaque en ese lugar, 0 si no lo hay.
@@ -497,7 +522,7 @@ int validate_check(chess_square * place, int color){
             {
                 if (validate_move(aux, place)==0)
                 {
-                    return -1;
+                    return -2;
                 }
             }
         }
@@ -506,17 +531,28 @@ int validate_check(chess_square * place, int color){
 }
 
 void castling_move(chess_square * origin,  chess_square * destiny){
+    chess_square * aux;
     if (origin->column < destiny->column)
     {
-        move(origin->row, origin->column, origin->row, origin->column+2);
-        move(destiny->row, destiny->column, destiny->row, destiny->column-2);
+        aux = get_board_tile(origin->row, origin->column+2);
+        move(origin, aux);
+        
+        aux = get_board_tile(destiny->row, destiny->column-2);
+        move(destiny, aux);
     }
     else
     {
-        move(origin->row, origin->column, origin->row, origin->column-2);
-        move(destiny->row, destiny->column, destiny->row, destiny->column+3);
+        aux = get_board_tile(origin->row, origin->column-2);
+        move(origin, aux);
+        aux = get_board_tile(destiny->row, destiny->column+3);
+        move(destiny, aux);
     }
-    origin->moves++;
-    destiny->moves++;
+    origin->flag_castling++;
+    destiny->flag_castling++;
 }
 
+void al_paso_move(chess_square * origin, chess_square * destiny){
+    move(origin, destiny);
+    casilla_al_paso->piece = NO_PIECE;
+    casilla_al_paso->color = 0;
+}
