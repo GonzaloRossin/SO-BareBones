@@ -1,7 +1,7 @@
 #include <libasm.h>
 #include <shell.h>
 #include <Lib.h>
-#include <chesslib.h>
+#include <chess_shell.h>
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
@@ -159,7 +159,7 @@ void fillCommandList()
     fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
     fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida" ,&testIvalidOpCodeCommand);
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem);
-    fillCommand("chess",": Juego de ajedrez", &initialize_chess);
+    fillCommand("chess",": Juego de ajedrez", &mini_shell);
 }
 static void CommandHandler()
 {
@@ -169,7 +169,12 @@ static void CommandHandler()
     {
         if (strcmp(potentialCommand, commandList[i].command_name))
         {
+
             (commandList[i].cmdptr)();
+            if(strcmp(potentialCommand,"chess")){
+                draw_Main_Sreen();
+                return;
+            }
             newLine();
             return;
         }
@@ -188,8 +193,17 @@ static void CommandHandler()
     print(potentialCommand);
     newLine();
 }
+void draw_Main_Sreen(){
+    print("WELCOME TO chessOS, espero que le guste mucho el ajedrez");
+    newLine();
+    newLine();
+    print("ingrese el comando help para comenzar");
+    newLine();
+}
 void shell()
 {
+    fillCommandList();
+    draw_Main_Sreen();
     put_char('>');
     while(1){
         if(readNewInput()){

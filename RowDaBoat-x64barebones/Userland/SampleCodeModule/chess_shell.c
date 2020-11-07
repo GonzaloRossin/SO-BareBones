@@ -19,11 +19,16 @@
 #define ISCOL(c) (( (c <= 'h'&& c>='a') || (c<='H' && c>='A'))  ? 1 : 0)
 #define ISROW(c) ( (c>='0' && c<='8') ? 1 : 0)
 
-static int FLAG_START=0;
-static int FLAG_END=0;
-static int LOG_X=5;
-static int LOG_Y=170;
-static int second_col_log=0;
+int FLAG_START=0;
+int FLAG_END=0;
+int SAVE_FLAG=0;
+int EXIT_FLAG=0;
+int TURNED_BOARD=0;
+int LOG_X=5;
+int LOG_Y=170;
+int BLACK_TIMER=0;
+int WHITE_TIMER=0;
+int second_col_log=0;
 
 matrix_struct * timermatrix;
 
@@ -45,19 +50,19 @@ typedef struct player{
     int color;
 }player;
 typedef struct log{
-    char from[2];
-    char to[2];
+    char from[3];
+    char to[3];
     char* playername;
     int order;
 }log;
 
-static log loghistory[300];
-static int logsize=0;
-static player players[2];
-static int currentplayer;
+log loghistory[68];
+int logsize=0;
+player players[2];
+int currentplayer;
 
-static chesscommand chess_commands[MAX_COMMANDS];
-static int command_size = 0;
+chesscommand chess_commands[MAX_COMMANDS];
+int command_size = 0;
 
 static char buffer[BUFFER+ 1] = {0}; //Non cyclic buffer
 static int buffer_size = 0;
@@ -94,9 +99,35 @@ void decrecetime(){
 }
 
 void start(){
+    if(!SAVE_FLAG){
+
+        initialize_chess();
+        currentplayer=0;
+    }
+    else{
+        draw_board();
+        draw_tags();
+    }
     player aux;
     for(int i=0;i<2;i++){
-        aux.timer.total_seconds=GAME_DURATION_IN_SECONDS;
+        if(SAVE_FLAG){
+            switch (i)
+            {
+            case 0:
+                aux.timer.total_seconds=WHITE_TIMER;
+                WHITE_TIMER=0;
+                break;
+            
+            case 1:
+                aux.timer.total_seconds=BLACK_TIMER;
+                BLACK_TIMER=0;
+                break;
+            }  
+            SAVE_FLAG=0;  
+        }
+        else{
+            aux.timer.total_seconds=GAME_DURATION_IN_SECONDS;
+        }
         aux.timer.time_reference=get_seconds();
         players[i]=aux;
     }
@@ -105,9 +136,23 @@ void start(){
     players[0].color = 0xFFFFFF;
     players[1].color = 0x000000;
     FLAG_START=1;
-    currentplayer=0;
 }
-
+static void cleanChessBuffer(){
+    for (int i = 0; i < BUFFER; i++)
+    {
+       buffer[i] = 0;
+    }
+    buffer_size = 0;
+}
+void exit(){
+    cleanChessBuffer();
+    SAVE_FLAG=1;
+    EXIT_FLAG=1;
+    FLAG_START=0;
+    BLACK_TIMER=players[1].timer.total_seconds;
+    WHITE_TIMER=players[0].timer.total_seconds;
+    clearScreen();
+}
 void playerswap(){
     if(currentplayer==1)
         currentplayer=0;
@@ -139,8 +184,20 @@ static int readChessInput()
         }
         return 0;
     }
+    else if(chartoadd=='0')
+    {
+        if(!TURNED_BOARD){
+            turn_board_90();
+            TURNED_BOARD=1;
+        }
+        else{
+            turn_board_normal();
+            TURNED_BOARD=0;
+        }
+        return;
+    } 
     else if(chartoadd==ESC){
-        //tecla especial reservada
+        exit();
         return 0;
     }
     //If its a regular letter.
@@ -157,18 +214,11 @@ static int readChessInput()
     //Just in case
     return 0;
 }
-
-static void cleanChessBuffer(){
-    for (int i = 0; i < BUFFER; i++)
-    {
-       buffer[i] = 0;
-    }
-    buffer_size = 0;
-}
-
 void restartgame(){
     FLAG_START=0;
     FLAG_END=0;
+    SAVE_FLAG=0;
+    EXIT_FLAG=0;
     command_size=0;
     logsize=0;
     second_col_log=0;
@@ -190,7 +240,29 @@ void fillChessList()
     fillChessCommand("start"," : inicia el tiempo y el juego",&start);
     fillChessCommand("restart"," : reinicia el juego y vuelve al menú",&restartgame);
 }
-
+void printlog(char* source,char* destiny,int order,char* name){
+    if(LOG_Y>=716){
+        if(second_col_log){
+            LOG_X=5;
+        }
+        else
+        {
+            second_col_log=1;
+            LOG_X=250;
+        }
+        LOG_Y=170;
+    }
+    sys_cursor(LOG_X,LOG_Y);
+    print(name);
+    print(source);
+    print(" ---> ");
+    print(destiny);
+    put_char('(');
+    print_num(order,0);
+    put_char(')');
+    sys_cursor(-1, -1);
+    LOG_Y+=16;
+}
 int CommandHandlerChess(){
     char potentialCommand[BUFFER] = {0};
     strncpy(buffer, potentialCommand,0, buffer_size);
@@ -232,7 +304,13 @@ int CommandHandlerChess(){
                 sys_cursor(150,ERROR_Y); //PARA BORRAR EL MENSAJE DE ERROR CUANDO EL MOVIMIENTO ES VALIDO
                 putActioncall(3);
                 sys_cursor(-1,-1);
-                printlog(movefrom,moveto);
+                log aux;
+                strncpy(movefrom,aux.from,0,strlen(movefrom));
+                strncpy(moveto,aux.to,0,strlen(moveto));
+                strncpy(players[currentplayer].name,aux.playername,0,strlen(players[currentplayer].name));
+                aux.order=logsize+1;
+                loghistory[logsize++]=aux;
+                printlog(movefrom,moveto,aux.order,players[currentplayer].name);
             }
             // Efectua el movimiento
             if (validate == -1){
@@ -276,34 +354,10 @@ int CommandHandlerChess(){
     sys_cursor(-1,-1);
     return 0;
 }
-
-void printlog(char* source,char* destiny){
-    if(LOG_Y>=716){
-        if(second_col_log){
-            LOG_X=5;
-        }
-        else
-        {
-            second_col_log=1;
-            LOG_X=250;
-        }
-        LOG_Y=170;
-    }
-    
-    sys_cursor(LOG_X,LOG_Y);
-    print(players[currentplayer].name);
-    print(source);
-    print(" ---> ");
-    print(destiny);
-    put_char('(');
-    print_num(logsize+1,0);
-    put_char(')');
-    sys_cursor(-1, -1);
-    logsize++;
-    LOG_Y+=16;
-}
-
-void mini_shell(){
+int mini_shell(){
+    clearScreen();
+    if(!SAVE_FLAG)
+        fillChessList();
     print("WELCOME TO CHESS");
     newline();
     print("Los comandos a disposicion del usuario son los siguientes:");
@@ -322,7 +376,13 @@ void mini_shell(){
     sys_cursor(5,150);
     print("Logs:");
     sys_cursor(-1,-1);
-    while(1 && !FLAG_END){
+    if(SAVE_FLAG){
+        for(int i=0;i<logsize;i++){
+            printlog(loghistory[i].from,loghistory[i].to,loghistory[i].order,loghistory[i].playername);
+        }
+        EXIT_FLAG=0;
+    }
+    while(1 && !FLAG_END && !EXIT_FLAG ){
         if(FLAG_START){
             decrecetime();
         }
@@ -334,19 +394,22 @@ void mini_shell(){
             cleanChessBuffer();
         }
     }
-    sys_cursor(ERROR_X,ERROR_Y);
-    print("JUEGO FINALIZADO, ");
-    print("gana el jugador: ");
-    print(players[!currentplayer].name);
-    for(int i=0;i<2;i++){
-        putActioncall(1);
-    }
-    sys_cursor(-1,-1);
-    while(1){
-        if(readChessInput()){
-            CommandHandlerChess();
-            put_char('>');
-            cleanChessBuffer();
+    if(!EXIT_FLAG){
+        sys_cursor(ERROR_X,ERROR_Y);
+        print("JUEGO FINALIZADO, ");
+        print("gana el jugador: ");
+        print(players[!currentplayer].name);
+        for(int i=0;i<2;i++){
+            putActioncall(1);
+        }
+        sys_cursor(-1,-1);
+        while(1){
+            if(readChessInput()){
+                CommandHandlerChess();
+                put_char('>');
+                cleanChessBuffer();
+            }
         }
     }
+    return 0;
 }

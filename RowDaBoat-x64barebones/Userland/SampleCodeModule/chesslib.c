@@ -80,7 +80,6 @@ void turn_board(){
 void initialize_chess(){
     int x = initial_x;
     int y = initial_y;
-    clearScreen();
     // Set the pieces on the board
     for (int i = 0; i < 8; i++)
     {
@@ -169,8 +168,6 @@ void initialize_chess(){
         y += CHESS_SQUARE_HEIGHT*CHESS_DRAW_SIZE;
     }
     draw_board();
-    fillChessList();
-    mini_shell();
 }
 
 
