@@ -11,13 +11,19 @@
 #define TIMER_Y 40
 #define ERROR_X 5
 #define ERROR_Y 130
-#define GAME_DURATION_IN_SECONDS 5
+#define GAME_DURATION_IN_SECONDS 5400
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
 #define BACKGROUND_COLOR1 0x0000FF
 
 #define ISCOL(c) (( (c <= 'h'&& c>='a') || (c<='H' && c>='A'))  ? 1 : 0)
 #define ISROW(c) ( (c>='0' && c<='8') ? 1 : 0)
+
+static int FLAG_START=0;
+static int FLAG_END=0;
+static int LOG_X=5;
+static int LOG_Y=170;
+static int second_col_log=0;
 
 matrix_struct * timermatrix;
 
@@ -45,13 +51,8 @@ typedef struct log{
     int order;
 }log;
 
-static log loghistory[100];
-static int count=0;
-
-static int FLAG_START=0;
-static int FLAG_END=0;
-static int LOG_X=5;
-static int LOG_Y=170;
+static log loghistory[300];
+static int logsize=0;
 static player players[2];
 static int currentplayer;
 
@@ -161,6 +162,8 @@ void restartgame(){
     FLAG_START=0;
     FLAG_END=0;
     command_size=0;
+    logsize=0;
+    second_col_log=0;
     initialize_chess();
 }
 void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
@@ -238,16 +241,27 @@ int CommandHandlerChess(){
 }
 
 void printlog(char* source,char* destiny){
-
-    if(LOG_Y>=600){
-        LOG_Y=150;
+    if(LOG_Y>=716){
+        if(second_col_log){
+            LOG_X=5;
+        }
+        else
+        {
+            second_col_log=1;
+            LOG_X=250;
+        }
+        LOG_Y=170;
     }
     sys_cursor(LOG_X,LOG_Y);
     print(players[currentplayer].name);
     print(source);
     print("--->");
     print(destiny);
+    put_char('(');
+    print_num(logsize+1,0);
+    put_char(')');
     sys_cursor(-1, -1);
+    logsize++;
     LOG_Y+=16;
 }
 void mini_shell(){
