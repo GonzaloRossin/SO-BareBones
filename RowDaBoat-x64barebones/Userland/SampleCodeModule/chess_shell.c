@@ -11,7 +11,7 @@
 #define TIMER_Y 40
 #define ERROR_X 5
 #define ERROR_Y 130
-#define GAME_DURATION_IN_SECONDS 5400
+#define GAME_DURATION_IN_SECONDS 5
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 1
 #define BACKGROUND_COLOR1 0x0000FF
@@ -24,11 +24,11 @@ int FLAG_END=0;
 int SAVE_FLAG=0;
 int EXIT_FLAG=0;
 int TURNED_BOARD=0;
-int LOG_X=5;
-int LOG_Y=170;
+static int LOG_X=5;
+static int LOG_Y=170;
 int BLACK_TIMER=0;
 int WHITE_TIMER=0;
-int second_col_log=0;
+static int second_col_log=0;
 
 matrix_struct * timermatrix;
 
@@ -56,9 +56,9 @@ typedef struct log{
     int order;
 }log;
 
-log loghistory[68];
+log loghistory[200]={0};
 int logsize=0;
-player players[2];
+static player players[2];
 int currentplayer;
 
 chesscommand chess_commands[MAX_COMMANDS];
@@ -113,17 +113,15 @@ void start(){
         if(SAVE_FLAG){
             switch (i)
             {
-            case 0:
+                case 0:
                 aux.timer.total_seconds=WHITE_TIMER;
                 WHITE_TIMER=0;
                 break;
-            
-            case 1:
+                case 1:
                 aux.timer.total_seconds=BLACK_TIMER;
                 BLACK_TIMER=0;
                 break;
             }  
-            SAVE_FLAG=0;  
         }
         else{
             aux.timer.total_seconds=GAME_DURATION_IN_SECONDS;
@@ -135,6 +133,7 @@ void start(){
     players[1].name="Player 2 : ";
     players[0].color = 0xFFFFFF;
     players[1].color = 0x000000;
+    SAVE_FLAG=0;
     FLAG_START=1;
 }
 static void cleanChessBuffer(){
@@ -215,6 +214,9 @@ static int readChessInput()
     return 0;
 }
 void restartgame(){
+    TURNED_BOARD=0;
+    BLACK_TIMER=0;
+    WHITE_TIMER=0;
     FLAG_START=0;
     FLAG_END=0;
     SAVE_FLAG=0;
@@ -223,7 +225,8 @@ void restartgame(){
     logsize=0;
     second_col_log=0;
     cleanChessBuffer();
-    initialize_chess();
+    clearScreen();
+    mini_shell();
 }
 
 void fillChessCommand(char* name,char *desc, void (*cmdptr)(void))
@@ -377,8 +380,10 @@ int mini_shell(){
     print("Logs:");
     sys_cursor(-1,-1);
     if(SAVE_FLAG){
+        LOG_X=5;
+        LOG_Y=170;
         for(int i=0;i<logsize;i++){
-            printlog(loghistory[i].from,loghistory[i].to,loghistory[i].order,loghistory[i].playername);
+            printlog(loghistory[i].from,loghistory[i].to,loghistory[i].order,players[i%2].name);
         }
         EXIT_FLAG=0;
     }
