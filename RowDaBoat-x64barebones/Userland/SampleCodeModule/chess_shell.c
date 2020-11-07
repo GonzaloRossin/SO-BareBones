@@ -193,6 +193,7 @@ int CommandHandlerChess(){
             }
             if (validate == 1)
             {
+                print("Castling ");
                 castling_move(origin, destiny);
                 return 1;
             }
@@ -224,7 +225,7 @@ void printlog(char* source,char* destiny){
     */
 }
 void mini_shell(){
-    print("WELCOME TO CHESS, press help to view commands");
+    print("WELCOME TO CHESS");
     newline();
     print("Los comandos a disposicion del usuario son los siguientes:");
     newLine();
@@ -234,8 +235,12 @@ void mini_shell(){
         print(chess_commands[i].desc);
         newLine();
     }
-    print("Para mover un pieza debe ");
-
+    newLine();
+    print("Para mover un pieza debe escribir en formato origen - destino");
+    newLine();
+    print("Por ejemplo: a1-a2 o A1-A2");
+    newLine();
+    newLine();
     put_char('>');
     while(1 && !FLAG_END){
         if(FLAG_START){
