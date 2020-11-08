@@ -136,32 +136,12 @@ int_80:
 	iretq
 
 %macro exception 1
-	;preserve registers
-	push rbp
-	mov rbp,rsp
 	pushState
 	;print exception data
 	mov rdi,%1
 	call printException
-	mov rdi,0;rsi
-	call printRegister
-	mov rdi,1;rax
-	mov rsi,rax
-	call printRegister
-	mov rdi,2;rbx
-	mov rsi,rbx
-	call printRegister
-	mov rdi,3;rcx
-	mov rsi,rcx
-	call printRegister
-	mov rdi,4;rdx
-	mov rsi,rdx
-	call printRegister
-	mov rdi,5;rsp
-	mov rsi,[rbp+32]
-	call printRegister
-	mov rdi,6;rbp
-	mov rsi,[rbp];rbp apunta al push de rbp
+	mov rdi,rsp;cargo instruction pointer en rdi
+	add rdi, 8*19
 	call printRegister
 	sti
 	call reboot

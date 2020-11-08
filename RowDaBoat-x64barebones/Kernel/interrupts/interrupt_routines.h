@@ -12,7 +12,7 @@ uint8_t get_key();
 unsigned long getSeconds();
 
 
-void printRegister(uint8_t reg, uint64_t regData);
+void printRegister(uint64_t pri);
 
 void printException(uint8_t exc);
 #endif

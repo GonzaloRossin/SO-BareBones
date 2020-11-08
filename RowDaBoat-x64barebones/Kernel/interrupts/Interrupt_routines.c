@@ -41,35 +41,20 @@ void printException(uint8_t exc)
 	newLine();
 }
 
-void printRegister(uint8_t reg, uint64_t regData)
+void printRegister(uint64_t pri)
 {
-	// get which register
-	switch (reg)
-	{
-	case 0:
-		draw_string("RSI: ",5);
-		break;
-	case 1:
-		draw_string("RAX: ",5);
-		break;
-	case 2:
-		draw_string("RBX: ",5);
-		break;
-	case 3:
-		draw_string("RCX: ",5);
-		break;
-	case 4:
-		draw_string("RDX: ",5);
-		break;
-	case 5:
-		draw_string("RSP: ",5);
-		break;
-	case 6:
-		draw_string("RBP: ",5);
-		break;
-	}
-	draw_hex(regData);
+	saveRegs();
+	uint64_t v[16] = {0};
+    getRegs(v);
+	draw_string("pir: ",5);
+	draw_hex(pri);
 	newLine();
+	char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8:  ", "r9:  ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
+	for(int i=0;i<16;i++){
+		draw_string(regs[i],5);
+		draw_hex(v[i]);
+        newLine();
+    }
 }
 void loader();
 void reboot()
