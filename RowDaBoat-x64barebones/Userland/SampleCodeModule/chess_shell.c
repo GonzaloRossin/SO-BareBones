@@ -237,7 +237,6 @@ static int readChessInput()
     
     char chartoadd=read_input();
 
-    //If there is nothing new or its not a valid character...
     if (chartoadd == 0)
     {
         return 0;
