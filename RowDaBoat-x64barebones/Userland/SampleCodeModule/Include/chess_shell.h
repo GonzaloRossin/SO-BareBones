@@ -2,8 +2,6 @@
 #define CHESS_SHELL_H
 #include <stdint.h>
 
-
-void mini_shell();
-void fillChessList();
+int mini_shell();
 
 #endif

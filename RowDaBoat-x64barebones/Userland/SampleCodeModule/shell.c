@@ -75,10 +75,12 @@ static void cleanBuffer(){
     }
     bufferSize = 0;
 }
+
 static void testDivisionBy0Command()
 {
     int a = 4 / 0;
 }
+
 static int readNewInput()
 {
     
@@ -126,7 +128,7 @@ static void help(){
     }
 }
 static void get_time(){
-    print("current time (UTC): ");
+    print("Current time (UTC): ");
     print_num(get_RTC(2),0);//horas
     print(":");
     print_num(get_RTC(1),0);//minutos
@@ -139,6 +141,20 @@ static void testIvalidOpCodeCommand()
     void (*punt)(void) = (void *)0x400000;
     *((uint64_t *)punt) = 0xffffffff;
     (punt)();
+}
+
+static void draw_Main_Sreen(){
+    print("WELCOME TO chessOS, espero que le guste mucho el ajedrez");
+    newLine();
+    newLine();
+    print("Ingrese el comando help para comenzar");
+    newLine();
+    newLine();
+}
+
+static void clean(){
+    clearScreen();
+    draw_Main_Sreen();
 }
 
 void fillCommand(char* name,char *desc, void (*cmdptr)())
@@ -159,8 +175,10 @@ void fillCommandList()
     fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
     fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida" ,&testIvalidOpCodeCommand);
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem);
+    fillCommand("clean", ": Limpia la pantalla", &clean);
     fillCommand("chess",": Juego de ajedrez", &mini_shell);
 }
+
 static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
@@ -193,13 +211,7 @@ static void CommandHandler()
     print(potentialCommand);
     newLine();
 }
-void draw_Main_Sreen(){
-    print("WELCOME TO chessOS, espero que le guste mucho el ajedrez");
-    newLine();
-    newLine();
-    print("ingrese el comando help para comenzar");
-    newLine();
-}
+
 void shell()
 {
     fillCommandList();

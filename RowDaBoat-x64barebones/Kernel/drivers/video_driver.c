@@ -200,6 +200,14 @@ void scroll(int size){
             current[1] = replace[1];
             current[2] = replace[2];
         }
+		for (int k = SCREEN_HEIGHT-CHAR_HEIGHT*size; k < SCREEN_HEIGHT; k++)
+		{
+			char * current = get_pixel( i, k);
+			current[0] = 0;
+			current[1] = 0;
+			current[2] = 0;
+		}
+		
     }
 	cursor_y -= CHAR_HEIGHT*FONT_SIZE;
 	cursor_x = 0;
