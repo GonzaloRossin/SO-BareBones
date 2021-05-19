@@ -5,6 +5,7 @@
 #define ENTER 0x0A
 #define CTRL 0x1D
 #define ESC 0x1B
+#define TAB 0X09
 
 void shell();
 

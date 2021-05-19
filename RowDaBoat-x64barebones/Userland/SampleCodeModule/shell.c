@@ -103,6 +103,10 @@ static int readNewInput()
         }
         return 0;
     }
+    else if(chartoadd==TAB){
+        print("hola");
+        return 0;
+    }
     //If its a regular letter.
     else
     {
