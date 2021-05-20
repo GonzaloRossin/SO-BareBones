@@ -31,6 +31,9 @@ void sys_draw(int i, uint64_t matrix);
 unsigned long get_seconds();
 //SYSCALL 13
 void sys_cursor(int x, int y);
-
+//SYSCALL 14
+void sys_margins(int mLeft,int mRight);
+//SYSCALL 15
+void sys_getCoords(int* placeholder);
 
 #endif

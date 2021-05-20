@@ -13,6 +13,8 @@ GLOBAL clearScreen
 GLOBAL sys_draw
 GLOBAL get_seconds
 GLOBAL sys_cursor
+GLOBAL sys_margins
+GLOBAL sys_getCoords
 
 section .text
 
@@ -64,7 +66,6 @@ read_input:
 	int 80h
 	popState
 	ret
-
 sys_write:
 	pushState
 	syscall_adjust
@@ -153,6 +154,20 @@ sys_cursor:
 	pushState
 	syscall_adjust
 	mov rdi, 13
+	int 80h
+	popState
+	ret
+sys_margins:
+	pushState
+	syscall_adjust
+	mov rdi, 14
+	int 80h
+	popState
+	ret
+sys_getCoords:
+	pushState
+	syscall_adjust
+	mov rdi, 15
 	int 80h
 	popState
 	ret

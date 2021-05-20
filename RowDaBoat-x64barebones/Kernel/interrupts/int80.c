@@ -55,6 +55,12 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 13:
 		sys_cursor((int) rsi, (int) rdx);
 		break;
+	case 14:
+		sys_setMargins((int)rsi,(int)rdx);
+		break;
+	case 15:
+		sys_getCoords((int*)rsi);
+		break;
 	}
 	return 0;
 }
@@ -164,6 +170,14 @@ void sys_cursor(int rsi, int rdx){
 	{
 		return_last_cursor();
 	}
+}
+//SYS_CALL 14
+void sys_setMargins(int rsi,int rdx){
+	set_margins(rsi,rdx);
+}
+//SYS_CALL 15
+void sys_getCoords(int* rsi){
+	getCoords(rsi);
 }
 
 

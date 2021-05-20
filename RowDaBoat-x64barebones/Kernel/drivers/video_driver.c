@@ -44,6 +44,8 @@ struct vbe_mode_info_structure * screendata=0x0000000000005C00;
 
 static int cursor_x = 0;
 static int cursor_y = 0;
+int marginLeft=0;
+int marginRight=SCREEN_WIDTH;
 static int aux_x = 0;
 static int aux_y = 0;
 static uint32_t valueToBase(uint64_t value, char * buffer, uint32_t base);
@@ -83,9 +85,9 @@ void draw_square(unsigned int x, unsigned int y, int l, int color){
 }
 
 void draw_char(char caracter){
-	if (cursor_x + CHAR_WIDTH*FONT_SIZE > SCREEN_WIDTH)
+	if (cursor_x + CHAR_WIDTH*FONT_SIZE > marginRight)
 	{
-		cursor_x = 0;
+		cursor_x = marginLeft;
 		cursor_y += CHAR_HEIGHT*FONT_SIZE;
 		if (cursor_y >= SCREEN_HEIGHT){
 			scroll(CHAR_HEIGHT*FONT_SIZE);
@@ -96,7 +98,7 @@ void draw_char(char caracter){
 }
 
 void draw_char_personalized(int x, int y, char character, int fontsize, int fontcolor, int backgroundcolor){
-	if (x + CHAR_WIDTH*fontsize > SCREEN_WIDTH)
+	if (x + CHAR_WIDTH*fontsize > marginRight)
 	{
 		x = 0;
 		y += CHAR_HEIGHT*fontsize;
@@ -135,7 +137,7 @@ void draw_char_personalized(int x, int y, char character, int fontsize, int font
 }
 
 void draw_string_personalized(int x, int y, char * buffer, int count, int fontsize, int fontcolor, int backgroundcolor){
-	if (x + CHAR_WIDTH*fontsize*count > SCREEN_WIDTH)
+	if (x + CHAR_WIDTH*fontsize*count > marginRight)
 	{
 		x = 0;
 		y += CHAR_HEIGHT*fontsize;
@@ -151,21 +153,13 @@ void draw_string_personalized(int x, int y, char * buffer, int count, int fontsi
 }
 
 void draw_string(char * buffer, int count){
-	if (cursor_x + CHAR_WIDTH*FONT_SIZE*count > SCREEN_WIDTH)
-	{
-		cursor_x = 0;
-		cursor_y += CHAR_HEIGHT*FONT_SIZE;
-		if (cursor_y >= SCREEN_HEIGHT){
-			scroll(FONT_SIZE);
-		}
-	}
 	for (int i = 0; i < count; i++){
 		draw_char(buffer[i]);
 	}
 }
 
 void newLine(){
-	cursor_x = 0;
+	cursor_x = marginLeft;
 	cursor_y += CHAR_HEIGHT*FONT_SIZE;
 	if (cursor_y >= SCREEN_HEIGHT){
 		scroll(FONT_SIZE);
@@ -173,9 +167,9 @@ void newLine(){
 }
 
 void delete_char(){
-	if (cursor_x == 0)
+	if (cursor_x == marginLeft)
 	{
-		cursor_x = SCREEN_WIDTH;
+		cursor_x = marginRight;//check
 		cursor_y -= CHAR_HEIGHT*FONT_SIZE;
 	}
 	cursor_x -= CHAR_WIDTH*FONT_SIZE;
@@ -184,7 +178,7 @@ void delete_char(){
 }
 
 void delete_line(){
-	while (cursor_x > 0)
+	while (cursor_x >= marginLeft)
 	{
 		delete_char();
 	}
@@ -192,17 +186,17 @@ void delete_line(){
 
 void scroll(int size){
   
-    for(int i=0 ; i<SCREEN_WIDTH ; i++){
+    for(int i=0 ; i<marginRight ; i++){
         for(int j=0 ; j<SCREEN_HEIGHT-CHAR_HEIGHT*size ; j++){
-            char * current = get_pixel( i, j);
-            char * replace = get_pixel( i, j+CHAR_HEIGHT*size);
+            char * current = get_pixel( i+marginLeft, j);
+            char * replace = get_pixel( i+marginLeft, j+CHAR_HEIGHT*size);
             current[0] = replace[0];
             current[1] = replace[1];
             current[2] = replace[2];
         }
 		for (int k = SCREEN_HEIGHT-CHAR_HEIGHT*size; k < SCREEN_HEIGHT; k++)
 		{
-			char * current = get_pixel( i, k);
+			char * current = get_pixel( i+marginLeft, k);
 			current[0] = 0;
 			current[1] = 0;
 			current[2] = 0;
@@ -210,16 +204,16 @@ void scroll(int size){
 		
     }
 	cursor_y -= CHAR_HEIGHT*FONT_SIZE;
-	cursor_x = 0;
+	cursor_x = marginLeft;
 }
 
 void clean(){
-	for(int i=0 ; i<=SCREEN_WIDTH ; i++){
+	for(int i=marginLeft ; i<=marginRight ; i++){
         for(int j=0 ; j<=SCREEN_HEIGHT ; j++){
             draw_pixel(i, j, BACKGROUND_COLOR);
         }
     }
-	cursor_x = 0;
+	cursor_x = marginLeft;
 	cursor_y = 0;
 }
 
@@ -272,7 +266,7 @@ void draw_hex(uint64_t value)
 }
 
 void draw_matrix(int x, int y, unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor){
-	if (x + width*draw_size > SCREEN_WIDTH || y + height*draw_size > SCREEN_HEIGHT)
+	if (x + width*draw_size > marginRight || y + height*draw_size > SCREEN_HEIGHT)
 	{
 		return;
 	}
@@ -312,7 +306,19 @@ void set_cursor(int x, int y){
 	cursor_y = y;
 }
 
+void set_margins(int marginL,int marginR){
+	marginLeft=marginL;
+	marginRight=marginRight;
+}
+
 void return_last_cursor(){
 	cursor_x = aux_x;
 	cursor_y = aux_y;
+}
+
+void getCoords(int* coords){
+	*coords=cursor_x;
+	coords++;
+	*coords=cursor_y;
+	coords--;// check
 }

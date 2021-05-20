@@ -7,6 +7,9 @@
 #define MAX_COMDESC 100
 #define MAX_COMMANDS 20
 
+int SCREEN_FLAG=0;
+
+struct screenShell screens[2];
 //Structure of a command stored in the command List
 typedef struct command
 {
@@ -104,7 +107,13 @@ static int readNewInput()
         return 0;
     }
     else if(chartoadd==TAB){
-        print("hola");
+        save_screenCords(screens[SCREEN_FLAG]);
+        if(SCREEN_FLAG)
+            SCREEN_FLAG=0;
+        else
+            SCREEN_FLAG=1;
+        set_margins(screens[SCREEN_FLAG].marginleft,screens[SCREEN_FLAG].marginright);
+        set_cursor(screens[SCREEN_FLAG].coords.coordX,screens[SCREEN_FLAG].coords.coordY);
         return 0;
     }
     //If its a regular letter.
@@ -148,9 +157,6 @@ static void testIvalidOpCodeCommand()
 }
 
 static void draw_Main_Sreen(){
-    print("WELCOME TO chessOS, espero que le guste mucho el ajedrez");
-    newLine();
-    newLine();
     print("Ingrese el comando help para comenzar");
     newLine();
     newLine();
@@ -215,12 +221,43 @@ static void CommandHandler()
     print(potentialCommand);
     newLine();
 }
+void initializeshell(){
+    char aux[BUFFER_SIZE+1]={0};
+    int i;
+    for(i=0;i<2;i++){
+        screens[i].buffer=aux;
+        screens[i].buffersize=0;
+        switch (i)
+        {
+        case 0:
+            screens[i].coords.coordX=0;
+            screens[i].coords.coordY=0;
+            screens[i].marginleft=0;
+            screens[i].marginright=500;
+            break;
+        
+        case 1:
+            screens[i].coords.coordX=502;
+            screens[i].coords.coordY=0;
+            screens[i].marginleft=502;
+            screens[i].marginright=1024;
+            break;
+        }
+    }
+    for(i=0;i<2;i++){
+        set_margins(screens[i].marginleft,screens[i].marginright);
+        set_cursor(screens[i].coords.coordX,screens[i].coords.coordY);
+        draw_Main_Sreen();
+        put_char('>');
+        save_screenCords(screens[i]);
+    }
+    set_cursor(screens[SCREEN_FLAG].coords.coordX,screens[SCREEN_FLAG].coords.coordY);
+}
 
 void shell()
 {
     fillCommandList();
-    draw_Main_Sreen();
-    put_char('>');
+    initializeshell();
     while(1){
         if(readNewInput()){
             CommandHandler();
