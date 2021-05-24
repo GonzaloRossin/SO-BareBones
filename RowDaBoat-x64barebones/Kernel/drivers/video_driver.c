@@ -100,7 +100,7 @@ void draw_char(char caracter){
 void draw_char_personalized(int x, int y, char character, int fontsize, int fontcolor, int backgroundcolor){
 	if (x + CHAR_WIDTH*fontsize > marginRight)
 	{
-		x = 0;
+		x = marginLeft;
 		y += CHAR_HEIGHT*fontsize;
 		if (y >= SCREEN_HEIGHT){
 			//scroll(CHAR_HEIGHT*fontsize);
@@ -139,7 +139,7 @@ void draw_char_personalized(int x, int y, char character, int fontsize, int font
 void draw_string_personalized(int x, int y, char * buffer, int count, int fontsize, int fontcolor, int backgroundcolor){
 	if (x + CHAR_WIDTH*fontsize*count > marginRight)
 	{
-		x = 0;
+		x = marginLeft;
 		y += CHAR_HEIGHT*fontsize;
 		if (y >= SCREEN_HEIGHT){
 			//scroll(fontsize);
@@ -169,7 +169,7 @@ void newLine(){
 void delete_char(){
 	if (cursor_x == marginLeft)
 	{
-		cursor_x = marginRight;//check
+		cursor_x = marginRight;
 		cursor_y -= CHAR_HEIGHT*FONT_SIZE;
 	}
 	cursor_x -= CHAR_WIDTH*FONT_SIZE;
@@ -186,22 +186,17 @@ void delete_line(){
 
 void scroll(int size){
   
-    for(int i=0 ; i<marginRight ; i++){
-        for(int j=0 ; j<SCREEN_HEIGHT-CHAR_HEIGHT*size ; j++){
-            char * current = get_pixel( i+marginLeft, j);
-            char * replace = get_pixel( i+marginLeft, j+CHAR_HEIGHT*size);
+  for(int j=0 ; j<SCREEN_HEIGHT-CHAR_HEIGHT*size ; j++){
+   		for(int i=marginLeft ; i<marginRight ; i++){
+            char * current = get_pixel( i, j);
+            char * replace = get_pixel( i, j+CHAR_HEIGHT*size);
             current[0] = replace[0];
             current[1] = replace[1];
             current[2] = replace[2];
+			replace[0]=0;
+			replace[1]=0;
+			replace[2]=0;
         }
-		for (int k = SCREEN_HEIGHT-CHAR_HEIGHT*size; k < SCREEN_HEIGHT; k++)
-		{
-			char * current = get_pixel( i+marginLeft, k);
-			current[0] = 0;
-			current[1] = 0;
-			current[2] = 0;
-		}
-		
     }
 	cursor_y -= CHAR_HEIGHT*FONT_SIZE;
 	cursor_x = marginLeft;
@@ -308,7 +303,7 @@ void set_cursor(int x, int y){
 
 void set_margins(int marginL,int marginR){
 	marginLeft=marginL;
-	marginRight=marginRight;
+	marginRight=marginR;
 }
 
 void return_last_cursor(){
@@ -320,5 +315,5 @@ void getCoords(int* coords){
 	*coords=cursor_x;
 	coords++;
 	*coords=cursor_y;
-	coords--;// check
+	coords--;
 }

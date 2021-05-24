@@ -156,7 +156,12 @@ static void testIvalidOpCodeCommand()
     (punt)();
 }
 
-static void draw_Main_Sreen(){
+static void draw_Main_Screen(screenShell shell){
+    set_margins(shell.marginleft,shell.marginright);
+    set_cursor(shell.coords.coordX,shell.coords.coordY);
+    print("Welcome to chessOS");
+    newLine();
+    newLine();
     print("Ingrese el comando help para comenzar");
     newLine();
     newLine();
@@ -164,7 +169,7 @@ static void draw_Main_Sreen(){
 
 static void clean(){
     clearScreen();
-    draw_Main_Sreen();
+    draw_Main_Screen(screens[SCREEN_FLAG]);
 }
 
 void fillCommand(char* name,char *desc, void (*cmdptr)())
@@ -200,7 +205,7 @@ static void CommandHandler()
 
             (commandList[i].cmdptr)();
             if(strcmp(potentialCommand,"chess")){
-                draw_Main_Sreen();
+                draw_Main_Screen(screens[SCREEN_FLAG]);
                 return;
             }
             newLine();
@@ -221,7 +226,7 @@ static void CommandHandler()
     print(potentialCommand);
     newLine();
 }
-void initializeshell(){
+void setShell(){
     char aux[BUFFER_SIZE+1]={0};
     int i;
     for(i=0;i<2;i++){
@@ -237,27 +242,28 @@ void initializeshell(){
             break;
         
         case 1:
-            screens[i].coords.coordX=502;
+            screens[i].coords.coordX=512;
             screens[i].coords.coordY=0;
-            screens[i].marginleft=502;
-            screens[i].marginright=1024;
+            screens[i].marginleft=512;
+            screens[i].marginright=1010;
             break;
         }
     }
-    for(i=0;i<2;i++){
-        set_margins(screens[i].marginleft,screens[i].marginright);
-        set_cursor(screens[i].coords.coordX,screens[i].coords.coordY);
-        draw_Main_Sreen();
+    
+}
+void initializeOS(){
+    for(int i=0;i<2;i++){
+        draw_Main_Screen(screens[i]);
         put_char('>');
         save_screenCords(screens[i]);
     }
     set_cursor(screens[SCREEN_FLAG].coords.coordX,screens[SCREEN_FLAG].coords.coordY);
 }
-
 void shell()
 {
     fillCommandList();
-    initializeshell();
+    setShell();
+    initializeOS();
     while(1){
         if(readNewInput()){
             CommandHandler();

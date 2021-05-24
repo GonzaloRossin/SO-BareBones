@@ -31,7 +31,7 @@ void getCursor(int coords[2]){
    sys_getCoords(coords);
 }
 void save_screenCords(screenShell shell){
-   int aux[2];
+   int aux[2]={0};
    getCursor(aux);
    shell.coords.coordX=aux[0];
    shell.coords.coordY=aux[1];
