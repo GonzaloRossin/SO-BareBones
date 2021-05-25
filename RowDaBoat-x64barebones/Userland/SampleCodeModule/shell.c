@@ -169,6 +169,7 @@ static void draw_Main_Screen(screenShell shell){
 
 static void clean(){
     clearScreen();
+    save_screenCords(&screens[SCREEN_FLAG]);
     draw_Main_Screen(screens[SCREEN_FLAG]);
 }
 
@@ -255,12 +256,10 @@ void initializeOS(){
     for(int i=0;i<2;i++){
         draw_Main_Screen(screens[i]);
         put_char('>');
-        //print_num(screens[i].coords.coordY,0);
-        //put_char(' ');
         save_screenCords(&screens[i]);
-        //print_num(screens[i].coords.coordY,0);
     }
     set_cursor(screens[SCREEN_FLAG].coordX,screens[SCREEN_FLAG].coordY);
+    set_margins(screens[SCREEN_FLAG].marginleft,screens[SCREEN_FLAG].marginright);
 }
 void shell()
 {
