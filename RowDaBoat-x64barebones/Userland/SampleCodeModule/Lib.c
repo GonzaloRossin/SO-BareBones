@@ -30,11 +30,11 @@ void set_margins(int mLeft,int mRight){
 void getCursor(int coords[2]){
    sys_getCoords(coords);
 }
-void save_screenCords(screenShell shell){
+void save_screenCords(screenShell* shell){
    int aux[2]={0};
    getCursor(aux);
-   shell.coords.coordX=aux[0];
-   shell.coords.coordY=aux[1];
+   shell->coordX=aux[0];
+   shell->coordY=aux[1];
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 int strlen(char *str)

@@ -107,13 +107,13 @@ static int readNewInput()
         return 0;
     }
     else if(chartoadd==TAB){
-        save_screenCords(screens[SCREEN_FLAG]);
+        save_screenCords(&screens[SCREEN_FLAG]);
         if(SCREEN_FLAG)
             SCREEN_FLAG=0;
         else
             SCREEN_FLAG=1;
         set_margins(screens[SCREEN_FLAG].marginleft,screens[SCREEN_FLAG].marginright);
-        set_cursor(screens[SCREEN_FLAG].coords.coordX,screens[SCREEN_FLAG].coords.coordY);
+        set_cursor(screens[SCREEN_FLAG].coordX,screens[SCREEN_FLAG].coordY);
         return 0;
     }
     //If its a regular letter.
@@ -158,7 +158,7 @@ static void testIvalidOpCodeCommand()
 
 static void draw_Main_Screen(screenShell shell){
     set_margins(shell.marginleft,shell.marginright);
-    set_cursor(shell.coords.coordX,shell.coords.coordY);
+    set_cursor(shell.coordX,shell.coordY);
     print("Welcome to chessOS");
     newLine();
     newLine();
@@ -235,15 +235,15 @@ void setShell(){
         switch (i)
         {
         case 0:
-            screens[i].coords.coordX=1;
-            screens[i].coords.coordY=1;
+            screens[i].coordX=1;
+            screens[i].coordY=1;
             screens[i].marginleft=0;
             screens[i].marginright=500;
             break;
         
         case 1:
-            screens[i].coords.coordX=512;
-            screens[i].coords.coordY=1;
+            screens[i].coordX=512;
+            screens[i].coordY=1;
             screens[i].marginleft=512;
             screens[i].marginright=1010;
             break;
@@ -255,9 +255,12 @@ void initializeOS(){
     for(int i=0;i<2;i++){
         draw_Main_Screen(screens[i]);
         put_char('>');
-        save_screenCords(screens[i]);
+        //print_num(screens[i].coords.coordY,0);
+        //put_char(' ');
+        save_screenCords(&screens[i]);
+        //print_num(screens[i].coords.coordY,0);
     }
-    set_cursor(screens[SCREEN_FLAG].coords.coordX,screens[SCREEN_FLAG].coords.coordY);
+    set_cursor(screens[SCREEN_FLAG].coordX,screens[SCREEN_FLAG].coordY);
 }
 void shell()
 {

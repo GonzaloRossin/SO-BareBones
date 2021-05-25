@@ -29,11 +29,6 @@ typedef struct matrix_struct
 	int color;
 	int backgroundcolor;
 } matrix_struct;
-typedef struct screenCoords
-{
-    int coordX;
-    int coordY;
-}screenCoords;
 
 typedef struct screenShell
 {
@@ -41,12 +36,13 @@ typedef struct screenShell
    int marginleft;
    int marginright;
    int buffersize;
-   screenCoords coords; 
+   int coordX;
+   int coordY; 
 }screenShell;
 
 void draw(int option, matrix_struct * m);
 void set_cursor(int x, int y);
 void set_margins(int mLeft,int mRight);
-void save_screenCords(screenShell shell);
+void save_screenCords(screenShell* shell);
 
 #endif
