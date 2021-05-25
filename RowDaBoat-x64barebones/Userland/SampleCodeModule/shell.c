@@ -74,9 +74,9 @@ static void printMem(uint8_t* mem){
 static void cleanBuffer(){
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
-        terminalBuffer[i] = 0;
+        screens[SCREEN_FLAG].buffer = 0;
     }
-    bufferSize = 0;
+    screens[SCREEN_FLAG].buffersize = 0;
 }
 
 static void testDivisionBy0Command()
@@ -99,9 +99,9 @@ static int readNewInput()
         return 1;
     }
     else if(chartoadd==BACKSPACE){
-        if (bufferSize > 0)
+        if (screens[SCREEN_FLAG].buffersize > 0)
         {
-            terminalBuffer[--bufferSize] = 0;
+            screens[SCREEN_FLAG].buffer[--screens[SCREEN_FLAG].buffersize] = 0;
             putActioncall(1);
         }
         return 0;
@@ -119,9 +119,9 @@ static int readNewInput()
     //If its a regular letter.
     else
     {
-        if (bufferSize <= 100)
+        if (screens[SCREEN_FLAG].buffersize <= 100)
         {
-            terminalBuffer[bufferSize++] = chartoadd;
+            screens[SCREEN_FLAG].buffer[screens[SCREEN_FLAG].buffersize++] = chartoadd;
             put_char(chartoadd);
             return 0;
         }
@@ -198,7 +198,7 @@ void fillCommandList()
 static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
-    strncpy(terminalBuffer, potentialCommand,0, bufferSize);
+    strncpy(screens[SCREEN_FLAG].buffer, potentialCommand,0, screens[SCREEN_FLAG].buffersize);
     for (int i = 0; i < commandsSize; i++)
     {
         if (strcmp(potentialCommand, commandList[i].command_name))
@@ -231,6 +231,7 @@ void setShell(){
     char aux[BUFFER_SIZE+1]={0};
     int i;
     for(i=0;i<2;i++){
+        
         screens[i].buffer=aux;
         screens[i].buffersize=0;
         switch (i)
