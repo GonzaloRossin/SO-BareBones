@@ -235,15 +235,15 @@ void setShell(){
         switch (i)
         {
         case 0:
-            screens[i].coords.coordX=0;
-            screens[i].coords.coordY=0;
+            screens[i].coords.coordX=1;
+            screens[i].coords.coordY=1;
             screens[i].marginleft=0;
             screens[i].marginright=500;
             break;
         
         case 1:
             screens[i].coords.coordX=512;
-            screens[i].coords.coordY=0;
+            screens[i].coords.coordY=1;
             screens[i].marginleft=512;
             screens[i].marginright=1010;
             break;
