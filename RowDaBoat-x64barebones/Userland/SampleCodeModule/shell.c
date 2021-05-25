@@ -23,7 +23,7 @@ static command commandList[MAX_COMMANDS];
 static int commandsSize = 0;
 
 //Buffer to store the input from the keyboard.
-static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
+static char terminalBuffer[2][BUFFER_SIZE + 1] = {{0}, {0}}; //Non cyclic buffer
 static int bufferSize = 0;
 
 
@@ -74,7 +74,7 @@ static void printMem(uint8_t* mem){
 static void cleanBuffer(){
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
-        screens[SCREEN_FLAG].buffer = 0;
+        terminalBuffer[SCREEN_FLAG][i] = 0;
     }
     screens[SCREEN_FLAG].buffersize = 0;
 }
@@ -101,7 +101,7 @@ static int readNewInput()
     else if(chartoadd==BACKSPACE){
         if (screens[SCREEN_FLAG].buffersize > 0)
         {
-            screens[SCREEN_FLAG].buffer[--screens[SCREEN_FLAG].buffersize] = 0;
+            terminalBuffer[SCREEN_FLAG][--screens[SCREEN_FLAG].buffersize] = 0;
             putActioncall(1);
         }
         return 0;
@@ -121,7 +121,7 @@ static int readNewInput()
     {
         if (screens[SCREEN_FLAG].buffersize <= 100)
         {
-            screens[SCREEN_FLAG].buffer[screens[SCREEN_FLAG].buffersize++] = chartoadd;
+            terminalBuffer[SCREEN_FLAG][screens[SCREEN_FLAG].buffersize++] = chartoadd;
             put_char(chartoadd);
             return 0;
         }
@@ -198,7 +198,7 @@ void fillCommandList()
 static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
-    strncpy(screens[SCREEN_FLAG].buffer, potentialCommand,0, screens[SCREEN_FLAG].buffersize);
+    strncpy(terminalBuffer[SCREEN_FLAG], potentialCommand,0, screens[SCREEN_FLAG].buffersize);
     for (int i = 0; i < commandsSize; i++)
     {
         if (strcmp(potentialCommand, commandList[i].command_name))
@@ -231,8 +231,6 @@ void setShell(){
     char aux[BUFFER_SIZE+1]={0};
     int i;
     for(i=0;i<2;i++){
-        
-        screens[i].buffer=aux;
         screens[i].buffersize=0;
         switch (i)
         {

@@ -32,7 +32,6 @@ typedef struct matrix_struct
 
 typedef struct screenShell
 {
-   char* buffer;
    int marginleft;
    int marginright;
    int buffersize;
