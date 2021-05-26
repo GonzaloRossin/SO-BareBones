@@ -90,7 +90,7 @@ void draw_char(char caracter){
 		cursor_x = marginLeft;
 		cursor_y += CHAR_HEIGHT*FONT_SIZE;
 		if (cursor_y >= SCREEN_HEIGHT){
-			scroll(CHAR_HEIGHT*FONT_SIZE);
+			scroll(FONT_SIZE);
 		}
 	}
 	draw_char_personalized(cursor_x, cursor_y, caracter, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);

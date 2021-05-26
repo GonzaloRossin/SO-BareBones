@@ -228,7 +228,6 @@ static void CommandHandler()
     newLine();
 }
 void setShell(){
-    char aux[BUFFER_SIZE+1]={0};
     int i;
     for(i=0;i<2;i++){
         screens[i].buffersize=0;
