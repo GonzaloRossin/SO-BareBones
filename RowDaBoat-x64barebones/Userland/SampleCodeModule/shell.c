@@ -1,7 +1,6 @@
 #include <libasm.h>
 #include <shell.h>
 #include <Lib.h>
-#include <chess_shell.h>
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
@@ -192,7 +191,6 @@ void fillCommandList()
     fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida" ,&testIvalidOpCodeCommand);
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem);
     fillCommand("clean", ": Limpia la pantalla", &clean);
-    fillCommand("chess",": Juego de ajedrez", &mini_shell);
 }
 
 static void CommandHandler()
@@ -205,10 +203,6 @@ static void CommandHandler()
         {
 
             (commandList[i].cmdptr)();
-            if(strcmp(potentialCommand,"chess")){
-                draw_Main_Screen(screens[SCREEN_FLAG]);
-                return;
-            }
             newLine();
             return;
         }
