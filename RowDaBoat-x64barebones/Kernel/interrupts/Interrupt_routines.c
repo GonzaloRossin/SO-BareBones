@@ -4,9 +4,18 @@
 #include <lib.h>
 #include <interrupts.h>
 #include <video_driver.h>
+#include <naiveConsole.h>
 
 static unsigned long ticks = 0;
 static unsigned long seconds=0;
+
+static uint64_t snapshotIP, snapshotSP;
+
+static char *regs[REG_SIZE] = {
+	"R15: 0x", "R14: 0x", "R13: ", "R12: 0x", "R11: 0x", "R10: 0x", "R9: 0x",
+	"R8: 0x", "RSI: 0x", "RDI: 0x", "RBP: 0x", "RDX: 0x", "RCX: 0x", "RBX: 0x",
+	"RAX: 0x", "IP: 0x", "RSP: 0x"};
+
 // called every 55ms. Increases the ticks counter
 void interruptRoutine1()
 {
@@ -27,7 +36,13 @@ void interruptRoutine2()
 	keyboard_handler(c);
 }
 
-void printException(uint8_t exc)
+void initialStateSnapshot(uint64_t IP, uint64_t SP)
+{
+	snapshotIP = IP;
+	snapshotSP = SP;
+}
+
+void printException(uint8_t exc, uint64_t *stackframe)
 {
 	// print exception info
 	switch (exc)
@@ -37,34 +52,59 @@ void printException(uint8_t exc)
 		break;
 	case 6:
 		draw_string("Excepcion 6:operacion invalida",30);
+		break;
+	default: draw_string("default", 7);
 	}
 	newLine();
+	printRegister(stackframe);
+	returnToSnapshot(stackframe);
+
+}
+void returnToSnapshot(uint64_t *stackframe)
+{
+	stackframe[REG_SIZE - 2] = snapshotIP; // RIP
+	stackframe[REG_SIZE + 1] = snapshotSP; // RSP 
 }
 
-void printRegister(uint64_t pri)
+void printRegister(uint64_t *pri)
 {
-	saveRegs();
-	uint64_t v[16] = {0};
-    getRegs(v);
-	draw_string("pir: ",5);
-	draw_hex(pri);
-	newLine();
-	char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8:  ", "r9:  ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
-	for(int i=0;i<16;i++){
-		draw_string(regs[i],5);
-		draw_hex(v[i]);
-        newLine();
-    }
+
+	// draw_string("pir: ",5);
+	// draw_hex(pri[0]);
+	// newLine();
+	// char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8:  ", "r9:  ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
+	// for(int i=0;i<16;i++){
+	// 	draw_string(regs[i],5);
+	// 	draw_hex(pri[i+1]);
+    //     newLine();
+    // }
+	// 
+
+	char toPrint[200];
+	for (int i = 0; i < REG_SIZE; i++)
+	{
+		draw_string(regs[i], 7);
+		uintToBase(pri[i], toPrint, 16);
+		draw_string(toPrint, 5);
+		newLine();
+	}
+	draw_string("Press left shift to exit",24);
+	while(1) {
+		if (get_key() == 0x2A) //left shift code
+		{
+			clean();
+			break;
+		}	
+	}
+	clean();
+
 }
 void loader();
 void reboot()
 {
-	while (getChar() != 0)
-	{
-		
-	}
+
 	newLine();
-	draw_string("Press any key to exit",29);
+	
 	while (1)
 	{
 		if (getChar() != 0)

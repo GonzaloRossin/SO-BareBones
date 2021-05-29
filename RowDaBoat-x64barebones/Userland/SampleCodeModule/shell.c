@@ -80,6 +80,7 @@ static void cleanBuffer(){
 
 static void testDivisionBy0Command()
 {
+    //initialStateSnapshot(, getSP());
     int a = 4 / 0;
 }
 
