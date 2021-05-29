@@ -11,6 +11,7 @@ GLOBAL int_80
 GLOBAL Halt
 GLOBAL exception0
 GLOBAL exception6
+GLOBAL getSP
 
 EXTERN irqDispatcher
 EXTERN printRegister
@@ -139,14 +140,10 @@ int_80:
 	pushState
 	;print exception data
 	mov rdi,%1
+	mov rsi, rsp
 	call printException
-	mov rdi,rsp;cargo instruction pointer en rdi
-	add rdi, 8*19
-	call printRegister
-	sti
-	call reboot
-	cli
-	hlt
+	popState
+	iretq
 %endmacro
 
 ;division by zero exception
@@ -155,4 +152,7 @@ exception0:
 ;invalid operation exception
 exception6:
 	exception 6
-	
+
+getSP:
+	mov rax, rsp
+	ret

@@ -6,6 +6,7 @@
 #include <idt.h>
 #include <video_driver.h>
 #include <font.h>
+#include <interrupt_routines.h>
 
 
 extern uint8_t text;
@@ -53,6 +54,7 @@ void * initializeKernelBinary()
 int main()
 {	
 	loadIDT();
+	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
 	//Entering sampleCodeModuleAddress in userland
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
