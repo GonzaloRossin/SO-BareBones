@@ -1,4 +1,4 @@
-GLOBAL sysCall1
+GLOBAL sys_call
 
 section .text
 
@@ -37,7 +37,7 @@ section .text
 %endmacro
 
 
-sysCall1:
+sys_call:
 	pushState
 	int 80h
 	popState
