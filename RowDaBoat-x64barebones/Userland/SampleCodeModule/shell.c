@@ -95,14 +95,14 @@ static int readNewInput()
         return 0;
     }
     else if(chartoadd==ENTER){
-        putActioncall(0);
+        actionCall(0);
         return 1;
     }
     else if(chartoadd==BACKSPACE){
         if (screens[SCREEN_FLAG].buffersize > 0)
         {
             terminalBuffer[SCREEN_FLAG][--screens[SCREEN_FLAG].buffersize] = 0;
-            putActioncall(1);
+            actionCall(1);
         }
         return 0;
     }
@@ -159,7 +159,7 @@ static void testIvalidOpCodeCommand()
 static void draw_Main_Screen(screenShell shell){
     set_margins(shell.marginleft,shell.marginright);
     set_cursor(shell.coordX,shell.coordY);
-    print("Welcome to chessOS");
+    print("Welcome to arquiOS");
     newLine();
     newLine();
     print("Ingrese el comando help para comenzar");

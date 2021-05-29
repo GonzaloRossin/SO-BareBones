@@ -3,32 +3,55 @@
 #include <stdint.h>
 
 
-
-void print(char *buffer)
+char read_input(){//syscall0
+   return (char) sysCall1(0,0,0,0);
+}
+void print(char *buffer)//syscall1
 {
    int length=strlen(buffer);
-   sys_write((uint64_t)buffer, (uint64_t)length);
+   sysCall1(1,(uint64_t)buffer,(uint64_t)length,0);
 }
-void putChar(char c){
-   put_char(c);
+void get_Memory(uint8_t* mem,uint8_t* v){//syscall2
+   sysCall1(2,(uint64_t) mem,(uint64_t)v,0);
 }
-void newLine(){
-   newline();
+void newLine(){//syscall3
+   sysCall1(3,0,0,0);
 }
-void actionCall(int action){
-    putActioncall(action);
+void get_CPUvendor(uint8_t* c,uint8_t* v){//syscall4
+   sysCall1(4,(uint64_t)c,(uint64_t)v,0);
 }
-void draw(int option, matrix_struct * m){
-    sys_draw(option, (uint64_t) m);
+void get_InfoReg(uint64_t* reg_pointer){//syscall5
+   sysCall1(5,(uint64_t)reg_pointer,0,0);
 }
-void set_cursor(int x, int y){
-   sys_cursor(x,y);
+void put_char(char c){//syscall6
+   sysCall1(6,(uint64_t)c,0,0);
 }
-void set_margins(int mLeft,int mRight){
-   sys_margins(mLeft,mRight);
+void actionCall(int action){//syscall7
+   sysCall1(7,(uint64_t) action,0,0);
 }
-void getCursor(int coords[2]){
-   sys_getCoords(coords);
+uint64_t get_RTC(uint64_t c){//syscall8
+   return sysCall1(8,c,0,0);
+}
+void print_num(int num, int base_option){//syscall9
+   sysCall1(9,(uint64_t)num,(uint64_t)base_option,0);
+}
+void clearScreen(){//syscall10
+   sysCall1(10,0,0,0);
+}
+void draw(int option, matrix_struct * m){//syscall11
+   sysCall1(11,(uint64_t)option,(uint64_t)m,0);
+}
+unsigned long get_seconds(){//syscall12
+   return (unsigned long) sysCall1(12,0,0,0);
+}
+void set_cursor(int x, int y){//syscall13
+   sysCall1(13,(uint64_t)x,(uint64_t)y,0);
+}
+void set_margins(int mLeft,int mRight){//syscall14
+   sysCall1(14,(uint64_t)mLeft,(uint64_t)mRight,0);
+}
+void getCursor(int coords[2]){//syscall15
+   sysCall1(15,(uint64_t) coords,0,0);
 }
 void save_screenCords(screenShell* shell){
    int aux[2]={0};
