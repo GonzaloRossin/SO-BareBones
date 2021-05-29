@@ -23,7 +23,6 @@ static int commandsSize = 0;
 
 //Buffer to store the input from the keyboard.
 static char terminalBuffer[2][BUFFER_SIZE + 1] = {{0}, {0}}; //Non cyclic buffer
-static int bufferSize = 0;
 
 
 static void CPUinfo(){
@@ -78,10 +77,10 @@ static void cleanBuffer(){
     screens[SCREEN_FLAG].buffersize = 0;
 }
 
-static void testDivisionBy0Command()
+static int testDivisionBy0Command()
 {
     //initialStateSnapshot(, getSP());
-    int a = 4 / 0;
+    return 4/0;
 }
 
 static int readNewInput()

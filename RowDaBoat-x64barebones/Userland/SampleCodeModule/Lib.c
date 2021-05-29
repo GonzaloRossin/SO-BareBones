@@ -17,7 +17,7 @@ void get_Memory(uint8_t* mem,uint8_t* v){//syscall2
 void newLine(){//syscall3
    sys_call(3,0,0,0);
 }
-void get_CPUvendor(uint8_t* c,uint8_t* v){//syscall4
+void get_CPUvendor(char* c,uint32_t* v){//syscall4
    sys_call(4,(uint64_t)c,(uint64_t)v,0);
 }
 void get_InfoReg(uint64_t* reg_pointer){//syscall5
