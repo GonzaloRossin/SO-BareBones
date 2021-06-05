@@ -3,22 +3,7 @@
 
 #include <stdint.h>
 
-//structures used
-typedef struct matrix_struct
-{
-	int x;
-	int y;
-	unsigned char * matrix;
-	char caracter;
-	char * buffer;
-	int count;
-	int width;
-	int height;
-	int draw_size;
-	int color;
-	int backgroundcolor;
-} matrix_struct;
-
+//structure used
 typedef struct screenShell
 {
    char* buffer;
@@ -50,7 +35,6 @@ void actionCall(int action);//syscall7
 uint64_t get_RTC(uint64_t c);//syscall8
 void print_num(int num, int base_option);//syscall9
 void clearScreen();//syscall10
-void draw(int option, matrix_struct * m);//syscall11
 unsigned long get_seconds();//syscall12
 void set_cursor(int x, int y);//syscall13
 void set_margins(int mLeft,int mRight);//syscall14

@@ -47,9 +47,6 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 10:
 		sys_clear_screen();
 		break;
-	case 11:
-		sys_draw((int) rsi, (matrix_struct *) rdx);
-		break;
 	case 12:
 		return sys_get_seconds();
 	case 13:
@@ -139,21 +136,6 @@ void sys_print_num(int rsi,int rdx){
 //SYS_CALL 10
 void sys_clear_screen(){
 	clean();
-}
-//SYS_CALL 11
-void sys_draw(int rsi, matrix_struct * rdx){
-	switch (rsi)
-	{
-	case 0:
-		draw_matrix(rdx->x, rdx->y, rdx->matrix, rdx->width, rdx->height, rdx->draw_size, rdx->color, rdx->backgroundcolor);
-		break;
-	case 1:
-		draw_char_personalized(rdx->x, rdx->y, rdx->caracter, rdx->draw_size, rdx->color, rdx->backgroundcolor);
-		break;
-	case 2:
-		draw_string_personalized(rdx->x, rdx->y, rdx->buffer, rdx->count, rdx->draw_size, rdx->color, rdx->backgroundcolor);
-		break;
-	}
 }
 //SYS_CALL 12
 unsigned long sys_get_seconds(){

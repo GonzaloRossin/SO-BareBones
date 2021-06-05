@@ -79,7 +79,6 @@ static void cleanBuffer(){
 
 static int testDivisionBy0Command()
 {
-    //initialStateSnapshot(, getSP());
     return 4/0;
 }
 
@@ -153,6 +152,7 @@ static void testIvalidOpCodeCommand()
     void (*punt)(void) = (void *)0x400000;
     *((uint64_t *)punt) = 0xffffffff;
     (punt)();
+
 }
 
 static void draw_Main_Screen(screenShell shell){

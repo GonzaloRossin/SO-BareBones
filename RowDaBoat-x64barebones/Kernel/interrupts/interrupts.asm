@@ -16,7 +16,6 @@ GLOBAL getSP
 EXTERN irqDispatcher
 EXTERN printRegister
 EXTERN printException
-EXTERN reboot
 
 
 

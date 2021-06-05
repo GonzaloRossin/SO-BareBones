@@ -9,7 +9,7 @@
 static unsigned long ticks = 0;
 static unsigned long seconds=0;
 
-static uint64_t snapshotIP, snapshotSP;
+uint64_t snapshotIP, snapshotSP;
 
 static char *regs[REG_SIZE] = {
 	"R15: 0x", "R14: 0x", "R13: ", "R12: 0x", "R11: 0x", "R10: 0x", "R9: 0x",
@@ -44,6 +44,7 @@ void initialStateSnapshot(uint64_t IP, uint64_t SP)
 
 void printException(uint8_t exc, uint64_t *stackframe)
 {
+	initialStateSnapshot((uint64_t)stackframe[15], stackframe[16]);
 	// print exception info
 	switch (exc)
 	{
@@ -63,23 +64,11 @@ void printException(uint8_t exc, uint64_t *stackframe)
 void returnToSnapshot(uint64_t *stackframe)
 {
 	stackframe[REG_SIZE - 2] = snapshotIP; // RIP
-	stackframe[REG_SIZE + 1] = snapshotSP; // RSP 
+	stackframe[REG_SIZE + 1] = snapshotSP; // RSP
 }
 
 void printRegister(uint64_t *pri)
 {
-
-	// draw_string("pir: ",5);
-	// draw_hex(pri[0]);
-	// newLine();
-	// char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8:  ", "r9:  ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
-	// for(int i=0;i<16;i++){
-	// 	draw_string(regs[i],5);
-	// 	draw_hex(pri[i+1]);
-    //     newLine();
-    // }
-	// 
-
 	char toPrint[200];
 	for (int i = 0; i < REG_SIZE; i++)
 	{
@@ -92,25 +81,7 @@ void printRegister(uint64_t *pri)
 	while(1) {
 		if (get_key() == 0x2A) //left shift code
 		{
-			clean();
 			break;
 		}	
 	}
-	clean();
-
-}
-void loader();
-void reboot()
-{
-
-	newLine();
-	
-	while (1)
-	{
-		if (getChar() != 0)
-		{
-			reboot_asm();
-		}
-	}
-	reboot_asm();
 }

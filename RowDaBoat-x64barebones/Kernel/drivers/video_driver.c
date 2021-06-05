@@ -260,40 +260,6 @@ void draw_hex(uint64_t value)
 	draw_number(value, 16);
 }
 
-void draw_matrix(int x, int y, unsigned char * matrix, int width, int height, int draw_size, int color, int backgroundcolor){
-	if (x + width*draw_size > marginRight || y + height*draw_size > SCREEN_HEIGHT)
-	{
-		return;
-	}
-
-	int aux_x = x;
-	int aux_y = y;
-
-	char bitIsPresent;
-
-	unsigned char * toDraw = matrix;
-
-	for (int i = 0; i < height; i++)
-	{
-		for (int j = 0; j < width; j++)
-		{
-			bitIsPresent = (1<<(width-j-1)) & toDraw[i];
-
-			if (bitIsPresent)
-			{
-				draw_square(aux_x, aux_y, draw_size, color);			
-			}
-			else
-			{
-				draw_square(aux_x, aux_y, draw_size, backgroundcolor);
-			}
-			aux_x+=draw_size;
-		}
-		aux_x = x;
-		aux_y += draw_size;
-	}
-}
-
 void set_cursor(int x, int y){
 	aux_x = cursor_x;
 	aux_y = cursor_y;

@@ -1,8 +1,6 @@
 #include <libasm.h>
 #include <Lib.h>
 #include <shell.h>
-#include <chesslib.h>
-#include <chess_draw.h>
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
 #define MAX_COMMANDS 20

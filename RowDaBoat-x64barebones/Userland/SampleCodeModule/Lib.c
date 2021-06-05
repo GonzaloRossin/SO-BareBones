@@ -38,9 +38,6 @@ void print_num(int num, int base_option){//syscall9
 void clearScreen(){//syscall10
    sys_call(10,0,0,0);
 }
-void draw(int option, matrix_struct * m){//syscall11
-   sys_call(11,(uint64_t)option,(uint64_t)m,0);
-}
 unsigned long get_seconds(){//syscall12
    return (unsigned long) sys_call(12,0,0,0);
 }

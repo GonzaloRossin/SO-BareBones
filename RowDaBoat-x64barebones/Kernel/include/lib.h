@@ -10,8 +10,6 @@ char *cpuVendor(char *result);
 
 void cpuVersion(uint32_t * result);
 
-void reboot_asm();
-
 void saveRegs();
 
 void getRegs(uint64_t * v);
