@@ -1,5 +1,6 @@
 // Created from bdf2c Version 3, (c) 2009, 2010 by Lutz Sammer
 //	License AGPLv3: GNU Affero General Public License version 3
+// Code taken from https://github.com/Reversive/taur-os/blob/master/Kernel/drivers/video/font.c
 
 #ifndef FONT_BITMAPS_H
 #define FONT_BITMAPS_H
