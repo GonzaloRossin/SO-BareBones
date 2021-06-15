@@ -20,6 +20,7 @@ void delete_char();
 void delete_line();
 void scroll(int size);
 void clean();
+void clean_all();
 void draw_number(uint64_t value, uint32_t base);
 void draw_decimal(uint64_t value);
 void draw_hex(uint64_t value);

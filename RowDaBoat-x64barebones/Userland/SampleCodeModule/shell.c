@@ -1,6 +1,7 @@
 #include <libasm.h>
 #include <shell.h>
 #include <Lib.h>
+#include <libasm.h>
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
@@ -77,9 +78,10 @@ static void cleanBuffer(){
     screens[SCREEN_FLAG].buffersize = 0;
 }
 
-static int testDivisionBy0Command()
+static void testDivisionBy0Command()
 {
-    return 4/0;
+    int a =1;
+    a = a/0;
 }
 
 static int readNewInput()
@@ -146,13 +148,10 @@ static void get_time(){
     print(":");
     print_num(get_RTC(0),0);//segundos
 }
-
+// source: https://www.felixcloutier.com/x86/ud.
 static void testIvalidOpCodeCommand()
 {
-    void (*punt)(void) = (void *)0x400000;
-    *((uint64_t *)punt) = 0xffffffff;
-    (punt)();
-
+    __asm__("ud2");
 }
 
 static void draw_Main_Screen(screenShell shell){

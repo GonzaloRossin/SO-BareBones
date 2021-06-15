@@ -2,7 +2,6 @@
 #include <Lib.h>
 #include <stdint.h>
 
-
 char read_input(){//syscall0
    return (char) sys_call(0,0,0,0);
 }

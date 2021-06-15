@@ -44,7 +44,6 @@ void initialStateSnapshot(uint64_t IP, uint64_t SP)
 
 void printException(uint8_t exc, uint64_t *stackframe)
 {
-	initialStateSnapshot((uint64_t)stackframe[15], stackframe[16]);
 	// print exception info
 	switch (exc)
 	{
@@ -58,6 +57,7 @@ void printException(uint8_t exc, uint64_t *stackframe)
 	}
 	newLine();
 	printRegister(stackframe);
+	clean_all();
 	returnToSnapshot(stackframe);
 
 }

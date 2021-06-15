@@ -1,6 +1,5 @@
 GLOBAL cpuVendor
 GLOBAL cpuVersion
-GLOBAL reboot_asm
 GLOBAL saveRegs
 GLOBAL getRegs
 GLOBAL saveMemory
@@ -56,12 +55,7 @@ cpuVersion:
 	mov rsp, rbp
 	pop rbp
 	ret
-reboot_asm:
-    ;ENVIA REBOOT AL CPU VIA 8042 CONTROLLER
-	mov al,0xf0
-	out 64h,al
-    ;SI FALLA, HACE HALT DE LA MAQUINA
-	cli
+
 infiniteLoop:
 	hlt
 	jmp infiniteLoop

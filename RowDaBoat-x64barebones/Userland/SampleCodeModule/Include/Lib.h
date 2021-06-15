@@ -2,6 +2,7 @@
 #define LIB_H
 
 #include <stdint.h>
+#include <libasm.h>
 
 //structure used
 typedef struct screenShell
@@ -22,6 +23,7 @@ void numToChar(double num, char * c);
 uint8_t * strToNumHex(char * str);
 int abs(int i);
 void save_screenCords(screenShell* shell);
+void my_invalid_op();
 //-------------------------------------------------------------
 //syscall
 char read_input();//syscall0

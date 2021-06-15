@@ -211,6 +211,15 @@ void clean(){
 	cursor_x = marginLeft;
 	cursor_y = 0;
 }
+void clean_all(){
+	for(int i=0 ; i<=SCREEN_WIDTH ; i++){
+        for(int j=0 ; j<=SCREEN_HEIGHT ; j++){
+            draw_pixel(i, j, BACKGROUND_COLOR);
+        }
+    }
+	cursor_x = 0;
+	cursor_y = 0;
+}
 
 void draw_number(uint64_t value, uint32_t base)
 {
