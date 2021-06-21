@@ -23,14 +23,13 @@ void numToChar(double num, char * c);
 uint8_t * strToNumHex(char * str);
 int abs(int i);
 void save_screenCords(screenShell* shell);
-void my_invalid_op();
 //-------------------------------------------------------------
 //syscall
 char read_input();//syscall0
 void print(char *buffer);//syscall1
 void get_Memory(uint8_t* mem,uint8_t* v);//syscall2
 void newLine();//syscall3
-void get_CPUvendor(char* c,uint32_t* v);//syscall4
+//syscall4
 void get_InfoReg(uint64_t* reg_pointer);//syscall5
 void put_char(char c);//syscall6
 void actionCall(int action);//syscall7

@@ -26,25 +26,6 @@ static int commandsSize = 0;
 static char terminalBuffer[2][BUFFER_SIZE + 1] = {{0}, {0}}; //Non cyclic buffer
 
 
-static void CPUinfo(){
-    char text[70];
-    char text2[70];
-    uint32_t num;
-    get_CPUvendor(text, &num);
-    int modelo = (num & 0xFF0) >> 4;
-    int familia = modelo >> 4;
-    modelo = modelo & 0x0f;
-    print("CPU:");
-    print(text);
-    newLine();
-    print("Modelo:");
-    print_num(modelo,0);
-    newLine();
-    print("Familia:");
-    print_num(familia,0);
-    newLine();
-}
-
 static void inforeg(){
     char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8: ", "r9: ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
     uint64_t v[16] = {0};
@@ -185,7 +166,6 @@ void fillCommandList()
     fillCommand("help",": Despliega al usuario los comandos disponibles",&help);
     fillCommand("get_time",": Muestra la hora actual",&get_time);
     fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros (con ctrl se guardan los registros)", &inforeg);
-    fillCommand("get_CPUinfo",": Imprime informacion del cpu", &CPUinfo);
     fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command);
     fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida" ,&testIvalidOpCodeCommand);
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem);

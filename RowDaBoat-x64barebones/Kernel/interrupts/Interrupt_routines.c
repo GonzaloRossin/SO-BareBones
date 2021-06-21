@@ -59,7 +59,6 @@ void printException(uint8_t exc, uint64_t *stackframe)
 	printRegister(stackframe);
 	clean_all();
 	returnToSnapshot(stackframe);
-
 }
 void returnToSnapshot(uint64_t *stackframe)
 {

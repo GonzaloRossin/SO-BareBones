@@ -26,9 +26,6 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 3:
 		sys_newline();
 		break;
-	case 4:
-		sys_cpuInfo((char *) rsi, (uint32_t *) rdx);
-		break;
 	case 5:
 		sys_get_InfoReg((uint64_t*) rsi);
 		break;
@@ -80,11 +77,7 @@ void sys_getMemory(uint8_t* rsi, uint8_t* rdx){
 void sys_newline(){
 	newLine();
 }
-//SYS_CALL 4
-void sys_cpuInfo(char* rsi , uint32_t* rdx){
-    cpuVendor(rsi);
-    cpuVersion(rdx);
-}
+
 //SYS_CALL 5
 void sys_get_InfoReg(uint64_t* rsi){
 	getRegs(rsi);
