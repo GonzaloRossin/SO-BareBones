@@ -29,16 +29,15 @@ char read_input();//syscall0
 void print(char *buffer);//syscall1
 void get_Memory(uint8_t* mem,uint8_t* v);//syscall2
 void newLine();//syscall3
-//syscall4
-void get_InfoReg(uint64_t* reg_pointer);//syscall5
-void put_char(char c);//syscall6
-void actionCall(int action);//syscall7
-uint64_t get_RTC(uint64_t c);//syscall8
-void print_num(int num, int base_option);//syscall9
-void clearScreen();//syscall10
-unsigned long get_seconds();//syscall12
-void set_cursor(int x, int y);//syscall13
-void set_margins(int mLeft,int mRight);//syscall14
-void getCursor(int coords[2]);//syscall15
+void get_InfoReg(uint64_t* reg_pointer);//syscall4
+void put_char(char c);//syscall5
+void actionCall(int action);//syscall6
+uint64_t get_RTC(uint64_t c);//syscall7
+void print_num(int num, int base_option);//syscall8
+void clearScreen();//syscall9
+unsigned long get_seconds();//syscall10
+void set_cursor(int x, int y);//syscall11
+void set_margins(int mLeft,int mRight);//syscall12
+void getCursor(int coords[2]);//syscall13
 
 #endif

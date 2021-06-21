@@ -26,33 +26,33 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 3:
 		sys_newline();
 		break;
-	case 5:
+	case 4:
 		sys_get_InfoReg((uint64_t*) rsi);
 		break;
-	case 6:
+	case 5:
 		sys_put_char((char) rsi);
 		break;
-	case 7:
+	case 6:
 		sys_action_call((int) rsi);
 		break;
-	case 8:
+	case 7:
 		return sys_get_clock((int) rsi);
 		break;
-	case 9:
+	case 8:
 		sys_print_num((int)rsi,(int)rdx);
 		break;
-	case 10:
+	case 9:
 		sys_clear_screen();
 		break;
-	case 12:
+	case 10:
 		return sys_get_seconds();
-	case 13:
+	case 11:
 		sys_cursor((int) rsi, (int) rdx);
 		break;
-	case 14:
+	case 12:
 		sys_setMargins((int)rsi,(int)rdx);
 		break;
-	case 15:
+	case 13:
 		sys_getCoords((int*)rsi);
 		break;
 	}
@@ -78,15 +78,15 @@ void sys_newline(){
 	newLine();
 }
 
-//SYS_CALL 5
+//SYS_CALL 4
 void sys_get_InfoReg(uint64_t* rsi){
 	getRegs(rsi);
 }
-//SYS_CALL 6
+//SYS_CALL 5
 void sys_put_char(char rsi){
 	draw_char(rsi);
 }
-//SYS CALL 7
+//SYS CALL 6
 void sys_action_call(int rsi){
 	switch(rsi){
 		case 0:
@@ -100,7 +100,7 @@ void sys_action_call(int rsi){
 			break;
 	}
 }
-//SYS_CALL 8
+//SYS_CALL 7
 uint8_t sys_get_clock(int rsi){
 	switch(rsi){
 		case 0:
@@ -114,7 +114,7 @@ uint8_t sys_get_clock(int rsi){
 	return 0;
 
 }
-//SYS_CALL 9
+//SYS_CALL 8
 void sys_print_num(int rsi,int rdx){
 	switch (rdx)
 	{
@@ -126,16 +126,16 @@ void sys_print_num(int rsi,int rdx){
 		break;
 	}
 }
-//SYS_CALL 10
+//SYS_CALL 9
 void sys_clear_screen(){
 	clean();
 }
-//SYS_CALL 12
+//SYS_CALL 10
 unsigned long sys_get_seconds(){
 	return getSeconds();
 }
 
-//SYS_CALL 13
+//SYS_CALL 11
 void sys_cursor(int rsi, int rdx){
 	if (rsi > 0 && rdx > 0 && rsi < SCREEN_WIDTH && rdx < SCREEN_HEIGHT)
 	{
@@ -146,11 +146,11 @@ void sys_cursor(int rsi, int rdx){
 		return_last_cursor();
 	}
 }
-//SYS_CALL 14
+//SYS_CALL 12
 void sys_setMargins(int rsi,int rdx){
 	set_margins(rsi,rdx);
 }
-//SYS_CALL 15
+//SYS_CALL 13
 void sys_getCoords(int* rsi){
 	getCoords(rsi);
 }
