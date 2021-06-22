@@ -40,7 +40,7 @@ struct vbe_mode_info_structure {
 	uint8_t reserved1[206];
 } __attribute__ ((packed));
 
-struct vbe_mode_info_structure * screendata=0x0000000000005C00;
+struct vbe_mode_info_structure * screendata=(void *)0x0000000000005C00;
 
 static int cursor_x = 0;
 static int cursor_y = 0;
