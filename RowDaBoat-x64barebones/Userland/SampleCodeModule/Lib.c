@@ -40,13 +40,13 @@ unsigned long get_seconds(){//syscall10
 void set_cursor(int x, int y){//syscall11
    sys_call(11,(uint64_t)x,(uint64_t)y,0);
 }
-void set_margins(int mLeft,int mRight){//syscall12
+void set_margins(int mLeft,int mRight){//syscall12-----------desuso
    sys_call(12,(uint64_t)mLeft,(uint64_t)mRight,0);
 }
 void getCursor(int coords[2]){//syscall13
    sys_call(13,(uint64_t) coords,0,0);
 }
-void save_screenCords(screenShell* shell){
+void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};
    getCursor(aux);
    shell->coordX=aux[0];

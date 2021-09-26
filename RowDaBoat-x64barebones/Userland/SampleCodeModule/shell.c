@@ -9,7 +9,6 @@
 
 int SCREEN_FLAG=0;
 
-struct screenShell screens[2];
 //Structure of a command stored in the command List
 typedef struct command
 {
@@ -23,7 +22,8 @@ static command commandList[MAX_COMMANDS];
 static int commandsSize = 0;
 
 //Buffer to store the input from the keyboard.
-static char terminalBuffer[2][BUFFER_SIZE + 1] = {{0}, {0}}; //Non cyclic buffer
+static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
+int buffersize;
 
 
 static void inforeg(){
@@ -54,9 +54,9 @@ static void printMem(uint8_t* mem){
 static void cleanBuffer(){
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
-        terminalBuffer[SCREEN_FLAG][i] = 0;
+        terminalBuffer[i] = 0;
     }
-    screens[SCREEN_FLAG].buffersize = 0;
+    buffersize = 0;
 }
 
 static void testDivisionBy0Command()
@@ -80,29 +80,19 @@ static int readNewInput()
         return 1;
     }
     else if(chartoadd==BACKSPACE){
-        if (screens[SCREEN_FLAG].buffersize > 0)
+        if (buffersize > 0)
         {
-            terminalBuffer[SCREEN_FLAG][--screens[SCREEN_FLAG].buffersize] = 0;
+            terminalBuffer[--buffersize] = 0;
             actionCall(1);
         }
-        return 0;
-    }
-    else if(chartoadd==TAB){
-        save_screenCords(&screens[SCREEN_FLAG]);
-        if(SCREEN_FLAG)
-            SCREEN_FLAG=0;
-        else
-            SCREEN_FLAG=1;
-        set_margins(screens[SCREEN_FLAG].marginleft,screens[SCREEN_FLAG].marginright);
-        set_cursor(screens[SCREEN_FLAG].coordX,screens[SCREEN_FLAG].coordY);
         return 0;
     }
     //If its a regular letter.
     else
     {
-        if (screens[SCREEN_FLAG].buffersize <= 100)
+        if (buffersize <= 100)
         {
-            terminalBuffer[SCREEN_FLAG][screens[SCREEN_FLAG].buffersize++] = chartoadd;
+            terminalBuffer[buffersize++] = chartoadd;
             put_char(chartoadd);
             return 0;
         }
@@ -135,9 +125,7 @@ static void testIvalidOpCodeCommand()
     __asm__("ud2");
 }
 
-static void draw_Main_Screen(screenShell shell){
-    set_margins(shell.marginleft,shell.marginright);
-    set_cursor(shell.coordX,shell.coordY);
+static void draw_Main_Screen(){
     print("Welcome to arquiOS");
     newLine();
     newLine();
@@ -148,8 +136,7 @@ static void draw_Main_Screen(screenShell shell){
 
 static void clean(){
     clearScreen();
-    save_screenCords(&screens[SCREEN_FLAG]);
-    draw_Main_Screen(screens[SCREEN_FLAG]);
+    draw_Main_Screen();
 }
 
 void fillCommand(char* name,char *desc, void (*cmdptr)())
@@ -175,7 +162,7 @@ void fillCommandList()
 static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
-    strncpy(terminalBuffer[SCREEN_FLAG], potentialCommand,0, screens[SCREEN_FLAG].buffersize);
+    strncpy(terminalBuffer, potentialCommand,0, buffersize);
     for (int i = 0; i < commandsSize; i++)
     {
         if (strcmp(potentialCommand, commandList[i].command_name))
@@ -200,42 +187,14 @@ static void CommandHandler()
     print(potentialCommand);
     newLine();
 }
-void setShell(){
-    int i;
-    for(i=0;i<2;i++){
-        screens[i].buffersize=0;
-        switch (i)
-        {
-        case 0:
-            screens[i].coordX=1;
-            screens[i].coordY=1;
-            screens[i].marginleft=0;
-            screens[i].marginright=500;
-            break;
-        
-        case 1:
-            screens[i].coordX=512;
-            screens[i].coordY=1;
-            screens[i].marginleft=512;
-            screens[i].marginright=1010;
-            break;
-        }
-    }
-    
-}
 void initializeOS(){
-    for(int i=0;i<2;i++){
-        draw_Main_Screen(screens[i]);
-        put_char('>');
-        save_screenCords(&screens[i]);
-    }
-    set_cursor(screens[SCREEN_FLAG].coordX,screens[SCREEN_FLAG].coordY);
-    set_margins(screens[SCREEN_FLAG].marginleft,screens[SCREEN_FLAG].marginright);
+    draw_Main_Screen();
+    put_char('>');
+    buffersize=0;
 }
 void shell()
 {
     fillCommandList();
-    setShell();
     initializeOS();
     while(1){
         if(readNewInput()){
