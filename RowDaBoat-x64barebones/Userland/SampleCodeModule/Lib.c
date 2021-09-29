@@ -46,6 +46,9 @@ void set_margins(int mLeft,int mRight){//syscall12-----------desuso
 void getCursor(int coords[2]){//syscall13
    sys_call(13,(uint64_t) coords,0,0);
 }
+void* malloc(int size){
+   return sys_call(14,(uint64_t)size,0,0);//syscall14
+}
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};
    getCursor(aux);

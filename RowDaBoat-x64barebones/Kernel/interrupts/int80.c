@@ -55,6 +55,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 13:
 		sys_getCoords((int*)rsi);
 		break;
+	case 14:
+		return malloc((int) rsi);
+		break;
 	}
 	return 0;
 }

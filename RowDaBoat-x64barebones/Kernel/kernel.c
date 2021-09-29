@@ -56,6 +56,7 @@ int main()
 	loadIDT();
 	//Entering sampleCodeModuleAddress in userland
 	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
+	initializeManager();
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

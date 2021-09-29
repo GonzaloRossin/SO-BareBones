@@ -192,9 +192,25 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
+char* test_malloc(char* string){
+    int size=strlen(string)+1;
+    char* p=(char*)malloc(size);
+    for(int i=0;i<strlen(string);i++){
+        p[i]=string[i];
+    }
+    p[strlen(string)+1]=0;
+    printMem((void*)p);
+    return p;
+}
 void shell()
 {
-    fillCommandList();
+    char*p1=test_malloc("hola");
+    char*p2=test_malloc("FUNCA");
+    if(p1==p2)
+        print("NO FUNCIONA EL DESPLAZAMIENTO DEL PUNTERO\n");
+    else
+        print("FUNCIONA EL DESPLAZAMIENTO DEL PUNTERO\n");
+    /*fillCommandList();
     initializeOS();
     while(1){
         if(readNewInput()){
@@ -202,5 +218,5 @@ void shell()
             put_char('>');
             cleanBuffer();
         }
-    }
+    }*/
 }
