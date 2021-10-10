@@ -34,7 +34,7 @@ static size_t xBlockAllocatedBit = 0;
 
 
 
-void * Malloc(size_t requestedSize) {
+void * RTOSMalloc(size_t requestedSize) {
     header * currp, * prevp;
     void * returnp = NULL;
 
@@ -162,7 +162,7 @@ static void initHeap() {
 
 
 
-void myFree(void *ptr){
+void RTOSFree(void *ptr){
 
     uint8_t * currp = (uint8_t *) ptr;
     header * insertp;

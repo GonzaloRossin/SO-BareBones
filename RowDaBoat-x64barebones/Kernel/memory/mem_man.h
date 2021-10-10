@@ -16,7 +16,7 @@
     #define heapBITS_PER_BYTE ((size_t) 8)
     #define START_ADDRESS 0x0000000000600000
 
-    void Free(void *ptr);
-    void * Malloc(size_t requestedSize);
+    void RTOSFree(void *ptr);
+    void * RTOSMalloc(size_t requestedSize);
 
 #endif
