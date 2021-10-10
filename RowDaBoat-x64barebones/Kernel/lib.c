@@ -134,17 +134,3 @@ uint8_t readHours()
 	}
 	return hours;
 }
-
-void* address_pointer;
-void initializeManager(){
-    address_pointer=START_ADDRESS;
-}
-void* malloc(int size){
-    void* toReturn;
-    if(address_pointer==END_ADDRESS){
-        return (void*)0;
-    }
-    toReturn=address_pointer;
-    address_pointer+=size;
-    return toReturn;
-}

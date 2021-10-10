@@ -3,11 +3,7 @@
 
 #include <stdint.h>
 
-#define START_ADDRESS 0x0000000000600000
-#define END_ADDRESS 0xFFFFFFFFFFFFFFFF
 
-void initializeManager();
-void* malloc(int size);
 
 void * memset(void * destination, int32_t character, uint64_t length);
 void * memcpy(void * destination, const void * source, uint64_t length);

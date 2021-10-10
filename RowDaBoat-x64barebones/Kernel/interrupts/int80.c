@@ -2,6 +2,7 @@
 #include <video_driver.h>
 #include <interrupt_routines.h>
 #include <lib.h>
+#include "mem_man.h"
 #include <keyboard_driver.h>
 #include <stdint.h>
 #include <font.h>
@@ -57,6 +58,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 		break;
 	case 14:
 		return malloc((int) rsi);
+		break;
+	case 15:
+		free((void*)rsi);
 		break;
 	}
 	return 0;
@@ -157,5 +161,12 @@ void sys_setMargins(int rsi,int rdx){
 void sys_getCoords(int* rsi){
 	getCoords(rsi);
 }
-
+//SYS_CALL 14
+void* malloc(size_t rsi){
+	return Malloc(rsi);
+}
+//SYS_CALL 15
+void free(void* rsi){
+	Free(rsi);
+}
 

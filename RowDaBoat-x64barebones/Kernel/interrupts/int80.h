@@ -19,5 +19,6 @@ unsigned long sys_get_seconds();//sys call 10
 void sys_cursor(int rsi, int rdx);//sys call 11
 void sys_setMargins(int rsi,int rdx);//sys call 12
 void sys_getCoords(int* rsi);// sys call 13
-void* malloc(int rsi);
+void* malloc(size_t rsi);// sys call 14
+void free(void* rsi);// sys call 15
 #endif
