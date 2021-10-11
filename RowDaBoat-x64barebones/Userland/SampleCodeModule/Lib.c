@@ -46,8 +46,14 @@ void set_margins(int mLeft,int mRight){//syscall12-----------desuso
 void getCursor(int coords[2]){//syscall13
    sys_call(13,(uint64_t) coords,0,0);
 }
-void* malloc(int size){
-   return sys_call(14,(uint64_t)size,0,0);//syscall14
+void* Mmalloc(int size){
+   return (void*)sys_call(14,(uint64_t)size,0,0);//syscall14
+}
+void Mfree(void* pointer){
+   sys_call(15,(uint64_t)pointer,0,0);
+}
+void* MemSet(void* ptr,uint32_t c,uint64_t string){
+   return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string);
 }
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};

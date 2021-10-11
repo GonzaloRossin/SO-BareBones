@@ -24,7 +24,8 @@ static header start, * pEnd = NULL;
 static size_t freeBytesRemaining = 0;
 
 /* Total memory heap*/
-static uint8_t totalMemory[TOTAL_HEAP_SIZE];
+void * totalMemory;
+void *topAddress = NULL;
 
 /* Gets set to the top bit of an size_t type.  When this bit in the size
  * member of an header structure is set then the block belongs to the
@@ -113,6 +114,25 @@ void * RTOSMalloc(size_t requestedSize) {
 }
 
 
+void sbrk_handler(int increment, void **buffer)
+{
+        if (topAddress == NULL)
+        {
+                topAddress = START_ADDRESS;
+        }
+
+        if ((topAddress + increment) <= END_ADDRESS)
+        {
+
+                *buffer = topAddress;
+                topAddress += increment;
+        }
+        else
+        {
+                *buffer = NULL;
+        }
+        return;
+}
 
 static void initHeap() {
     
@@ -120,6 +140,8 @@ static void initHeap() {
     uint8_t * pAlignedHeap;
     size_t totalMemPointer;
     size_t totalHeapSize = TOTAL_HEAP_SIZE;
+
+    sbrk_handler(TOTAL_HEAP_SIZE, &totalMemory);
 
     /* Ensure the heap starts on a correctly aligned boundary. */
     totalMemPointer = (size_t) totalMemory;

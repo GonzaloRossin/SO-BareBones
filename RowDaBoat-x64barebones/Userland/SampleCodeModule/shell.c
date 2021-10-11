@@ -1,6 +1,7 @@
 #include <libasm.h>
 #include <shell.h>
 #include <Lib.h>
+#include <test_mm.h>
 #include <libasm.h>
 
 #define BUFFER_SIZE 100
@@ -192,24 +193,9 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
-char* test_malloc(char* string){
-    int size=strlen(string)+1;
-    char* p=(char*)malloc(size);
-    for(int i=0;i<strlen(string);i++){
-        p[i]=string[i];
-    }
-    p[strlen(string)+1]=0;
-    printMem((void*)p);
-    return p;
-}
 void shell()
 {
-    char*p1=test_malloc("hola");
-    char*p2=test_malloc("FUNCA");
-    if(p1==p2)
-        print("NO FUNCIONA EL DESPLAZAMIENTO DEL PUNTERO\n");
-    else
-        print("FUNCIONA EL DESPLAZAMIENTO DEL PUNTERO\n");
+    test_mm();
     /*fillCommandList();
     initializeOS();
     while(1){

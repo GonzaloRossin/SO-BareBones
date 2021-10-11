@@ -39,6 +39,8 @@ unsigned long get_seconds();//syscall10
 void set_cursor(int x, int y);//syscall11
 void set_margins(int mLeft,int mRight);//syscall12
 void getCursor(int coords[2]);//syscall13
-void* malloc(int size);//syscall14
+void* Mmalloc(int size);//syscall14
+void Mfree(void* pointer);//syscall15
+void* MemSet(void* ptr,uint32_t c,uint64_t string);//syscall16
 
 #endif
