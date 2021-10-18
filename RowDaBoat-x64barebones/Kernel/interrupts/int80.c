@@ -65,6 +65,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 16:
 		return memSet((void*)rsi,(uint32_t)rdx,(uint64_t)rcx);
 		break;
+	case 17:
+		mem();
+		break;
 	}
 	return 0;
 }
@@ -176,4 +179,7 @@ void MyFree(void* rsi){
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx){
 	return (void*)memset(rsi, rdx, rcx);
 }
-
+//SYS_CALL 17
+void mem(){
+	RTOSmem();
+}

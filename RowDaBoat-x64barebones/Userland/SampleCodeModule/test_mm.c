@@ -32,6 +32,9 @@ void test_mm(){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         MemSet(mm_rqs[i].address, i, mm_rqs[i].size); // TODO: Port this call as required
+    
+    // Print Mem state
+    Mmem();
 
     // Check
     for (i = 0; i < rq; i++)
@@ -44,5 +47,5 @@ void test_mm(){
       if (mm_rqs[i].address != NULL)
         Mfree(mm_rqs[i].address);  // TODO: Port this call as required
     }
-    print("pasa testeo"); 
+    print("pasa testeoq");
 }

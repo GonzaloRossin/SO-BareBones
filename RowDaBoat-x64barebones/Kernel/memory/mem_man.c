@@ -1,4 +1,5 @@
 #include "mem_man.h"
+#include "int80.h"
 
 /* Based on FreeRTOS Kernel V10.4.3
  * https://www.FreeRTOS.org
@@ -256,5 +257,20 @@ static void addBlockToFreeList(header * blockToInsert) {
      * to itself. */
     if(iteratorp != blockToInsert) {
         iteratorp->next = blockToInsert;
+    }
+}
+
+
+void RTOSmem(){
+    header *curr = &start;
+    char *message1 = "Block: ";
+    char *message2 = "Bytes: ";
+    for (int i = 1; curr != NULL; curr = curr->next, i++)
+    {
+        draw_string(message1, 7);
+        sys_print_num(i, 0);
+        draw_string(message2, 7);
+        sys_print_num(curr->size, 0); //nose si está bien llamar syscalls desde acá
+        sys_newline(); //newline() funciona pero es funcion del driver
     }
 }

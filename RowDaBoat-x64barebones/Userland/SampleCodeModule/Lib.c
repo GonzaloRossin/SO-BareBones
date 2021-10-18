@@ -55,6 +55,9 @@ void Mfree(void* pointer){
 void* MemSet(void* ptr,uint32_t c,uint64_t string){
    return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string);
 }
+void Mmem(){
+   sys_call(17,0,0,0);
+}
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};
    getCursor(aux);
