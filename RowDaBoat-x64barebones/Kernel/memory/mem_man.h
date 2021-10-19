@@ -19,5 +19,6 @@
 
     void RTOSFree(void *ptr);
     void * RTOSMalloc(size_t requestedSize);
+    void RTOSmem();
 
 #endif

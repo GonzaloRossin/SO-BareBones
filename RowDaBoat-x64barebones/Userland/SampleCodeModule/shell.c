@@ -195,7 +195,8 @@ void initializeOS(){
 }
 void shell()
 {
-    test_mm();
+    //test_mm();
+    test_mem();
     /*fillCommandList();
     initializeOS();
     while(1){

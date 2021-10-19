@@ -22,4 +22,5 @@ void sys_getCoords(int* rsi);// sys call 13
 void* MyMalloc(unsigned int rsi);// sys call 14
 void MyFree(void* rsi);// sys call 15
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
+void mem();// sys call 17
 #endif

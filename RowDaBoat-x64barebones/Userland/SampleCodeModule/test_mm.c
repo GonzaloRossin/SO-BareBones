@@ -15,7 +15,6 @@ void test_mm(){
 
     rq = 0;
     total = 0;
-
     // Request as many blocks as we can
     while(rq < MAX_BLOCKS && total < MAX_MEMORY){
       mm_rqs[rq].size = GetUniform(MAX_MEMORY - total - 1) + 1;
@@ -26,23 +25,60 @@ void test_mm(){
       total += mm_rqs[rq].size;
       rq++;
     }
-
     // Set
     uint32_t i;
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         MemSet(mm_rqs[i].address, i, mm_rqs[i].size); // TODO: Port this call as required
+    
+    // Print Mem state
 
     // Check
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
           print("ERROR!\n"); // TODO: Port this call as required
-
     // Free
     for (i = 0; i < rq; i++){
       if (mm_rqs[i].address != NULL)
         Mfree(mm_rqs[i].address);  // TODO: Port this call as required
     }
-    print("pasa testeo"); 
+    print("pasa testeo");
+}
+
+void test_mem(){
+  print("just begun");
+  newLine();
+  Mmem();
+  newLine();
+
+  mm_rq mm_rqs[3];
+  for (int i=0; i<3; i++){
+    newLine();
+    print("iter ");
+    print_num(i,0);
+    newLine();
+
+    mm_rqs[i].size = 5;
+    mm_rqs[i].address = Mmalloc(1024);
+    if(mm_rqs[i].address==NULL){
+        print("malloc returns NULL");
+    }
+    Mmem();
+  }
+
+    for (int i=0; i<3; i++){
+    newLine();
+    print("iter ");
+    print_num(i,0);
+    newLine();
+
+    Mfree(mm_rqs[i].address);
+    if(mm_rqs[i].address==NULL){
+        print("malloc returns NULL");
+    }
+    Mmem();
+  }
+  
+
 }
