@@ -264,13 +264,14 @@ static void addBlockToFreeList(header * blockToInsert) {
 void RTOSmem(){
     header *curr = &start;
     char *message1 = "Block: ";
-    char *message2 = "Bytes: ";
+    char *message2 = ", Bytes: ";
     for (int i = 1; curr != NULL; curr = curr->next, i++)
     {
         draw_string(message1, 7);
         sys_print_num(i, 0);
-        draw_string(message2, 7);
+        draw_string(message2, 9);
         sys_print_num(curr->size, 0); //nose si está bien llamar syscalls desde acá
         sys_newline(); //newline() funciona pero es funcion del driver
     }
+    sys_newline();
 }
