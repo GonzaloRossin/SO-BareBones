@@ -134,3 +134,42 @@ uint8_t readHours()
 	}
 	return hours;
 }
+
+int strlen(char *str)
+{
+   int i = 0;
+   while (str[i] != 0)
+   {
+      i++;
+   }
+   return i;
+}
+
+int strcmp(const char *str1, const char *str2)
+{
+
+   int i = 0;
+   while (str1[i] != 0 && str2[i] != 0)
+   {
+      if (str1[i] != str2[i])
+         return 0;
+      i++;
+   }
+   //If one of them still has characters.
+   if (str1[i] != str2[i])
+      return 0;
+
+   return 1;
+}
+
+void strncpy(char *source, char *dest, int index, int size)
+{
+   int i = index;
+   int j=0;
+   while (i < size && source[i] != 0)
+   {
+      dest[j++] = source[i];
+      i++;
+   }
+   dest[j] = 0;
+}

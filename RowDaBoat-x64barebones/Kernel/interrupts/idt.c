@@ -1,9 +1,9 @@
 #include <defs.h>
-#include <idt.h>
-#include <int80.h>
-#include <interrupts.h>
-#include <video_driver.h>
-#include <interrupt_routines.h>
+#include "idt.h"
+#include "int80.h"
+#include "interrupts.h"
+#include "../drivers/video_driver.h"
+#include "interrupt_routines.h"
 
 // TODO: add all type_attr constants here
 #define TATTR_INT_32 0x0E

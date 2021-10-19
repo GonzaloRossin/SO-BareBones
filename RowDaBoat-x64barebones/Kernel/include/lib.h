@@ -1,7 +1,7 @@
 #ifndef LIB_H
 #define LIB_H
-
 #include <stdint.h>
+#define NULL ((void *)0)
 
 
 
@@ -27,5 +27,11 @@ uint8_t readSeconds();
 uint8_t readMinutes();
 
 uint8_t readHours();
+
+int strlen(char *str);
+
+int strcmp(const char *str1, const char *str2);
+
+void strncpy(char *source, char *dest,int index, int size);
 
 #endif

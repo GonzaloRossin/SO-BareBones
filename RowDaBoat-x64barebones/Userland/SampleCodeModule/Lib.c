@@ -49,7 +49,7 @@ void getCursor(int coords[2]){//syscall13
 void* Mmalloc(int size){
    return (void*)sys_call(14,(uint64_t)size,0,0);//syscall14
 }
-void Mfree(void* pointer){
+void Mfree(void* pointer){//syscall15
    sys_call(15,(uint64_t)pointer,0,0);
 }
 void* MemSet(void* ptr,uint32_t c,uint64_t string){

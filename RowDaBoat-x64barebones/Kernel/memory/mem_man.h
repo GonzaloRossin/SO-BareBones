@@ -2,7 +2,7 @@
 #define MEM_MAN_H
 
     #include <stdio.h>
-    #include <lib.h>
+    #include "../include/lib.h"
     #include <stdint.h>
 
     typedef struct Header {
