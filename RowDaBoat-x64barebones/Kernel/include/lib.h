@@ -28,10 +28,10 @@ uint8_t readMinutes();
 
 uint8_t readHours();
 
-int strlen(char *str);
+int Strlen(char *str);
 
-int strcmp(const char *str1, const char *str2);
+int Strcmp(const char *str1, const char *str2);
 
-void strncpy(char *source, char *dest,int index, int size);
+void Strncpy(char *source, char *dest,int index, int size);
 
 #endif

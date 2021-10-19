@@ -1,11 +1,10 @@
 #include <stdint.h>
-#include <string.h>
-#include <lib.h>
-#include <moduleLoader.h>
-#include <int80.h>
+#include "include/lib.h"
+#include "interrupts/int80.h"
+#include "include/moduleLoader.h"
 #include <idt.h>
-#include <video_driver.h>
-#include <font.h>
+#include "drivers/video_driver.h"
+#include "include/font.h"
 #include <interrupt_routines.h>
 
 

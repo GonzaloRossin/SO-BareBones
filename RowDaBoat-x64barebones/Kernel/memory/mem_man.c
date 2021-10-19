@@ -1,5 +1,5 @@
 #include "mem_man.h"
-#include "int80.h"
+#include "../interrupts/int80.h"
 
 /* Based on FreeRTOS Kernel V10.4.3
  * https://www.FreeRTOS.org

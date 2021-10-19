@@ -1,11 +1,11 @@
-#include <int80.h>
-#include <video_driver.h>
+#include "int80.h"
+#include "../drivers/video_driver.h"
 #include <interrupt_routines.h>
-#include <lib.h>
-#include <mem_man.h>
-#include <keyboard_driver.h>
+#include "../include/lib.h"
+#include "../memory/mem_man.h"
+#include "../drivers/keyboard_driver.h"
 #include <stdint.h>
-#include <font.h>
+#include "../include/font.h"
 
 //Software interrupt used for interaction between user and kernel space
 uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)

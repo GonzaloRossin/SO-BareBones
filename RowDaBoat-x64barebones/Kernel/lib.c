@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <lib.h>
+#include "include/lib.h"
 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
@@ -135,7 +135,7 @@ uint8_t readHours()
 	return hours;
 }
 
-int strlen(char *str)
+int Strlen(char *str)
 {
    int i = 0;
    while (str[i] != 0)
@@ -145,7 +145,7 @@ int strlen(char *str)
    return i;
 }
 
-int strcmp(const char *str1, const char *str2)
+int Strcmp(const char *str1, const char *str2)
 {
 
    int i = 0;
@@ -162,7 +162,7 @@ int strcmp(const char *str1, const char *str2)
    return 1;
 }
 
-void strncpy(char *source, char *dest, int index, int size)
+void Strncpy(char *source, char *dest, int index, int size)
 {
    int i = index;
    int j=0;

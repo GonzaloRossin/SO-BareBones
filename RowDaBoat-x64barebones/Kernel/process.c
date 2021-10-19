@@ -16,11 +16,11 @@ pid_t setPid() {
 }
 
 size_t set_pName(process_t * process, char *name) {
-    size_t size=strlen(name)+1;
+    size_t size=Strlen(name)+1;
     process->process_name = (char *) MyMalloc(size);
     if(process->process_name == NULL) 
         return MEMORY_OVERFLOW;
-    strncpy(process->process_name, name,0,size);
+    Strncpy(process->process_name, name,0,size);
     return size;
 }
 
