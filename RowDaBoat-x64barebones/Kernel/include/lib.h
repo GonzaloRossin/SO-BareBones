@@ -34,4 +34,6 @@ int Strcmp(const char *str1, const char *str2);
 
 void Strncpy(char *source, char *dest,int index, int size);
 
+int _start_process(int (*main)(int argc, char * argv), int argc, char * argv);
+
 #endif
