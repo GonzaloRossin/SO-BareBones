@@ -8,7 +8,8 @@
 
 
 int main() {
-    //shell();
     print("Llegue");
+    shell();
+    
     return 0;
 }

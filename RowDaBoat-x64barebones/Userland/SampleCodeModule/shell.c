@@ -196,8 +196,8 @@ void initializeOS(){
 void shell()
 {
     //test_mm();
-    test_mem();
-    /*fillCommandList();
+    //test_mem();
+    fillCommandList();
     initializeOS();
     while(1){
         if(readNewInput()){
@@ -205,5 +205,5 @@ void shell()
             put_char('>');
             cleanBuffer();
         }
-    }*/
+    }
 }

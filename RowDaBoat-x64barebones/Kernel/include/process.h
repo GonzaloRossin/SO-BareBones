@@ -5,11 +5,14 @@
 
 #define STATE_SIZE 5
 #define REGS_SIZE 15
+#define MAX_PROCESSES 50
+
 
 typedef unsigned long size_t;
 typedef void* address_t;
 typedef int pid_t;
 typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
+
 
 static const uint64_t MAX_STACK = 0x50000;
 
@@ -27,14 +30,27 @@ typedef struct {
     pid_t pid;
     char *process_name;
     pStatus status;
-    address_t code_pos;
-    argument arguments;
+    unsigned int given_time;
+    unsigned int aging;
+    unsigned int priority;
     memoryBlock heap;
     memoryBlock stack;
     void * rbp;
     void * rsp;
-    
+    struct process_t * next_in_queue;    
 } process_t;
+
+typedef struct QUEUE_HD {
+    unsigned int quantum;
+    struct process_t * first;
+    struct process_t * last;
+} QUEUE_HD;
+
+typedef struct main_func_t {
+    int (*f)(int, char *);
+    int argc;
+    char * argv;
+} main_func_t;
 
 typedef struct stackProcess {
     uint64_t r15;
@@ -64,8 +80,9 @@ typedef struct stackProcess {
 #define MEMORY_OVERFLOW -1
 #define MAX_PROCESS_COUNT 5 
 
+void * scheduler(void * rsp);
 
-pid_t pCreate(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap);
+pid_t pCreate(char *name, main_func_t * f, size_t stack, size_t heap);
 int exit(void);
 int kill(size_t pid);
 process_t* get_process_by_id(pid_t pid);

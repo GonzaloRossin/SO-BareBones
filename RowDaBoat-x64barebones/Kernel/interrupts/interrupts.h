@@ -4,7 +4,8 @@
 
 
 //handler of timer tick
-void irq0Handler();
+void irq0Handler(void);
+void * int_20(void * rsp);
 //handler of Kb interrupt
 void irq1Handler();
 
@@ -12,6 +13,8 @@ void irq1Handler();
 uint8_t get_key();
 
 void int_80();
+
+
 
 void _cli(void);
 

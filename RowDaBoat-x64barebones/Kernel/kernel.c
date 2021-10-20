@@ -55,11 +55,19 @@ int main()
 	loadIDT();
 	//Entering sampleCodeModuleAddress in userland
 	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
-	// ((EntryPoint)sampleCodeModuleAddress)();
+	
 
 	//start shell process, createProcess de process.c con datos hardcodeados
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	char name[6] = "Shell";
-	pCreate(name, (int (*)(int, char **)) sampleCodeModuleAddress, NULL, MAX_STACK, MAX_STACK); 
+	main_func_t main_f;
+	main_f.f = sampleCodeModuleAddress;
+	main_f.argc = 0;
+	main_f.argv = NULL;
+	pCreate(name, &main_f, MAX_STACK, MAX_STACK);
+	while(1){
+		draw_string("hola", 5);
+	}
+	// ((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }
