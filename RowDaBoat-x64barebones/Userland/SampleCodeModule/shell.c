@@ -199,7 +199,7 @@ void shell()
     //test_mem();
     fillCommandList();
     initializeOS();
-    while(1){
+    while(1) {
         if(readNewInput()){
             CommandHandler();
             put_char('>');

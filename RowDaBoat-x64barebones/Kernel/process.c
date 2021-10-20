@@ -2,15 +2,19 @@
 #include "interrupts/int80.h"
 #include "drivers/video_driver.h"
 
-process_t* processes[MAX_PROCESS_COUNT] = {NULL};
+process_t* processes[MAX_PROCESSES] = {NULL};
 size_t process_count = 0, started = 0;
 process_t* curr_process = NULL;
 
-static QUEUE_HD queues[2][MAX_PROCESSES];
-static int actual_queue = 0;
-static unsigned int prior = 0;
+static QUEUE_HD queues[2][MAX_PRIORITY - MIN_PRIORITY + 1];
 static QUEUE_HD * act_queue; //queue with active processes
 static QUEUE_HD * exp_queue; //queue with those processes that have expired their quantum or are new or priority changed
+unsigned quantum[MAX_PRIORITY - MIN_PRIORITY + 1];
+
+static int actual_queue = 0;
+static unsigned int prior = 0;
+int quantum_started = 0;
+unsigned int processes_size = 0;
 
 static void updateCurrent(void);
 static void expireCurrent(void);
@@ -21,9 +25,16 @@ static stackProcess stackModel = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
 
 
 void * scheduler(void * rsp) {
-    // draw_string("Hola", 5);
+    draw_string("Scheduler\n", 11);
+
+    if(!quantum_started) {
+        initQuantums();
+        quantum_started = 1;
+    }
+
     if(process_count > 0) {
-        if (curr_process != NULL) {//process running
+        draw_string("Hay proceso\n", 13);
+        if (curr_process != NULL) { //process running
             (curr_process->given_time--);
 
             if (curr_process->given_time == 0) {
@@ -35,9 +46,17 @@ void * scheduler(void * rsp) {
                 expireCurrent();
             }
         }
+        draw_string("Proximo proceso\n", 17);
         getNextProcess(rsp);
     } else {
+        draw_string("No hay proceso\n", 16);
         return rsp;
+    }
+}
+
+static void initQuantums() {
+    for (unsigned int p = 0; p < MAX_PRIORITY - MIN_PRIORITY + 1; p++) {
+        quantum[p] = PRIOR_SLOPE * p + PRIOR_INDVAR;
     }
 }
 

@@ -56,7 +56,6 @@ int main()
 	//Entering sampleCodeModuleAddress in userland
 	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
 	
-
 	//start shell process, createProcess de process.c con datos hardcodeados
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	char name[6] = "Shell";
@@ -65,6 +64,9 @@ int main()
 	main_f.argc = 0;
 	main_f.argv = NULL;
 	pCreate(name, &main_f, MAX_STACK, MAX_STACK);
+
+	_halt_and_wait();
+	
 	while(1){
 		draw_string("hola", 5);
 	}

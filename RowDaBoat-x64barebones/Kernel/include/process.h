@@ -6,15 +6,21 @@
 #define STATE_SIZE 5
 #define REGS_SIZE 15
 #define MAX_PROCESSES 50
+#define MAX_STACK 50000
+#define MIN_PRIORITY 0
+#define MAX_PRIORITY 6
+
+#define MIN_TICKS 10
+#define MAX_TICKS 100
+
+#define PRIOR_SLOPE ((MAX_TICKS - MIN_TICKS)/(MIN_PRIORITY - MAX_PRIORITY)) //To calculate the quantum of each queue (quantum(priorirty) = m*p + b)
+#define PRIOR_INDVAR (MAX_TICKS - MIN_PRIORITY * PRIOR_SLOPE)
 
 
 typedef unsigned long size_t;
 typedef void* address_t;
 typedef int pid_t;
 typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
-
-
-static const uint64_t MAX_STACK = 0x50000;
 
 typedef struct {
     address_t base;
@@ -26,7 +32,7 @@ typedef struct{
     int argc;
 } argument;
 
-typedef struct {
+typedef struct process_t{
     pid_t pid;
     char *process_name;
     pStatus status;
@@ -47,9 +53,9 @@ typedef struct QUEUE_HD {
 } QUEUE_HD;
 
 typedef struct main_func_t {
-    int (*f)(int, char *);
+    int (*f)(int, char **);
     int argc;
-    char * argv;
+    char ** argv;
 } main_func_t;
 
 typedef struct stackProcess {
@@ -90,7 +96,7 @@ pStatus get_pStatus(pid_t pid);
 pid_t set_pStatus(pid_t pid, pStatus status);
 void free_process(pid_t pid);
 static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
-
+static void initQuantums();
 
 
 #endif
