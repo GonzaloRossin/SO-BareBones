@@ -5,6 +5,7 @@
 #include <interrupts.h>
 #include <video_driver.h>
 #include <naiveConsole.h>
+#include <process.h>
 
 static unsigned long ticks = 0;
 static unsigned long seconds=0;
@@ -17,11 +18,13 @@ static char *regs[REG_SIZE] = {
 	"RAX: 0x", "IP: 0x", "RSP: 0x"};
 
 // called every 55ms. Increases the ticks counter
-void interruptRoutine1()
+void * timerTickHandler(void * rsp)
 {
-	ticks++;
-	if(ticks%18==0)
+	ticks++;	
+	if(ticks % 18 == 0) {
 		seconds++;
+	}
+	return scheduler(rsp);
 }
 
 // returns the amount of ticks

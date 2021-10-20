@@ -8,7 +8,7 @@ void initialStateSnapshot(uint64_t IP, uint64_t SP);
 extern uint64_t getSP();
 void returnToSnapshot(uint64_t *stackframe);
 // timer interrupt(int 20h)
-void interruptRoutine1();
+void * timerTickHandler(void * rsp);
 // what the interrupt 2(int 21h)
 void interruptRoutine2();
 // asm code used for interruptRoutine2

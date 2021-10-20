@@ -17,6 +17,7 @@ GLOBAL getSP
 EXTERN irqDispatcher
 EXTERN printRegister
 EXTERN printException
+EXTERN int_20
 
 
 
@@ -103,10 +104,23 @@ picSlaveMask:
 
 ;int 20h
 irq0Handler:
-	irqHandlerMaster 0
+	pushState
+
+	mov rdi, rsp ; le paso rsp
+	call int_20
+	mov rsp, rax
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
 ;int 21h
 irq1Handler:
 	irqHandlerMaster 1
+
+
 
 ;basically checks that keyboard has input and then gets that input
 ;if it doesnt have then return 0xffff

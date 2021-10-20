@@ -6,6 +6,7 @@ GLOBAL saveMemory
 GLOBAL getMemory
 GLOBAL readCMOS
 GLOBAL _start_process
+GLOBAL _halt_and_wait
 EXTERN exit
 
 
@@ -115,6 +116,14 @@ _start_process:
 
     pop rbx
     ret 
+_halt_and_wait:
+
+    mov al, 20h
+	out 20h, al
+    sti
+
+    hlt
+    ret
 
 getMemory:
  push rbp

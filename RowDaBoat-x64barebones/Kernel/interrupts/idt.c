@@ -13,12 +13,13 @@ void irqDispatcher(int n)
 {
 	switch (n)
 	{
-	case 0:
-		interruptRoutine1();
-		break;
 	case 1:
 		interruptRoutine2();
 	}
+}
+
+void * int_20(void * rsp) {
+	return timerTickHandler(rsp);
 }
 
 #pragma pack(push)
