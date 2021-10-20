@@ -9,9 +9,9 @@
 typedef unsigned long size_t;
 typedef void* address_t;
 typedef int pid_t;
-typedef enum { ZOMBIE = 0, ACTIVE, SUSPENDED } pStatus;
+typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
 
-static const uint64_t MAX_STACK = 0x50000
+static const uint64_t MAX_STACK = 0x50000;
 
 typedef struct {
     address_t base;
@@ -65,11 +65,14 @@ typedef struct stackProcess {
 #define MAX_PROCESS_COUNT 5 
 
 
-pid_t pCreate(char *name, address_t code, char **argv, size_t stack, size_t heap);
+pid_t pCreate(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap);
+int exit(void);
+int kill(size_t pid);
 process_t* get_process_by_id(pid_t pid);
 pStatus get_pStatus(pid_t pid);
 pid_t set_pStatus(pid_t pid, pStatus status);
 void free_process(pid_t pid);
+static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
 
 
 

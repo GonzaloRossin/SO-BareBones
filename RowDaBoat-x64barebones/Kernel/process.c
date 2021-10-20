@@ -3,6 +3,7 @@
 
 process_t* processes[MAX_PROCESS_COUNT] = {NULL};
 size_t process_count = 0;
+process_t* curr_process;
 
 static stackProcess stackModel = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0x8, 0x202, 0, 0};
 
@@ -36,7 +37,7 @@ int getArgvCount(char **argv) {
     return count;
 }
 
-pid_t pCreate(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap) {
+pid_t pCreate(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap) { // int (*code)(int, char **) el parametro de _start_process
     //falta: back or foreground, *funcion con argc y argv, 
 
     pid_t pid = setPid();
@@ -47,7 +48,7 @@ pid_t pCreate(char *name, int (*code)(int, char **), char **argv, size_t stack, 
     if (process == NULL) 
         return MEMORY_OVERFLOW;
     process->pid = pid;
-    process->status = ACTIVE;
+    process->status = READY;
 
     if (set_pName(process, name) == MEMORY_OVERFLOW) 
         return MEMORY_OVERFLOW;
@@ -73,8 +74,8 @@ pid_t pCreate(char *name, int (*code)(int, char **), char **argv, size_t stack, 
     process->arguments.argv = argv;
     process->arguments.argc = getArgvCount(argv);
 
-    process->rbp = ((uint64_t) process->stack.base + MAX_STACK) & -8;
-    process->rsp = ((uint64_t) ((process->stack.base + MAX_STACK) & -8) - (REGS_SIZE + STATE_SIZE) * sizeof(uint64_t)); //se quejaba si le poniamos process->rbp - ...
+    process->rbp = (void*) (((uint64_t) process->stack.base + MAX_STACK) & -8);
+    process->rsp = (void*) ((((uint64_t) process->stack.base + MAX_STACK) & -8) - (REGS_SIZE + STATE_SIZE) * sizeof(uint64_t)); //se quejaba si le poniamos process->rbp - ...
 
     //Preparar el stack
     prepareStack(code, process->arguments.argc, process->arguments.argv, process->rbp, process->rsp);
@@ -93,6 +94,14 @@ static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** 
     stackModel.rdx = (uint64_t) argv; 
     
     memcpy(rsp, (void *) &stackModel, sizeof(stackModel)); //rsp == rbp al comienzo
+}
+
+int exit() {
+    return kill(curr_process->pid);
+}
+
+int kill(size_t pid) {
+    return set_pStatus(pid, KILLED);
 }
 
 process_t* get_process_by_id(pid_t pid) {

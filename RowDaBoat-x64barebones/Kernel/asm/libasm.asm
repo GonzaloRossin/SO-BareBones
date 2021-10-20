@@ -6,6 +6,8 @@ GLOBAL saveMemory
 GLOBAL getMemory
 GLOBAL readCMOS
 GLOBAL _start_process
+EXTERN exit
+
 
 section .text
 
