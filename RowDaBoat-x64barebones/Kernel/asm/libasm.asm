@@ -5,6 +5,7 @@ GLOBAL getRegs
 GLOBAL saveMemory
 GLOBAL getMemory
 GLOBAL readCMOS
+GLOBAL _start_process
 
 section .text
 
@@ -100,6 +101,18 @@ saveMemory:
     pop rbp
     ret
 
+_start_process:
+    push rbx
+    mov rbx, rdi       ; main
+    mov rdi, rsi       ; argc
+    mov rsi, rdx       ; argv
+
+    call rbx           ; Llamada al main
+
+    call exit
+
+    pop rbx
+    ret 
 
 getMemory:
  push rbp

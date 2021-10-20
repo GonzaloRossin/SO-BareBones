@@ -3,11 +3,15 @@
 
 #include "lib.h"
 
+#define STATE_SIZE 5
+#define REGS_SIZE 15
+
 typedef unsigned long size_t;
 typedef void* address_t;
 typedef int pid_t;
 typedef enum { ZOMBIE = 0, ACTIVE, SUSPENDED } pStatus;
 
+static const uint64_t MAX_STACK = 0x50000
 
 typedef struct {
     address_t base;
@@ -27,6 +31,8 @@ typedef struct {
     argument arguments;
     memoryBlock heap;
     memoryBlock stack;
+    void * rbp;
+    void * rsp;
     
 } process_t;
 

@@ -1,6 +1,5 @@
 #include "include/process.h"
 #include "interrupts/int80.h"
-#include "asm/libasm.asm"
 
 process_t* processes[MAX_PROCESS_COUNT] = {NULL};
 size_t process_count = 0;

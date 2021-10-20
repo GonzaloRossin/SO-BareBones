@@ -6,7 +6,7 @@
 #include "drivers/video_driver.h"
 #include "include/font.h"
 #include <interrupt_routines.h>
-
+#include "process.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -56,5 +56,10 @@ int main()
 	//Entering sampleCodeModuleAddress in userland
 	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
 	((EntryPoint)sampleCodeModuleAddress)();
+
+	//start shell process, createProcess de process.c con datos hardcodeados
+	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
+	char name[6] = "Shell"
+	pCreate(name, (int (*)(int, char **)) sampleCodeModuleAddress, NULL, MAX_STACK, MAX_STACK) 
 	return 0;
 }
