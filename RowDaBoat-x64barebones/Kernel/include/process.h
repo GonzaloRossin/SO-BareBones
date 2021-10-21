@@ -7,8 +7,10 @@
 #define REGS_SIZE 15
 #define MAX_PROCESSES 50
 #define MAX_STACK 50000
+
 #define MIN_PRIORITY 0
 #define MAX_PRIORITY 6
+#define BASE_PRIORITY ((MAX_PRIORITY - MIN_PRIORITY)/2)
 
 #define MIN_TICKS 10
 #define MAX_TICKS 100
@@ -23,7 +25,7 @@ typedef int pid_t;
 typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
 
 typedef struct {
-    address_t base;
+    uint64_t base;
     size_t size;
 } memoryBlock;
 
@@ -36,10 +38,10 @@ typedef struct process_t{
     pid_t pid;
     char *process_name;
     pStatus status;
+    int foreground;
     unsigned int given_time;
     unsigned int aging;
     unsigned int priority;
-    memoryBlock heap;
     memoryBlock stack;
     void * rbp;
     void * rsp;
@@ -88,10 +90,10 @@ typedef struct stackProcess {
 
 void * scheduler(void * rsp);
 
-pid_t pCreate(char *name, main_func_t * f, size_t stack, size_t heap);
+pid_t pCreate(main_func_t * f, char *name, int foreground);
 int exit(void);
 int kill(size_t pid);
-process_t* get_process_by_id(pid_t pid);
+process_t get_process_by_id(pid_t pid);
 pStatus get_pStatus(pid_t pid);
 pid_t set_pStatus(pid_t pid, pStatus status);
 void free_process(pid_t pid);
