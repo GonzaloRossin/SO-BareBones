@@ -80,6 +80,7 @@ void block(pid_t pid){
 }
 
 void argTest(int a1, int a2, int a3){
+   sys_call(8,420,0,0,0);
    sys_call(99,a1,a2,a3,0);
 }
 
