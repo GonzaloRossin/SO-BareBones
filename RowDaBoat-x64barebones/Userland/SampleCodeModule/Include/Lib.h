@@ -14,6 +14,73 @@ typedef struct screenShell
    int coordX;
    int coordY; 
 }screenShell;
+
+
+typedef unsigned long size_t;
+typedef void* address_t;
+typedef int pid_t;
+typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
+
+typedef struct {
+    address_t base;
+    size_t size;
+} memoryBlock;
+
+typedef struct{
+    char** argv;
+    int argc;
+} argument;
+
+typedef struct process_t{
+    pid_t pid;
+    char *process_name;
+    pStatus status;
+    unsigned int given_time;
+    unsigned int aging;
+    unsigned int priority;
+    memoryBlock heap;
+    memoryBlock stack;
+    void * rbp;
+    void * rsp;
+    struct process_t * next_in_queue;    
+} process_t;
+
+typedef struct QUEUE_HD {
+    unsigned int quantum;
+    struct process_t * first;
+    struct process_t * last;
+} QUEUE_HD;
+
+typedef struct main_func_t {
+    int (*f)(int, char **);
+    int argc;
+    char ** argv;
+} main_func_t;
+
+typedef struct stackProcess {
+    uint64_t r15;
+    uint64_t r14;
+    uint64_t r13;
+    uint64_t r12;
+    uint64_t r11;
+    uint64_t r10;
+    uint64_t r9;
+    uint64_t r8;
+    uint64_t rsi;
+    uint64_t rdi;
+    uint64_t rbp;
+    uint64_t rdx;
+    uint64_t rcx;
+    uint64_t rbx;
+    uint64_t rax;
+    uint64_t rip;
+    uint64_t cs;
+    uint64_t rflags;
+    uint64_t rsp;
+    uint64_t ss;
+} stackProcess;
+
+
 //-----------------------------------------------------------------------------------------------
 //general use functions
 int strlen(char *str);
@@ -42,5 +109,8 @@ void getCursor(int coords[2]);//syscall13
 void* Mmalloc(int size);//syscall14
 void Mfree(void* pointer);//syscall15
 void* MemSet(void* ptr,uint32_t c,uint64_t string);//syscall16
+void Mmem();//syscall17
+//exec syscall18
+void ps();//syscall19
 
 #endif

@@ -72,6 +72,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 18:
 		return (pid_t) exec((char*)rsi,(main_func_t*)rdx,(size_t)rcx,(size_t)r8);
 		break;
+	case 19:
+		ps();
+		break;
 	}
 	return 0;
 }
@@ -187,6 +190,12 @@ void* memSet(void* rsi,uint32_t rdx,uint64_t rcx){
 void mem(){
 	RTOSmem();
 }
+//SYS_CALL 18
 pid_t exec(char* rsi,main_func_t*rdx,size_t rcx,size_t r8){
 	return pCreate(rsi,rdx,rcx,r8);
 }
+//SYS_CALL 19
+void ps(){
+	PS();
+}
+

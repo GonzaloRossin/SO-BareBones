@@ -58,6 +58,13 @@ void* MemSet(void* ptr,uint32_t c,uint64_t string){//syscall16
 void Mmem(){
    sys_call(17,0,0,0,0);
 }
+
+//exec = 18
+
+void ps(){
+  sys_call(19,0,0,0,0);
+}
+
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};
    getCursor(aux);

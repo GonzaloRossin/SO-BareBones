@@ -105,7 +105,6 @@ static void enqueueProcess(process_t * process) {
 }
 
 
-
 pid_t setPid() {
     pid_t current_pid = ERROR;
     for (int current_process = 0; current_process < MAX_PROCESS_COUNT; current_process++) {
@@ -239,3 +238,43 @@ void free_process(pid_t pid) {
     MyFree(processes[pid]);
     processes[pid] = NULL;
 }
+
+void printProcess(process_t* process){
+    sys_newline();
+    char* line = " ----- ";
+    char* name = "name: ";
+    draw_string(name, 6);
+    draw_string(process->process_name, 10); //hacer que no sea numero fijo
+    draw_string(line, 7);
+    
+    char* pid = "pid: ";
+    draw_string(pid, 5);
+    sys_print_num(process->pid,0);
+    draw_string(line, 7);
+
+    char* priority = "priority: ";
+    draw_string(priority, 10);
+    sys_print_num(process->priority,0);
+    draw_string(line, 7);
+    
+    char* rbp = "rbp: ";
+    draw_string(rbp, 5);
+    sys_print_num(process->rbp,0);
+    draw_string(line, 7);
+    
+    char* rsp = "rsp: ";
+    draw_string(rsp, 5);
+    sys_print_num(process->rsp,0);
+    //draw_string(line, 7);
+
+    sys_newline();
+}
+
+void PS(){
+    int i;
+    for(i=0; i<MAX_PROCESSES; i++){
+        if(processes[i] != NULL){
+            printProcess(processes[i]);
+        }
+    }
+};

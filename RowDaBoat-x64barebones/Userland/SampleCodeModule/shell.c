@@ -140,6 +140,7 @@ static void clean(){
     draw_Main_Screen();
 }
 
+
 void fillCommand(char* name,char *desc, void (*cmdptr)())
 {
     command aux;
@@ -158,6 +159,8 @@ void fillCommandList()
     fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida" ,&testIvalidOpCodeCommand);
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem);
     fillCommand("clean", ": Limpia la pantalla", &clean);
+    fillCommand("test_mem", ": Testeo de memoria", &test_mm);
+    fillCommand("ps", ": Imprime el estado de los procesos vivos", &ps);
 }
 
 static void CommandHandler()

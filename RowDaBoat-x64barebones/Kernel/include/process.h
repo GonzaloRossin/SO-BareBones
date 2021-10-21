@@ -2,6 +2,7 @@
 #define PROCESS_H
 
 #include "lib.h"
+#include "video_driver.h"
 
 #define STATE_SIZE 5
 #define REGS_SIZE 15
