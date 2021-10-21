@@ -66,7 +66,7 @@ int main()
 	pCreate(name, &main_f, MAX_STACK, MAX_STACK);
 
 	_halt_and_wait();
-	
+
 	while(1){
 		draw_string("hola", 5);
 	}
