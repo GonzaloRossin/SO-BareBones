@@ -65,6 +65,24 @@ void ps(){
   sys_call(19,0,0,0,0);
 }
 
+//loop = 20
+
+void kill(pid_t pid){
+   sys_call(21,pid,0,0,0);
+}
+
+void nice(pid_t pid, unsigned int priority){
+   sys_call(22,pid,priority,0,0);
+}
+
+void block(pid_t pid){
+   sys_call(23,pid,0,0,0);
+}
+
+void argTest(int a1, int a2, int a3){
+   sys_call(99,a1,a2,a3,0);
+}
+
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};
    getCursor(aux);

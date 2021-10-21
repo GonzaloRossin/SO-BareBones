@@ -161,6 +161,10 @@ void fillCommandList()
     fillCommand("clean", ": Limpia la pantalla", &clean);
     fillCommand("test_mem", ": Testeo de memoria", &test_mm);
     fillCommand("ps", ": Imprime el estado de los procesos vivos", &ps);
+    fillCommand("kill", ": Mata a un proceso dado su ID", &kill);
+    fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice);
+    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block);
+    fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest);
 }
 
 static void CommandHandler()

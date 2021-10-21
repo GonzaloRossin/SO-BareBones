@@ -277,4 +277,16 @@ void PS(){
             printProcess(processes[i]);
         }
     }
-};
+}
+
+void update_priority(pid_t pid, unsigned int priority){
+    get_process_by_id(pid)->priority = priority;
+}
+
+void change_status(pid_t pid){
+    if(get_process_by_id(pid)->status == READY){
+        set_pStatus(pid, BLOCKED);
+    } else if(get_process_by_id(pid)->status == BLOCKED){
+        set_pStatus(pid, READY);
+    }
+}

@@ -75,10 +75,36 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 19:
 		ps();
 		break;
+	case 20:
+		//loop();
+		break;
+	case 21:
+		process_kill(rsi);
+		break;
+	case 22:
+		nice(rsi, rdx);
+		break;
+	case 23:
+		block(rsi);
+		break;
+	case 99:
+		arg_test(rsi,rdx,rcx);
+		break;
 	}
 	return 0;
 }
-
+//SYSCALL 99
+void arg_test(int a1, int a2, int a3){
+	char* msg = "Argumentos: ";
+	draw_string(msg, 12);
+	sys_newline();
+	draw_decimal(a1);
+	sys_newline();
+	draw_decimal(a2);
+	sys_newline();
+	draw_decimal(a3);
+	sys_newline();
+}
 //SYSCALL 0
 char sys_read (){
 	return getLastInput();
@@ -197,5 +223,18 @@ pid_t exec(char* rsi,main_func_t*rdx,size_t rcx,size_t r8){
 //SYS_CALL 19
 void ps(){
 	PS();
+}
+//SYS_CALL 20
+//SYS_CALL 21
+void process_kill(pid_t pid){
+	kill(pid);
+}
+//SYS_CALL 22
+void nice(pid_t pid, unsigned int priority){
+	update_priority(pid, priority);
+}
+//SYS_CALL 23
+void block(pid_t pid){
+	change_status(pid);
 }
 
