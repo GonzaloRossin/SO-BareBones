@@ -6,7 +6,7 @@
 #include "drivers/video_driver.h"
 #include "include/font.h"
 #include <interrupt_routines.h>
-#include "process.h"
+#include "include/process.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -66,7 +66,7 @@ int main()
 	pCreate(name, &main_f, MAX_STACK, MAX_STACK);
 
 	_halt_and_wait();
-	
+
 	while(1){
 		draw_string("hola", 5);
 	}

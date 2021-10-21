@@ -77,7 +77,7 @@ static void expireCurrent(void) {
     #endif
 
     if (exp_queue[curr_process->priority].last != NULL)
-        (exp_queue[curr_process->priority].last)->next_in_queue = curr_process;
+        exp_queue[curr_process->priority].last->next_in_queue = curr_process;
     exp_queue[curr_process->priority].last = curr_process;
 }
 
@@ -176,7 +176,7 @@ pid_t pCreate(char *name, main_func_t * main_f, size_t stack, size_t heap) { // 
     //Preparar el stack
     prepareStack(main_f->f, main_f->argc, main_f->argv, process->rbp, process->rsp);
 
-    enqueueProcess(&(processes[process->pid]));
+    enqueueProcess((processes[process->pid]));
 
     processes[process->pid] = process;
     process_count++;
