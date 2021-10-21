@@ -1,5 +1,6 @@
 #include "mem_man.h"
 #include "../interrupts/int80.h"
+#include "../drivers/video_driver.h"
 
 /* Based on FreeRTOS Kernel V10.4.3
  * https://www.FreeRTOS.org

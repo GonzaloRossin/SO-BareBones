@@ -14,7 +14,7 @@ void get_Memory(uint8_t* mem,uint8_t* v){//syscall2
    sys_call(2,(uint64_t) mem,(uint64_t)v,0,0);
 }
 void newLine(){//syscall3
-   sys_call(3,0,0,0);
+   sys_call(3,0,0,0,0);
 }
 void get_InfoReg(uint64_t* reg_pointer){//syscall4
    sys_call(4,(uint64_t)reg_pointer,0,0,0);
@@ -64,6 +64,7 @@ void save_screenCords(screenShell* shell){//desuso
    shell->coordX=aux[0];
    shell->coordY=aux[1];
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 int strlen(char *str)
 {

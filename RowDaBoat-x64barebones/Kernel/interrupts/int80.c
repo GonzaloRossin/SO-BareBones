@@ -70,7 +70,6 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		mem();
 		break;
 	case 18:
-		//pid_t pCreate(char *name, main_func_t * f, size_t stack, size_t heap);
 		return (pid_t) exec((char*)rsi,(main_func_t*)rdx,(size_t)rcx,(size_t)r8);
 		break;
 	}
@@ -187,4 +186,7 @@ void* memSet(void* rsi,uint32_t rdx,uint64_t rcx){
 //SYS_CALL 17
 void mem(){
 	RTOSmem();
+}
+pid_t exec(char* rsi,main_func_t*rdx,size_t rcx,size_t r8){
+	return pCreate(rsi,rdx,rcx,r8);
 }

@@ -2,11 +2,11 @@
 #include "include/lib.h"
 #include "interrupts/int80.h"
 #include "include/moduleLoader.h"
-#include <idt.h>
+#include "interrupts/idt.h"
 #include "drivers/video_driver.h"
 #include "include/font.h"
 #include <interrupt_routines.h>
-#include "process.h"
+#include "include/process.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
