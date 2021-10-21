@@ -3,7 +3,7 @@
 #include "drivers/video_driver.h"
 
 process_t processes[MAX_PROCESSES];
-size_t process_count = 0, started = 0;
+size_t process_count = 0, processes_so_far = 0;
 process_t* curr_process = NULL;
 
 static QUEUE_HD queues[2][MAX_PRIORITY - MIN_PRIORITY + 1];
@@ -16,7 +16,7 @@ static unsigned int prior = 0;
 int quantum_started = 0;
 unsigned int processes_size = 0;
 
-static void updateCurrent(void);
+static void updateProcess(process_t *process);
 static void * getNextProcess(void * rsp);
 static void enqueueProcess(process_t * process);
 
@@ -39,7 +39,7 @@ void * scheduler(void * rsp) {
 
             if (curr_process->given_time == 0) {
 
-                updateCurrent();
+                updateProcess(curr_process);
                 curr_process->rsp = rsp;
 
                 #ifdef _RR_AGING_ 
@@ -65,30 +65,35 @@ static void initQuantums() {
     }
 }
 
-static void updateCurrent(void) {
+static void updateProcess(process_t *process) {
     //update info
-    (curr_process->aging)++;
+    (process->aging)++;
 
     //update act_queue
-    act_queue[prior].first = curr_process->next_in_queue;
-    if (act_queue[prior].last == curr_process)
-        act_queue[prior].last == NULL;
-    curr_process->next_in_queue = NULL;
+    if (curr_process == process) {
+        act_queue[prior].first = curr_process->next_in_queue;
+        if (act_queue[prior].last == curr_process)
+            act_queue[prior].last == NULL;
+    }
+
+    process->next_in_queue = NULL;
 }
 
 static void * getNextProcess(void * rsp) {
     while (prior <= MAX_PRIORITY && act_queue[prior].first == NULL) //go to a queue with lower priority
     prior++;
 
-    if(prior < MAX_PRIORITY){
-        //draw_string("Proceso encontrado\n", 20);
+    if(prior <= MAX_PRIORITY) {
+        if (act_queue[prior].first->status == KILLED) {
+            act_queue[prior].first = (act_queue[prior].first)->next_in_queue;
+            return getNextProcess(rsp);
+        }
+
         curr_process = act_queue[prior].first;
-        //draw_string("proceso seleccionado\n", 22);
         curr_process->given_time = act_queue[prior].quantum;
-        //draw_string("time given\n", 12);
         return curr_process->rsp;
+    
     } else {
-        //draw_string("No encontre proceso\n", 22);
         actual_queue = 1 - actual_queue; // change to expired queue
         prior = 0;
         curr_process = NULL;
@@ -154,7 +159,7 @@ pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)
     if (i < MAX_PROCESSES) {
         int size = Strlen(name);
         Strncpy(processes[i].process_name, name, 0, size);
-        processes[i].pid = (process_count + 1);
+        processes[i].pid = (processes_so_far + 1);
         processes[i].ppid = (curr_process != NULL)?curr_process->pid:0; 
         processes[i].foreground = foreground;
         processes[i].priority = BASE_PRIORITY;
@@ -173,6 +178,7 @@ pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)
         enqueueProcess(&(processes[i]));
 
         process_count++;
+        processes_so_far++; 
 
         //draw_hex(stackModel.rip);
         return processes[i].pid;
