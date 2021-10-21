@@ -4,11 +4,12 @@
 #include "../include/lib.h"
 #include "../memory/mem_man.h"
 #include "../drivers/keyboard_driver.h"
+#include "../include/process.h"
 #include <stdint.h>
 #include "../include/font.h"
 
 //Software interrupt used for interaction between user and kernel space
-uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
+uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8)
 {
 
 	switch (rdi)
@@ -67,6 +68,10 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 		break;
 	case 17:
 		mem();
+		break;
+	case 18:
+		//pid_t pCreate(char *name, main_func_t * f, size_t stack, size_t heap);
+		return (pid_t) exec((char*)rsi,(main_func_t*)rdx,(size_t)rcx,(size_t)r8);
 		break;
 	}
 	return 0;

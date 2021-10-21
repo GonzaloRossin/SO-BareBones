@@ -3,60 +3,60 @@
 #include <stdint.h>
 
 char read_input(){//syscall0
-   return (char) sys_call(0,0,0,0);
+   return (char) sys_call(0,0,0,0,0);
 }
 void print(char *buffer)//syscall1
 {
    int length=strlen(buffer);
-   sys_call(1,(uint64_t)buffer,(uint64_t)length,0);
+   sys_call(1,(uint64_t)buffer,(uint64_t)length,0,0);
 }
 void get_Memory(uint8_t* mem,uint8_t* v){//syscall2
-   sys_call(2,(uint64_t) mem,(uint64_t)v,0);
+   sys_call(2,(uint64_t) mem,(uint64_t)v,0,0);
 }
 void newLine(){//syscall3
    sys_call(3,0,0,0);
 }
 void get_InfoReg(uint64_t* reg_pointer){//syscall4
-   sys_call(4,(uint64_t)reg_pointer,0,0);
+   sys_call(4,(uint64_t)reg_pointer,0,0,0);
 }
 void put_char(char c){//syscall5
-   sys_call(5,(uint64_t)c,0,0);
+   sys_call(5,(uint64_t)c,0,0,0);
 }
 void actionCall(int action){//syscall6
-   sys_call(6,(uint64_t) action,0,0);
+   sys_call(6,(uint64_t) action,0,0,0);
 }
 uint64_t get_RTC(uint64_t c){//syscall7
-   return sys_call(7,c,0,0);
+   return sys_call(7,c,0,0,0);
 }
 void print_num(int num, int base_option){//syscall8
-   sys_call(8,(uint64_t)num,(uint64_t)base_option,0);
+   sys_call(8,(uint64_t)num,(uint64_t)base_option,0,0);
 }
 void clearScreen(){//syscall9
-   sys_call(9,0,0,0);
+   sys_call(9,0,0,0,0);
 }
 unsigned long get_seconds(){//syscall10
-   return (unsigned long) sys_call(10,0,0,0);
+   return (unsigned long) sys_call(10,0,0,0,0);
 }
 void set_cursor(int x, int y){//syscall11
-   sys_call(11,(uint64_t)x,(uint64_t)y,0);
+   sys_call(11,(uint64_t)x,(uint64_t)y,0,0);
 }
 void set_margins(int mLeft,int mRight){//syscall12-----------desuso
-   sys_call(12,(uint64_t)mLeft,(uint64_t)mRight,0);
+   sys_call(12,(uint64_t)mLeft,(uint64_t)mRight,0,0);
 }
 void getCursor(int coords[2]){//syscall13
-   sys_call(13,(uint64_t) coords,0,0);
+   sys_call(13,(uint64_t) coords,0,0,0);
 }
 void* Mmalloc(int size){
-   return (void*)sys_call(14,(uint64_t)size,0,0);//syscall14
+   return (void*)sys_call(14,(uint64_t)size,0,0,0);//syscall14
 }
 void Mfree(void* pointer){//syscall15
-   sys_call(15,(uint64_t)pointer,0,0);
+   sys_call(15,(uint64_t)pointer,0,0,0);
 }
-void* MemSet(void* ptr,uint32_t c,uint64_t string){
-   return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string);
+void* MemSet(void* ptr,uint32_t c,uint64_t string){//syscall16
+   return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string,0);
 }
 void Mmem(){
-   sys_call(17,0,0,0);
+   sys_call(17,0,0,0,0);
 }
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};

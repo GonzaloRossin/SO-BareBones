@@ -1,10 +1,10 @@
 #include <interrupt_routines.h>
 #include <stdint.h>
-#include <keyboard_driver.h>
-#include <lib.h>
+#include "../drivers/keyboard_driver.h"
+#include "../include/lib.h"
+#include "../drivers/video_driver.h"
+#include "../include/naiveConsole.h"
 #include <interrupts.h>
-#include <video_driver.h>
-#include <naiveConsole.h>
 #include <process.h>
 
 static unsigned long ticks = 0;
