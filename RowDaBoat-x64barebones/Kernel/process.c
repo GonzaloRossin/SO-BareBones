@@ -153,7 +153,9 @@ pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)
 
     if (i < MAX_PROCESSES) {
         int size = Strlen(name);
-        Strncpy(processes[i].process_name, name, 0, size); 
+        Strncpy(processes[i].process_name, name, 0, size);
+        processes[i].pid = (process_count + 1);
+        processes[i].ppid = (curr_process != NULL)?curr_process->pid:0; 
         processes[i].foreground = foreground;
         processes[i].priority = BASE_PRIORITY;
         processes[i].status = READY;

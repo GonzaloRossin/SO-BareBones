@@ -36,6 +36,7 @@ typedef struct{
 
 typedef struct process_t{
     pid_t pid;
+    pid_t ppid;
     char *process_name;
     pStatus status;
     int foreground;
