@@ -168,67 +168,8 @@ void fillCommandList()
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block,1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest,3);
 }
-static void CommandHandler()
-{
-    char potentialCommand[MAX_COMDESC] = {0};
-    strncpy(terminalBuffer, potentialCommand,0, buffersize);
-    char command[MAX_COMDESC];
-    char args[MAX_ARGS][MAX_COMDESC];
-    for(int i=0;i<MAX_ARGS;i++){
-        for(int j=0;j<MAX_COMDESC;j++){
-            args[i][j]=0;
-        }
-    }
-    int args_q_read = parse_command(potentialCommand, command, args);
-//
-    for (int i = 0; i < commandsSize; i++)
-    {
-        if (strcmp(command, commandList[i].command_name))
-        {
-            if(args_q_read != commandList[i].arg_q){
-                newLine();
-                print((char*)args);
-                print("Cantidad invalida de argumentos para el comando: ");
-                print(command);
-                newLine();
-                print("Argumentos recibidos: ");
-                print_num(args_q_read,0);
-                print(", Argumentos esperados: ");
-                print_num(commandList[i].arg_q,0);
-                newLine();
-                return; 
-            }
-            if(commandList[i].arg_q == 0){
-                (commandList[i].cmdptr)(0,0,0);
-                newLine();
-                return;
-            } else if(commandList[i].arg_q == 1){
-                (commandList[i].cmdptr)(args[0],0,0);
-                newLine();
-                return;
-            } else if(commandList[i].arg_q == 2){
-                (commandList[i].cmdptr)(args[0], args[1],0);
-                newLine();
-                return;
-            } else if(commandList[i].arg_q == 3){
-                (commandList[i].cmdptr)(args[0], args[1], args[2]);
-                newLine();
-                print("done");
-                newLine();
-                return;
-            } else {
-                print("failatron");
-            }
-        }
-    }
 
-    //If command not found
-    print("Not a valid command: ");
-    print(potentialCommand);
-    newLine();
-}
-
-int parse_command(char* potentialCommand, char* command, char** args){
+int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
 	int params_read=0, j=0, i=0;
 
     //building command
@@ -265,6 +206,65 @@ int parse_command(char* potentialCommand, char* command, char** args){
     }
 
 	return params_read; 
+}
+
+static void CommandHandler()
+{
+    char potentialCommand[MAX_COMDESC] = {0};
+    strncpy(terminalBuffer, potentialCommand,0, buffersize);
+    char command[MAX_COMDESC];
+    char args[MAX_ARGS][MAX_COMDESC];
+    for(int i=0;i<MAX_ARGS;i++){
+        for(int j=0;j<MAX_COMDESC;j++){
+            args[i][j]=0;
+        }
+    }
+    int args_q_read = parse_command(potentialCommand, command,args);
+//
+    for (int i = 0; i < commandsSize; i++)
+    {
+        if (strcmp(command, commandList[i].command_name))
+        {
+            if(args_q_read != commandList[i].arg_q){
+                newLine();
+                print("Cantidad invalida de argumentos para el comando: ");
+                print(command);
+                newLine();
+                print("Argumentos recibidos: ");
+                print_num(args_q_read,0);
+                print(", Argumentos esperados: ");
+                print_num(commandList[i].arg_q,0);
+                newLine();
+                return; 
+            }
+            if(commandList[i].arg_q == 0){
+                (commandList[i].cmdptr)(0,0,0);
+                newLine();
+                return;
+            } else if(commandList[i].arg_q == 1){
+                (commandList[i].cmdptr)(strToInt(args[0]),0,0);
+                newLine();
+                return;
+            } else if(commandList[i].arg_q == 2){
+                (commandList[i].cmdptr)(strToInt(args[0]),strToInt(args[1]),0);
+                newLine();
+                return;
+            } else if(commandList[i].arg_q == 3){
+               (commandList[i].cmdptr)(strToInt(args[0]),strToInt(args[1]), strToInt(args[2]));
+                newLine();
+                print("done");
+                newLine();
+                return;
+            } else {
+                print("failatron");
+            }
+        }
+    }
+
+    //If command not found
+    print("Not a valid command: ");
+    print(potentialCommand);
+    newLine();
 }
 
 void initializeOS(){

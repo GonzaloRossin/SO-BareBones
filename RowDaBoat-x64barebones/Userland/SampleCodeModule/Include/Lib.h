@@ -89,6 +89,7 @@ void strncpy(char *source, char *dest,int index, int size);
 void numToChar(double num, char * c);
 uint8_t * strToNumHex(char * str);
 int abs(int i);
+int strToInt(char* str);
 void save_screenCords(screenShell* shell);
 //-------------------------------------------------------------
 //syscall
