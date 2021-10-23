@@ -1,8 +1,6 @@
-#include <libasm.h>
-#include <shell.h>
-#include <Lib.h>
-#include <test_mm.h>
-#include <libasm.h>
+#include "Include/shell.h"
+#include "Include/Lib.h"
+#include "Include/test_mm.h"
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
@@ -156,7 +154,7 @@ void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 
 void fillCommandList()
 {
-    fillCommand("help",": Despliega al usuario los comandos disponibles",func0,0);
+    fillCommand("help",": Despliega al usuario los comandos disponibles",&help,0);
     fillCommand("get_time",": Muestra la hora actual",&get_time,0);
     fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros (con ctrl se guardan los registros)", &inforeg,0);
     fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command,0);
@@ -170,14 +168,17 @@ void fillCommandList()
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block,1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest,3);
 }
-
-
 static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
     strncpy(terminalBuffer, potentialCommand,0, buffersize);
     char command[MAX_COMDESC];
     char args[MAX_ARGS][MAX_COMDESC];
+    for(int i=0;i<MAX_ARGS;i++){
+        for(int j=0;j<MAX_COMDESC;j++){
+            args[i][j]=0;
+        }
+    }
     int args_q_read = parse_command(potentialCommand, command, args);
 //
     for (int i = 0; i < commandsSize; i++)
@@ -187,8 +188,8 @@ static void CommandHandler()
             if(args_q_read != commandList[i].arg_q){
                 newLine();
                 print((char*)args);
-                print("Invalida cantidad de argumentos para el comando: ");
-                print(potentialCommand);
+                print("Cantidad invalida de argumentos para el comando: ");
+                print(command);
                 newLine();
                 print("Argumentos recibidos: ");
                 print_num(args_q_read,0);
@@ -198,25 +199,22 @@ static void CommandHandler()
                 return; 
             }
             if(commandList[i].arg_q == 0){
-                print("executing..");
                 (commandList[i].cmdptr)(0,0,0);
                 newLine();
                 return;
             } else if(commandList[i].arg_q == 1){
-                print("executing..");
                 (commandList[i].cmdptr)(args[0],0,0);
                 newLine();
                 return;
             } else if(commandList[i].arg_q == 2){
-                print("executing..");
                 (commandList[i].cmdptr)(args[0], args[1],0);
                 newLine();
                 return;
             } else if(commandList[i].arg_q == 3){
-                print("executing..");
                 (commandList[i].cmdptr)(args[0], args[1], args[2]);
                 newLine();
                 print("done");
+                newLine();
                 return;
             } else {
                 print("failatron");
@@ -250,7 +248,7 @@ int parse_command(char* potentialCommand, char* command, char** args){
 	//building params
 	while(potentialCommand[i] != '\0' && params_read <= MAX_ARGS){
 		if(potentialCommand[i] != ' '){
-			args[params_read][j++] = potentialCommand[i]; 
+			args[params_read][j++] = potentialCommand[i];
 		}else{
             args[params_read++][j] = '\0';
 			j=0;
@@ -277,8 +275,6 @@ void initializeOS(){
 
 void shell()
 {
-    //test_mm();
-    //test_mem();
     fillCommandList();
     initializeOS();
     while(1) {
