@@ -151,20 +151,31 @@ uint8_t* strToNumHex(char * str){
 }
 int strToInt(char* str)
 {
-    // Initialize result
+   // Initialize result
     int res = 0;
  
-    // Iterate through all characters
-    // of input string and update result
-    // take ASCII character of corresponding digit and
-    // subtract the code from '0' to get numerical
-    // value and multiply res by 10 to shuffle
-    // digits left to update running total
-    for (int i = 0; str[i] != '\0'; ++i)
+    // Initialize sign as positive
+    int sign = 1;
+ 
+    // Initialize index of first digit
+    int i = 0;
+ 
+    // If number is negative,
+    // then update sign
+    if (str[0] == '-') {
+        sign = -1;
+ 
+        // Also update index of first digit
+        i++;
+    }
+ 
+    // Iterate through all digits
+    // and update the result
+    for (; str[i] != '\0'; ++i)
         res = res * 10 + str[i] - '0';
  
-    // return result.
-    return res;
+    // Return result with sign
+    return sign * res;
 }
 int abs(int i){
     return i >= 0 ? i : -i;
