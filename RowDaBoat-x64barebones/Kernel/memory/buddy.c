@@ -161,7 +161,7 @@ static uint64_t log2(uint64_t n)
 
 static void pushBlock(block_t *oldBlock, block_t *newBlock)
 {
-    block_t prev = oldBlock->prev;
+    block_t* prev = oldBlock->prev;
     newBlock->prev = prev;
     newBlock->next = oldBlock;
     prev->next = newBlock;

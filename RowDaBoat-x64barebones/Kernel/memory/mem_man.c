@@ -1,5 +1,6 @@
 #include "mem_man.h"
 #include "../interrupts/int80.h"
+#include "sbrk.h"
 #include "../drivers/video_driver.h"
 
 /* Based on FreeRTOS Kernel V10.4.3
@@ -27,7 +28,6 @@ static size_t freeBytesRemaining = 0;
 
 /* Total memory heap*/
 void * totalMemory;
-void *topAddress = NULL;
 
 /* Gets set to the top bit of an size_t type.  When this bit in the size
  * member of an header structure is set then the block belongs to the
@@ -124,7 +124,7 @@ static void initHeap() {
     size_t totalMemPointer;
     size_t totalHeapSize = TOTAL_HEAP_SIZE;
 
-    sbrk_handler(TOTAL_HEAP_SIZE, &totalMemory);
+    sbrkHandler(TOTAL_HEAP_SIZE, &totalMemory);
 
     /* Ensure the heap starts on a correctly aligned boundary. */
     totalMemPointer = (size_t) totalMemory;

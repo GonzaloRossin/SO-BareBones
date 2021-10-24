@@ -1,5 +1,5 @@
-#ifndef MEM_MAN_H
-#define MEM_MAN_H
+#ifndef BUDDY_H
+#define BUDDY_H
 
 #include <stdint.h>
 #include <string.h>
@@ -22,7 +22,7 @@
     {
         bool inUse;
         unsigned short int level;
-        struct block_t *prev;
+        struct block_t* prev;
         struct block_t *next;
     } block_t;
 
