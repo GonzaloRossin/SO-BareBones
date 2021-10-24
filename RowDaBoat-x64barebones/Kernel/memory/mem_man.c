@@ -116,25 +116,6 @@ void * RTOSMalloc(size_t requestedSize) {
 }
 
 
-void sbrk_handler(int increment, void **buffer)
-{
-        if (topAddress == NULL)
-        {
-                topAddress = START_ADDRESS;
-        }
-
-        if ((topAddress + increment) <= END_ADDRESS)
-        {
-
-                *buffer = topAddress;
-                topAddress += increment;
-        }
-        else
-        {
-                *buffer = NULL;
-        }
-        return;
-}
 
 static void initHeap() {
     
