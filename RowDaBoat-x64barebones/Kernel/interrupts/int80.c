@@ -71,13 +71,13 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		//loop();
 		break;
 	case 21:
-		process_kill(rsi);
+		process_kill((pid_t)rsi);
 		break;
 	case 22:
-		nice(rsi, rdx);
+		nice((pid_t)rsi, (unsigned int)rdx);
 		break;
 	case 23:
-		block(rsi);
+		block((pid_t)rsi);
 		break;
 	case 24:
 		return get_MemInfo();
