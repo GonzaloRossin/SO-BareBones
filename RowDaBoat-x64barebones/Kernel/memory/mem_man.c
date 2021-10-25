@@ -12,7 +12,7 @@
 static void addBlockToFreeList(header * block);
 
 /* Sets up the required heap on the first call to malloc */
-static void initHeap();
+void initHeap();
 
 /* The size of the structure placed at the beginning of each allocated
  *  memory block must be correctly byte aligned. */
@@ -24,7 +24,9 @@ static const size_t heapStructSize = (sizeof(header) + ((size_t) (BYTE_ALIGNMENT
 /* Links to the free list*/
 static header start, * pEnd = NULL;
 
-static size_t freeBytesRemaining = 0;
+size_t freeBytesRemaining = TOTAL_HEAP_SIZE;
+size_t totalAvailableMemory=TOTAL_HEAP_SIZE;
+int info[2] = {0};
 
 /* Total memory heap*/
 void * totalMemory;
@@ -48,8 +50,10 @@ void * RTOSMalloc(size_t requestedSize) {
     /* Checks that the requested block doesn't set the top bit
      * The top bit determines if the block is free or not. */
     if((requestedSize & xBlockAllocatedBit) == 0) {
+        
         /* The wanted size is smaller than our block size.
          * We proceed to make it larger */
+        
         if((requestedSize > 0) && ((requestedSize + heapStructSize) >  requestedSize)) {
             
             requestedSize += heapStructSize;
@@ -115,9 +119,14 @@ void * RTOSMalloc(size_t requestedSize) {
     return returnp;
 }
 
+int * get_MemInfo()
+{
+    info[0] = (int)totalAvailableMemory;
+    info[1] = (int)freeBytesRemaining;
+    return info;
+}
 
-
-static void initHeap() {
+void initHeap() {
     
     header * pFirstFreeBlock;
     uint8_t * pAlignedHeap;
@@ -160,6 +169,7 @@ static void initHeap() {
 
     /* Only one block exists - and it covers the entire usable heap space. */
     freeBytesRemaining = pFirstFreeBlock->size;
+    totalAvailableMemory=pFirstFreeBlock->size;
 
     /* Work out the position of the top bit in a size_t variable. */
     xBlockAllocatedBit = ((size_t) 1) << ((sizeof(size_t) * heapBITS_PER_BYTE) - 1);

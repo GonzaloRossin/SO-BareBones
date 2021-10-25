@@ -1,12 +1,10 @@
 #include "sbrk.h"
 
-//---------------------------DECLARACION DE VARIABLES--------------------------------------//
 
 static void *const sampleDataModuleAddress = (void *)0x600000; 
 static void *const maxAddress = (void *)0xF00000;             
 void *topAddress = NULL;
 
-//-----------------------------------------------------------------------------------------//
 
 
 void sbrkHandler(int increment, void **buffer)

@@ -7,6 +7,8 @@
 #include "include/font.h"
 #include <interrupt_routines.h>
 #include "include/process.h"
+#include "memory/mem_man.h"
+#include "memory/buddy.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -70,6 +72,7 @@ int main()
 	//while(1){
 	//	draw_string("hola", 5);
 	//}
+	initHeap();
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

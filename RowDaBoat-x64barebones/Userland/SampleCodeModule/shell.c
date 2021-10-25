@@ -140,6 +140,14 @@ static void clean(){
     draw_Main_Screen();
 }
 
+void get_mem_info(){
+    int* info=get_Minfo();
+    print_num(info[1],0);
+    print(" bytes free from ");
+    print_num(info[0],0);
+    print(" total heap space");
+    newLine();
+}
 
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
@@ -167,6 +175,7 @@ void fillCommandList()
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice,2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block,1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest,3);
+    fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)",&get_mem_info,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){

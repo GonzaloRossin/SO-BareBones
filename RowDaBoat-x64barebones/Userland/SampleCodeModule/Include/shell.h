@@ -8,5 +8,6 @@
 #define TAB 0X09
 
 void shell();
+void get_mem_info();
 
 #endif

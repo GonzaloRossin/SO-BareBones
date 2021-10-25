@@ -2,7 +2,7 @@
 #define __INT80__
 #include <stdint.h>
 #include "../drivers/video_driver.h"
-#include <interrupt_routines.h>
+#include "interrupt_routines.h"
 #include "../include/lib.h"
 #include "../memory/mem_man.h"
 #include "../drivers/keyboard_driver.h"

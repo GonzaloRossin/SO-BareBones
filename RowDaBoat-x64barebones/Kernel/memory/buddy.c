@@ -24,9 +24,17 @@ static size_t heapSize;
 static size_t cantBlocks;
 static block_t buckets[MAX_ALLOC_LOG2];
 static size_t freeBytesRemaining;
+int info[2] = {0};
 
 
 //-----------------------------------------------------------------------------------------//
+
+int * get_MemInfo()
+{
+    info[0]=(int) heapSize;
+    info[1]=(int) freeBytesRemaining; 
+    return info;
+}
 
 
 static int myPow(int base, int power)
@@ -57,7 +65,8 @@ int biggestBuddy(size_t heap)
 void initHeap()
 {
     static void* totalMemoryAux;    
-    heapSize = freeBytesRemaining = biggestBuddy(TOTAL_HEAP_SIZE);      // There will be only one block, taking up the entire space
+    heapSize= biggestBuddy(TOTAL_HEAP_SIZE);      // There will be only one block, taking up the entire space
+    freeBytesRemaining=heapSize;
     sbrkHandler(heapSize, &totalMemoryAux);
     totalMemory = (block_t *)totalMemoryAux;    
     cantBlocks = log2(heapSize) - MIN_ALLOC_LOG2 + 1;
@@ -276,4 +285,4 @@ static int getBlockToUse(size_t firstBlock)
     }
 
     return currentBlock;
-} 
+}
