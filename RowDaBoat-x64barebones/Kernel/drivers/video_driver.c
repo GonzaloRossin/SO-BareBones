@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <font.h>
 #include <video_driver.h>
+#include "../include/lib.h"
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -264,10 +265,24 @@ void draw_decimal(uint64_t value)
 	draw_number(value, 10);
 }
 
+static void _64Hexfill(int n, char * buffer) {
+	for (int i = 15; i >= 0; i--) {
+		if (i >= n)
+			buffer[i] = buffer[i - n];
+		else
+			buffer[i] = '0';
+	}
+	buffer[16] = 0;
+}
+
 void draw_hex(uint64_t value)
 {
-	draw_number(value, 16);
+	int digits = uintToBase(value, buffer, 16);
+	_64Hexfill(16 - digits, buffer);
+	draw_string(buffer, Strlen(buffer));
 }
+
+
 
 void set_cursor(int x, int y){
 	aux_x = cursor_x;

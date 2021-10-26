@@ -22,6 +22,8 @@ static void enqueueProcess(process_t * process);
 static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
 static void initQuantums();
 
+void printProcess(process_t process);
+
 static stackProcess stackModel = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0x8, 0x202, 0, 0};
 
 
@@ -128,7 +130,7 @@ pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)
 
     if (i < MAX_PROCESSES) {
         int size = Strlen(name);
-        Strncpy(processes[i].process_name, name, 0, size);
+        Strncpy(name, processes[i].process_name, 0, size);
         processes[i].pid = (processes_so_far + 1);
         processes[i].ppid = (curr_process != NULL)?curr_process->pid:0; 
         processes[i].foreground = foreground;
@@ -139,18 +141,21 @@ pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)
         processes[i].given_time = quantum[BASE_PRIORITY];
 
         processes[i].stack = MyMalloc(MAX_STACK);
+        
+        //draw_hex(0420);
 
         processes[i].rbp = (void *)(((uint64_t) processes[i].stack + MAX_STACK) & -8);
         processes[i].rsp = (void *) (&processes[i].rbp - (STATE_SIZE + REGS_SIZE) * sizeof(uint64_t));
         //Preparar el stack
         prepareStack(main_f->f, main_f->argc, main_f->argv, processes[i].rbp, processes[i].rsp);
 
+        
         enqueueProcess(&(processes[i]));
 
         process_count++;
         processes_so_far++; 
+        //draw_string(processes[i].process_name, 16);
 
-        //draw_hex(stackModel.rip);
         return processes[i].pid;
     }
     return -1;
@@ -229,6 +234,48 @@ int changeForegorundStatus(pid_t pid, unsigned int status) {
         }
     }
     return -1;
+}
+
+void printProcess(process_t process){
+    sys_newline();
+    char* line = " -----\n ";
+    char* name = "name: ";
+    draw_string(name, 6);
+    draw_string(process.process_name, 16); //hacer que no sea numero fijo
+    draw_string(line, 9);
+    
+    char* pid = "pid: ";
+    draw_string(pid, 5);
+    draw_decimal(process.pid);
+    //sys_print_num(process->pid,0);
+    draw_string(line, 7);
+
+    char* priority = "priority: ";
+    draw_string(priority, 10);
+    draw_decimal((uint64_t) process.priority);
+    //sys_print_num(process->priority,0);
+    draw_string(line, 7);
+    
+    char* rbp = "rbp: ";
+    draw_string(rbp, 5);
+    draw_hex((uint64_t) process.rbp);
+    //sys_print_num(process->rbp,0);
+    draw_string(line, 7);
+    
+    char* rsp = "rsp: ";
+    draw_string(rsp, 5);
+    draw_hex((uint64_t) process.rsp);
+    //sys_print_num(process->rsp,0);
+    //draw_string(line, 7);
+
+    sys_newline();
+}
+
+void PS(){
+    int i;
+    for(i = 0; i < process_count; i++) {
+        printProcess(processes[i]);
+    }
 }
 
 

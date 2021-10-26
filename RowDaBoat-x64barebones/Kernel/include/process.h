@@ -105,8 +105,8 @@ pStatus get_pStatus(pid_t pid);
 void free_process(pid_t pid);
 
 void PS();
-void update_priority(pid_t pid, unsigned int priority);
-void change_status(pid_t pid);
+// void update_priority(pid_t pid, unsigned int priority);
+// void change_status(pid_t pid);
 
 
 #endif

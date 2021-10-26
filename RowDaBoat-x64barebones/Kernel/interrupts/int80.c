@@ -64,9 +64,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 18:
 		return (pid_t) exec((main_func_t *) rsi, (char*) rdx, (int) rcx);
 		break;
-	// case 19:
-	// 	ps();
-	// 	break;
+	case 19:
+		ps();
+		break;
 	// case 20:
 	// 	//loop();
 	// 	break;
@@ -215,10 +215,10 @@ void mem(){
 pid_t exec(main_func_t *rsi, char* rdx, int rcx){
 	return pCreate(rsi, rdx, rcx);
 }
-// //SYS_CALL 19
-// void ps(){
-// 	PS();
-// }
+//SYS_CALL 19
+void ps(){
+	PS();
+}
 // //SYS_CALL 20
 // //SYS_CALL 21
 // void process_kill(pid_t pid){
