@@ -7,3 +7,5 @@ RowDaBoat-x64barebones/.vscode/launch.json
 RowDaBoat-x64barebones/.vscode/settings.json
 .bash_history
 .vscode/settings.json
+
+RowDaBoat-x64barebones/Kernel/kernel.elf

@@ -3,7 +3,7 @@
 #include "Include/shell.h"
 
 #define MAX_BLOCKS 128
-#define MAX_MEMORY 1024 //Should be around 80% of memory managed by the MM
+#define MAX_MEMORY 8192 //Should be around 80% of memory managed by the MM
 
 typedef struct MM_rq{
   void *address;
@@ -36,25 +36,26 @@ void test_mm(){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         MemSet(mm_rqs[i].address, i, mm_rqs[i].size); // TODO: Port this call as required
-    
+      else{
+        print("pointer is null");
+        newLine();
+      }
     // Print Mem state
-
+    newLine();
+    print("freeing...");
+      newLine();
     // Check
-    for (i = 0; i < rq; i++)
+    for (i = 0; i < rq; i++){
       if (mm_rqs[i].address != NULL)
         if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
           print("ERROR!\n"); // TODO: Port this call as required
-    // Free
-    print("freeing...");
-    newLine();
-    newLine();
-    for (i = 0; i < rq; i++){
-      if (mm_rqs[i].address != NULL){
-          Mfree(mm_rqs[i].address);  // TODO: Port this call as required
-          get_mem_info();
+      for (i = 0; i < rq; i++){
+        if (mm_rqs[i].address != NULL){
+            Mfree(mm_rqs[i].address);  // TODO: Port this call as required
+            get_mem_info();
+        }
       }
     }
-    print("pasa testeo");
 }
 
 void test_mem(){

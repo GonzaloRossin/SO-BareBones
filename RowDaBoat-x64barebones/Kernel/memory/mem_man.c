@@ -42,11 +42,9 @@ static size_t xBlockAllocatedBit = 0;
 void * RTOSMalloc(size_t requestedSize) {
     header * currp, * prevp;
     void * returnp = NULL;
-
     if(pEnd == NULL){
         initHeap();
     }
-
     /* Checks that the requested block doesn't set the top bit
      * The top bit determines if the block is free or not. */
     if((requestedSize & xBlockAllocatedBit) == 0) {
