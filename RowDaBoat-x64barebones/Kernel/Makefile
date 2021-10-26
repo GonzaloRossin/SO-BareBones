@@ -6,7 +6,9 @@ SOURCES_ASM=$(wildcard asm/*.asm)
 SOURCES_INTERRUPTS=$(wildcard interrupts/*.c)
 SOURCES_INTERRUPTS_ASM=$(wildcard interrupts/*.asm)
 SOURCES_DRIVERS=$(wildcard drivers/*.c)
-SOURCES_MEM_MANAGER=$(wildcard memory/*.c)
+SOURCES_MEM_MANAGER=$(filter-out memory/buddy.c, $(wildcard memory/*.c))
+SOURCES_MEM2=$(filter-out memory/mem_man.c, $(wildcard memory/*.c))
+OBJECTS_MEM2=$(SOURCES_MEM2:.c=.o)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
 OBJECTS_INTERRUPTS=$(SOURCES_INTERRUPTS:.c=.o)
@@ -19,6 +21,11 @@ LOADEROBJECT=$(LOADERSRC:.asm=.o)
 STATICLIBS=
 
 all: $(KERNEL)
+
+buddy: $(KERNEL2)
+
+$(KERNEL2): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM) $(OBJECTS_INTERRUPTS) $(OBJECTS_INTERRUPTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_MEM2)
+	$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $^
 
 $(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM) $(OBJECTS_INTERRUPTS) $(OBJECTS_INTERRUPTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_MEM_MANAGER)
 	$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $^

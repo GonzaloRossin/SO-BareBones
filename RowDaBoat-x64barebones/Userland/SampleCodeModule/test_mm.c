@@ -1,4 +1,6 @@
 #include <test_mm.h>
+#include "Include/Lib.h"
+#include "Include/shell.h"
 
 #define MAX_BLOCKS 128
 #define MAX_MEMORY 1024 //Should be around 80% of memory managed by the MM
@@ -16,9 +18,13 @@ void test_mm(){
     rq = 0;
     total = 0;
     // Request as many blocks as we can
+    print("allocating space...");
+    newLine();
+    newLine();
     while(rq < MAX_BLOCKS && total < MAX_MEMORY){
       mm_rqs[rq].size = GetUniform(MAX_MEMORY - total - 1) + 1;
       mm_rqs[rq].address = Mmalloc(mm_rqs[rq].size); // TODO: Port this call as required
+      get_mem_info();
       if(mm_rqs[rq].address==NULL){
         print("malloc returns NULL");
       }
@@ -39,9 +45,14 @@ void test_mm(){
         if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
           print("ERROR!\n"); // TODO: Port this call as required
     // Free
+    print("freeing...");
+    newLine();
+    newLine();
     for (i = 0; i < rq; i++){
-      if (mm_rqs[i].address != NULL)
-        Mfree(mm_rqs[i].address);  // TODO: Port this call as required
+      if (mm_rqs[i].address != NULL){
+          Mfree(mm_rqs[i].address);  // TODO: Port this call as required
+          get_mem_info();
+      }
     }
     print("pasa testeo");
 }

@@ -2,6 +2,7 @@
 #define PROCESS_H
 
 #include "lib.h"
+#include "video_driver.h"
 
 #define STATE_SIZE 5
 #define REGS_SIZE 15
@@ -109,6 +110,9 @@ void free_process(pid_t pid);
 
 static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
 static void initQuantums();
+void PS();
+void update_priority(pid_t pid, unsigned int priority);
+void change_status(pid_t pid);
 
 
 #endif

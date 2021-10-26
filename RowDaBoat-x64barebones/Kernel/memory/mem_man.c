@@ -1,5 +1,7 @@
 #include "mem_man.h"
 #include "../interrupts/int80.h"
+#include "sbrk.h"
+#include "../drivers/video_driver.h"
 
 /* Based on FreeRTOS Kernel V10.4.3
  * https://www.FreeRTOS.org
@@ -10,7 +12,7 @@
 static void addBlockToFreeList(header * block);
 
 /* Sets up the required heap on the first call to malloc */
-static void initHeap();
+void initHeap();
 
 /* The size of the structure placed at the beginning of each allocated
  *  memory block must be correctly byte aligned. */
@@ -22,11 +24,12 @@ static const size_t heapStructSize = (sizeof(header) + ((size_t) (BYTE_ALIGNMENT
 /* Links to the free list*/
 static header start, * pEnd = NULL;
 
-static size_t freeBytesRemaining = 0;
+size_t freeBytesRemaining = TOTAL_HEAP_SIZE;
+size_t totalAvailableMemory=TOTAL_HEAP_SIZE;
+int info[2] = {0};
 
 /* Total memory heap*/
 void * totalMemory;
-void *topAddress = NULL;
 
 /* Gets set to the top bit of an size_t type.  When this bit in the size
  * member of an header structure is set then the block belongs to the
@@ -47,8 +50,10 @@ void * RTOSMalloc(size_t requestedSize) {
     /* Checks that the requested block doesn't set the top bit
      * The top bit determines if the block is free or not. */
     if((requestedSize & xBlockAllocatedBit) == 0) {
+        
         /* The wanted size is smaller than our block size.
          * We proceed to make it larger */
+        
         if((requestedSize > 0) && ((requestedSize + heapStructSize) >  requestedSize)) {
             
             requestedSize += heapStructSize;
@@ -114,35 +119,21 @@ void * RTOSMalloc(size_t requestedSize) {
     return returnp;
 }
 
-
-void sbrk_handler(int increment, void **buffer)
+int * get_MemInfo()
 {
-        if (topAddress == NULL)
-        {
-                topAddress = START_ADDRESS;
-        }
-
-        if ((topAddress + increment) <= END_ADDRESS)
-        {
-
-                *buffer = topAddress;
-                topAddress += increment;
-        }
-        else
-        {
-                *buffer = NULL;
-        }
-        return;
+    info[0] = (int)totalAvailableMemory;
+    info[1] = (int)freeBytesRemaining;
+    return info;
 }
 
-static void initHeap() {
+void initHeap() {
     
     header * pFirstFreeBlock;
     uint8_t * pAlignedHeap;
     size_t totalMemPointer;
     size_t totalHeapSize = TOTAL_HEAP_SIZE;
 
-    sbrk_handler(TOTAL_HEAP_SIZE, &totalMemory);
+    sbrkHandler(TOTAL_HEAP_SIZE, &totalMemory);
 
     /* Ensure the heap starts on a correctly aligned boundary. */
     totalMemPointer = (size_t) totalMemory;
@@ -178,6 +169,7 @@ static void initHeap() {
 
     /* Only one block exists - and it covers the entire usable heap space. */
     freeBytesRemaining = pFirstFreeBlock->size;
+    totalAvailableMemory=pFirstFreeBlock->size;
 
     /* Work out the position of the top bit in a size_t variable. */
     xBlockAllocatedBit = ((size_t) 1) << ((sizeof(size_t) * heapBITS_PER_BYTE) - 1);

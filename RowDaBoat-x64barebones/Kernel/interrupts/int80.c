@@ -1,14 +1,7 @@
 #include "int80.h"
-#include "../drivers/video_driver.h"
-#include <interrupt_routines.h>
-#include "../include/lib.h"
-#include "../memory/mem_man.h"
-#include "../drivers/keyboard_driver.h"
-#include <stdint.h>
-#include "../include/font.h"
 
 //Software interrupt used for interaction between user and kernel space
-uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
+uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8)
 {
 
 	switch (rdi)
@@ -68,10 +61,45 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx)
 	case 17:
 		mem();
 		break;
+	case 18:
+		return (pid_t) exec((char*)rsi,(main_func_t*)rdx,(size_t)rcx,(size_t)r8);
+		break;
+	case 19:
+		ps();
+		break;
+	case 20:
+		//loop();
+		break;
+	case 21:
+		process_kill((pid_t)rsi);
+		break;
+	case 22:
+		nice((pid_t)rsi, (unsigned int)rdx);
+		break;
+	case 23:
+		block((pid_t)rsi);
+		break;
+	case 24:
+		return get_MemInfo();
+		break;
+	case 99:
+		arg_test(rsi,rdx,rcx);
+		break;
 	}
 	return 0;
 }
-
+//SYSCALL 99
+void arg_test(int a1, int a2, int a3){
+	char* msg = "Argumentos: ";
+	draw_string(msg, 12);
+	sys_newline();
+	draw_decimal(a1);
+	sys_newline();
+	draw_decimal(a2);
+	sys_newline();
+	draw_decimal(a3);
+	sys_newline();
+}
 //SYSCALL 0
 char sys_read (){
 	return getLastInput();
@@ -183,3 +211,25 @@ void* memSet(void* rsi,uint32_t rdx,uint64_t rcx){
 void mem(){
 	RTOSmem();
 }
+//SYS_CALL 18
+pid_t exec(char* rsi,main_func_t*rdx,size_t rcx,size_t r8){
+	return pCreate(rsi,rdx,rcx,r8);
+}
+//SYS_CALL 19
+void ps(){
+	PS();
+}
+//SYS_CALL 20
+//SYS_CALL 21
+void process_kill(pid_t pid){
+	kill(pid);
+}
+//SYS_CALL 22
+void nice(pid_t pid, unsigned int priority){
+	update_priority(pid, priority);
+}
+//SYS_CALL 23
+void block(pid_t pid){
+	change_status(pid);
+}
+

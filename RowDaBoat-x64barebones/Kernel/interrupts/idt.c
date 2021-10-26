@@ -60,7 +60,7 @@ void loadIDT()
 {
 	//disable interrupts
 	_cli();
-	setupEntry(0x20, (uint64_t) &irq0Handler);  // Interrupt del timertick
+	//setupEntry(0x20, (uint64_t) &irq0Handler);  // Interrupt del timertick
 	setupEntry(0x21,(uint64_t) &irq1Handler); 	// Interrupt del teclado
 	setupEntry(0x80, (uint64_t)&int_80); 		// Int 80
 	setupEntry(0x00, (uint64_t)&exception0);  	//exception 0 division by 0

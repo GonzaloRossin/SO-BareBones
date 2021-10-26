@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "libasm.h": "c"
+        "libasm.h": "c",
+        "process.h": "c",
+        "test_mm.h": "c",
+        "test_util.h": "c",
+        "stdlib.h": "c",
+        "lib.h": "c",
+        "video_driver.h": "c"
     }
 }
