@@ -119,16 +119,7 @@ static void enqueueProcess(process_t * process) {
 
 
 
-// pid_t setPid() {
-//     pid_t current_pid = ERROR;
-//     for (int current_process = 0; current_process < MAX_PROCESS_COUNT; current_process++) {
-//         if (processes[current_process].pid == NULL) {
-//             current_pid = current_process;
-//             break;
-//         }
-//     }
-//     return current_pid;
-// }
+
 
 size_t set_pName(process_t * process, char *name) {
     size_t size = Strlen(name) + 1;
@@ -205,16 +196,61 @@ int kill(size_t pid) {
     return set_pStatus(pid, KILLED);
 }
 
-// process_t get_process_by_id(pid_t pid) {
-//     return processes[pid];
-// }
+int getPid(void) {
+    return curr_process->pid;
+}
 
-// pStatus get_pStatus(pid_t pid) {
-//     if(pid >= MAX_PROCESS_COUNT || pid < 0 || processes[pid].pid == NULL) 
-//         return ERROR;
-    
-//     return processes[pid].status;
-// }
+unsigned int getProcessesCount(void) {
+    return process_count; 
+}
+
+int changePriority(pid_t pid, unsigned int new_priority) {
+
+    if (new_priority >= MIN_PRIORITY && new_priority <= MAX_PRIORITY) {
+        for (int i = 0; i < processes_size; i++) {
+            if (processes[i].pid == pid) {
+                if (processes[i].status == KILLED)
+                    return -1;
+                processes[i].priority = new_priority;
+                return 0;
+            }
+        }
+    }
+    return -1;
+}
+
+int changeState(pid_t pid, pStatus new_status) {
+    for (int i = 0; i < processes_size; i++) {
+        if (processes[i].pid == pid) {
+            if (processes[i].status == KILLED)
+                return -1;
+            processes[i].status = new_status;
+            if (new_status == KILLED) {
+                updateProcess(&(processes[i]));
+                if (curr_process != NULL && curr_process->pid == pid) {
+                    curr_process = NULL;
+                    _halt_and_wait();
+                }
+                MyFree(processes[i].stack.base);
+                process_count--;
+            }
+        }
+    }
+}
+
+int changeForegorundStatus(pid_t pid, unsigned int status) {
+    for (int i = 0; i < processes_size; i++) {
+        if (processes[i].pid == pid) {
+            if (processes[i].status == KILLED)
+                return -1;
+            processes[i].foreground = status;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+
 
 pid_t set_pStatus(pid_t pid, pStatus status) {
     if(pid >= MAX_PROCESS_COUNT || pid < 0) //processes[pid] == NULL
@@ -229,4 +265,26 @@ pid_t set_pStatus(pid_t pid, pStatus status) {
 
 //     if (processes[pid].stack.base != NULL)
 //         MyFree(processes[pid].stack.base);
+// }
+
+// process_t get_process_by_id(pid_t pid) {
+//     return processes[pid];
+// }
+
+// pStatus get_pStatus(pid_t pid) {
+//     if(pid >= MAX_PROCESS_COUNT || pid < 0 || processes[pid].pid == NULL) 
+//         return ERROR;
+    
+//     return processes[pid].status;
+// }
+
+// pid_t setPid() {
+//     pid_t current_pid = ERROR;
+//     for (int current_process = 0; current_process < MAX_PROCESS_COUNT; current_process++) {
+//         if (processes[current_process].pid == NULL) {
+//             current_pid = current_process;
+//             break;
+//         }
+//     }
+//     return current_pid;
 // }

@@ -94,10 +94,19 @@ void * scheduler(void * rsp);
 pid_t pCreate(main_func_t * f, char *name, int foreground);
 int exit(void);
 int kill(size_t pid);
+
+// working on these
+int getPid(void);
+unsigned int getProcessesAmount(void);
+int changePriority(int pid, unsigned int new_priority);
+int changeStatus(pid_t pid, pStatus new_status);
+int changeForegroundStatus(int pid, unsigned int state);
+
+//dont sure we need
 process_t get_process_by_id(pid_t pid);
 pStatus get_pStatus(pid_t pid);
-pid_t set_pStatus(pid_t pid, pStatus status);
 void free_process(pid_t pid);
+
 static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
 static void initQuantums();
 
