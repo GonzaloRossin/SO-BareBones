@@ -25,10 +25,6 @@ typedef void* address_t;
 typedef int pid_t;
 typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
 
-typedef struct {
-    uint64_t base;
-    size_t size;
-} memoryBlock;
 
 typedef struct{
     char** argv;
@@ -44,7 +40,7 @@ typedef struct process_t{
     unsigned int given_time;
     unsigned int aging;
     unsigned int priority;
-    memoryBlock stack;
+    void * stack;
     void * rbp;
     void * rsp;
     struct process_t * next_in_queue;    
@@ -108,8 +104,6 @@ process_t get_process_by_id(pid_t pid);
 pStatus get_pStatus(pid_t pid);
 void free_process(pid_t pid);
 
-static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
-static void initQuantums();
 void PS();
 void update_priority(pid_t pid, unsigned int priority);
 void change_status(pid_t pid);

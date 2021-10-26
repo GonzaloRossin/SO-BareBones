@@ -19,12 +19,13 @@ unsigned int processes_size = 0;
 static void updateProcess(process_t *process);
 static void * getNextProcess(void * rsp);
 static void enqueueProcess(process_t * process);
+static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
+static void initQuantums();
 
 static stackProcess stackModel = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0x8, 0x202, 0, 0};
 
 
 void * scheduler(void * rsp) {
-
     if(!quantum_started) {
         initQuantums();
         quantum_started = 1;
@@ -118,28 +119,6 @@ static void enqueueProcess(process_t * process) {
 }
 
 
-
-
-
-size_t set_pName(process_t * process, char *name) {
-    size_t size = Strlen(name) + 1;
-    process->process_name = (char *) MyMalloc(size);
-    if (process->process_name == NULL) 
-        return MEMORY_OVERFLOW;
-    Strncpy(process->process_name, name,0,size);
-    return size;
-}
-
-int getArgvCount(char **argv) {
-    int count = 0;
-    if (argv == NULL) 
-        return count;
-    while (argv[count] != NULL) {
-        count++;
-    }
-    return count;
-}
-
 pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)(int, char **) el parametro de _start_process
     //falta: back or foreground, *funcion con argc y argv, 
     //draw_string("Creando proceso", 16);
@@ -159,9 +138,9 @@ pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)
         processes[i].aging = 0; 
         processes[i].given_time = quantum[BASE_PRIORITY];
 
-        processes[i].stack.base = (uint64_t) MyMalloc(MAX_STACK);
+        processes[i].stack = MyMalloc(MAX_STACK);
 
-        processes[i].rbp = (void *)((processes[i].stack.base + MAX_STACK) & -8);
+        processes[i].rbp = (void *)(((uint64_t) processes[i].stack + MAX_STACK) & -8);
         processes[i].rsp = (void *) (&processes[i].rbp - (STATE_SIZE + REGS_SIZE) * sizeof(uint64_t));
         //Preparar el stack
         prepareStack(main_f->f, main_f->argc, main_f->argv, processes[i].rbp, processes[i].rsp);
@@ -177,7 +156,7 @@ pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)
     return -1;
 }
 
-static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp) { //no le pasamos rsp ya que es igual al rbp
+static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp) {
     stackModel.rbp = (uint64_t) rbp;
     stackModel.rsp = (uint64_t) rbp;
     stackModel.rip = (uint64_t) _start_process; //de lib.h
@@ -193,7 +172,7 @@ int exit() {
 }
 
 int kill(size_t pid) {
-    return set_pStatus(pid, KILLED);
+    return changeStatus(pid, KILLED);
 }
 
 int getPid(void) {
@@ -219,7 +198,7 @@ int changePriority(pid_t pid, unsigned int new_priority) {
     return -1;
 }
 
-int changeState(pid_t pid, pStatus new_status) {
+int changeStatus(pid_t pid, pStatus new_status) {
     for (int i = 0; i < processes_size; i++) {
         if (processes[i].pid == pid) {
             if (processes[i].status == KILLED)
@@ -231,11 +210,13 @@ int changeState(pid_t pid, pStatus new_status) {
                     curr_process = NULL;
                     _halt_and_wait();
                 }
-                MyFree(processes[i].stack.base);
+                MyFree(processes[i].stack);
                 process_count--;
             }
+            return 0;
         }
     }
+    return -1;
 }
 
 int changeForegorundStatus(pid_t pid, unsigned int status) {
@@ -252,12 +233,12 @@ int changeForegorundStatus(pid_t pid, unsigned int status) {
 
 
 
-pid_t set_pStatus(pid_t pid, pStatus status) {
-    if(pid >= MAX_PROCESS_COUNT || pid < 0) //processes[pid] == NULL
-        return ERROR;
-    processes[pid].status = status;
-    return pid;
-}
+// pid_t set_pStatus(pid_t pid, pStatus status) {
+//     if(pid >= MAX_PROCESS_COUNT || pid < 0) //processes[pid] == NULL
+//         return ERROR;
+//     processes[pid].status = status;
+//     return pid;
+// }
 
 // void free_process(pid_t pid) {
 //     if (processes[pid].pid == NULL)
