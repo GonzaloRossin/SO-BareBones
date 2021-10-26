@@ -2,8 +2,8 @@
 #include "interrupts/int80.h"
 #include "drivers/video_driver.h"
 
-process_t* processes[MAX_PROCESSES] = {NULL};
-size_t process_count = 0, started = 0;
+process_t processes[MAX_PROCESSES];
+size_t process_count = 0, processes_so_far = 0;
 process_t* curr_process = NULL;
 
 static QUEUE_HD queues[2][MAX_PRIORITY - MIN_PRIORITY + 1];
@@ -16,40 +16,46 @@ static unsigned int prior = 0;
 int quantum_started = 0;
 unsigned int processes_size = 0;
 
-static void updateCurrent(void);
-static void expireCurrent(void);
+static void updateProcess(process_t *process);
 static void * getNextProcess(void * rsp);
 static void enqueueProcess(process_t * process);
+static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp);
+static void initQuantums();
 
 static stackProcess stackModel = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0x8, 0x202, 0, 0};
 
 
 void * scheduler(void * rsp) {
-    draw_string("Scheduler\n", 11);
-
     if(!quantum_started) {
         initQuantums();
         quantum_started = 1;
     }
 
     if(process_count > 0) {
-        draw_string("Hay proceso\n", 13);
+        //draw_string("Hay proceso\n", 13);
+        act_queue = queues[actual_queue];
+        exp_queue = queues[1 - actual_queue];
         if (curr_process != NULL) { //process running
             (curr_process->given_time--);
 
             if (curr_process->given_time == 0) {
-                act_queue = queues[actual_queue];
-                exp_queue = queues[1 - actual_queue];
 
-                updateCurrent();
+                updateProcess(curr_process);
                 curr_process->rsp = rsp;
-                expireCurrent();
+
+                #ifdef _RR_AGING_ 
+                    // set new priority
+                    changePriority(curr_process->pid, (prior < MAX_PRIOR)? prior+1 : prior);
+                #endif
+                enqueueProcess(curr_process);
+            } else {
+                return rsp;
             }
         }
-        draw_string("Proximo proceso\n", 17);
-        getNextProcess(rsp);
+        //draw_string("Proximo proceso\n", 17);
+        return getNextProcess(rsp);
     } else {
-        draw_string("No hay proceso\n", 16);
+        //draw_string("No hay proceso\n", 16);
         return rsp;
     }
 }
@@ -60,34 +66,34 @@ static void initQuantums() {
     }
 }
 
-static void updateCurrent(void) {
+static void updateProcess(process_t *process) {
     //update info
-    (curr_process->aging)++;
+    (process->aging)++;
 
     //update act_queue
-    act_queue[prior].first = curr_process->next_in_queue;
-    curr_process->next_in_queue = NULL;
-}
+    if (curr_process == process) {
+        act_queue[prior].first = curr_process->next_in_queue;
+        if (act_queue[prior].last == curr_process)
+            act_queue[prior].last == NULL;
+    }
 
-static void expireCurrent(void) {
-    //if aging is used then go to a lower priority queue
-    #ifdef _RR_AGING_ 
-    // set new priority
-    changePriority(curr_process->pid, (prior < MAX_PRIOR)? prior+1 : prior);
-    #endif
-
-    if (exp_queue[curr_process->priority].last != NULL)
-        exp_queue[curr_process->priority].last->next_in_queue = curr_process;
-    exp_queue[curr_process->priority].last = curr_process;
+    process->next_in_queue = NULL;
 }
 
 static void * getNextProcess(void * rsp) {
     while (prior <= MAX_PRIORITY && act_queue[prior].first == NULL) //go to a queue with lower priority
     prior++;
 
-    if(prior < MAX_PRIORITY){
+    if(prior <= MAX_PRIORITY) {
+        if (act_queue[prior].first->status == KILLED) {
+            act_queue[prior].first = (act_queue[prior].first)->next_in_queue;
+            return getNextProcess(rsp);
+        }
+
         curr_process = act_queue[prior].first;
         curr_process->given_time = act_queue[prior].quantum;
+        return curr_process->rsp;
+    
     } else {
         actual_queue = 1 - actual_queue; // change to expired queue
         prior = 0;
@@ -97,95 +103,60 @@ static void * getNextProcess(void * rsp) {
 }
 
 static void enqueueProcess(process_t * process) {
-    process->next_in_queue = exp_queue[process->priority].first;
-    exp_queue[process->priority].first = process;
-    if(exp_queue[process->priority].last == NULL) {
-        exp_queue[process->priority].last = process;
+    if (act_queue == NULL || exp_queue == NULL) {
+        act_queue = queues[actual_queue];
+        exp_queue = queues[1 - actual_queue];
     }
-}
 
-
-pid_t setPid() {
-    pid_t current_pid = ERROR;
-    for (int current_process = 0; current_process < MAX_PROCESS_COUNT; current_process++) {
-        if (processes[current_process] == NULL) {
-            current_pid = current_process;
-            break;
-        }
+    if (exp_queue[process->priority].first == NULL) {
+        exp_queue[process->priority].first = process;
     }
-    return current_pid;
-}
 
-size_t set_pName(process_t * process, char *name) {
-    size_t size = Strlen(name) + 1;
-    process->process_name = (char *) MyMalloc(size);
-    if (process->process_name == NULL) 
-        return MEMORY_OVERFLOW;
-    Strncpy(process->process_name, name,0,size);
-    return size;
-}
-
-int getArgvCount(char **argv) {
-    int count = 0;
-    if (argv == NULL) 
-        return count;
-    while (argv[count] != NULL) {
-        count++;
+    if (exp_queue[process->priority].last != NULL) {
+        exp_queue[process->priority].last->next_in_queue = process;
     }
-    return count;
+    exp_queue[process->priority].last = process;
 }
 
-pid_t pCreate(char *name, main_func_t * main_f, size_t stack, size_t heap) { // int (*code)(int, char **) el parametro de _start_process
+
+pid_t pCreate(main_func_t * main_f, char *name, int foreground) { // int (*code)(int, char **) el parametro de _start_process
     //falta: back or foreground, *funcion con argc y argv, 
-    draw_string("Creando proceso", 16);
-    pid_t pid = setPid();
-    if (pid == ERROR || main_f->f == NULL) 
-        return ERROR;
-    process_t* process = (process_t*) MyMalloc(sizeof(process_t));
+    //draw_string("Creando proceso", 16);
+    int i = 0;
+    while(i < processes_size && processes[i].status != KILLED)
+        i++;
 
-    if (process == NULL) 
-        return MEMORY_OVERFLOW;
-    process->pid = pid;
-    process->status = READY;
+    if (i < MAX_PROCESSES) {
+        int size = Strlen(name);
+        Strncpy(processes[i].process_name, name, 0, size);
+        processes[i].pid = (processes_so_far + 1);
+        processes[i].ppid = (curr_process != NULL)?curr_process->pid:0; 
+        processes[i].foreground = foreground;
+        processes[i].priority = BASE_PRIORITY;
+        processes[i].status = READY;
+        processes[i].next_in_queue = NULL;
+        processes[i].aging = 0; 
+        processes[i].given_time = quantum[BASE_PRIORITY];
 
-    if (set_pName(process, name) == MEMORY_OVERFLOW) 
-        return MEMORY_OVERFLOW;
+        processes[i].stack = MyMalloc(MAX_STACK);
 
-    if (heap == 0) {
-        process->heap.base = NULL;
-        process->heap.size = heap;
+        processes[i].rbp = (void *)(((uint64_t) processes[i].stack + MAX_STACK) & -8);
+        processes[i].rsp = (void *) (&processes[i].rbp - (STATE_SIZE + REGS_SIZE) * sizeof(uint64_t));
+        //Preparar el stack
+        prepareStack(main_f->f, main_f->argc, main_f->argv, processes[i].rbp, processes[i].rsp);
+
+        enqueueProcess(&(processes[i]));
+
+        process_count++;
+        processes_so_far++; 
+
+        //draw_hex(stackModel.rip);
+        return processes[i].pid;
     }
-    else {
-        process->heap.base = (address_t) MyMalloc(heap);
-        process->heap.size = heap;
-    }
-
-    if (stack == 0) {
-        process->stack.base = NULL;
-        process->stack.size = 0;
-    }
-    else {
-        process->stack.base = (address_t) MyMalloc(stack);
-        process->stack.size = stack;
-    }
-
-    process->rbp = (void*) (((uint64_t) process->stack.base + MAX_STACK) & -8);
-    process->rsp = (void*) ((((uint64_t) process->stack.base + MAX_STACK) & -8) - (REGS_SIZE + STATE_SIZE) * sizeof(uint64_t)); //se quejaba si le poniamos process->rbp - ...
-
-    //Preparar el stack
-    prepareStack(main_f->f, main_f->argc, main_f->argv, process->rbp, process->rsp);
-
-    enqueueProcess((processes[process->pid]));
-
-    processes[process->pid] = process;
-    process_count++;
-
-    if (!started) started = 1;
-    draw_hex(stackModel.rip);
-    return process->pid;
+    return -1;
 }
 
-static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp) { //no le pasamos rsp ya que es igual al rbp
+static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** argv, void * rbp, void * rsp) {
     stackModel.rbp = (uint64_t) rbp;
     stackModel.rsp = (uint64_t) rbp;
     stackModel.rip = (uint64_t) _start_process; //de lib.h
@@ -201,92 +172,100 @@ int exit() {
 }
 
 int kill(size_t pid) {
-    return set_pStatus(pid, KILLED);
+    return changeStatus(pid, KILLED);
 }
 
-process_t* get_process_by_id(pid_t pid) {
-    return processes[pid];
+int getPid(void) {
+    return curr_process->pid;
 }
 
-pStatus get_pStatus(pid_t pid) {
-    if(pid >= MAX_PROCESS_COUNT || pid < 0 || processes[pid] == NULL) 
-        return ERROR;
-    
-    return processes[pid]->status;
+unsigned int getProcessesCount(void) {
+    return process_count; 
 }
 
-pid_t set_pStatus(pid_t pid, pStatus status) {
-    if(pid >= MAX_PROCESS_COUNT || pid < 0 || processes[pid] == NULL) 
-        return ERROR;
-    processes[pid]->status = status;
-    return pid;
-}
+int changePriority(pid_t pid, unsigned int new_priority) {
 
-void free_process(pid_t pid) {
-    if (processes[pid]==NULL)
-        return;
-
-    if (processes[pid]->process_name != NULL) 
-        MyFree(processes[pid]->process_name);
-
-    if (processes[pid]->heap.base != NULL) 
-        MyFree(processes[pid]->heap.base);
-
-    if (processes[pid]->stack.base != NULL)
-        MyFree(processes[pid]->stack.base);
-
-    MyFree(processes[pid]);
-    processes[pid] = NULL;
-}
-
-void printProcess(process_t* process){
-    sys_newline();
-    char* line = " ----- ";
-    char* name = "name: ";
-    draw_string(name, 6);
-    draw_string(process->process_name, 10); //hacer que no sea numero fijo
-    draw_string(line, 7);
-    
-    char* pid = "pid: ";
-    draw_string(pid, 5);
-    sys_print_num(process->pid,0);
-    draw_string(line, 7);
-
-    char* priority = "priority: ";
-    draw_string(priority, 10);
-    sys_print_num(process->priority,0);
-    draw_string(line, 7);
-    
-    char* rbp = "rbp: ";
-    draw_string(rbp, 5);
-    sys_print_num(process->rbp,0);
-    draw_string(line, 7);
-    
-    char* rsp = "rsp: ";
-    draw_string(rsp, 5);
-    sys_print_num(process->rsp,0);
-    //draw_string(line, 7);
-
-    sys_newline();
-}
-
-void PS(){
-    int i;
-    for(i=0; i<MAX_PROCESSES; i++){
-        if(processes[i] != NULL){
-            printProcess(processes[i]);
+    if (new_priority >= MIN_PRIORITY && new_priority <= MAX_PRIORITY) {
+        for (int i = 0; i < processes_size; i++) {
+            if (processes[i].pid == pid) {
+                if (processes[i].status == KILLED)
+                    return -1;
+                processes[i].priority = new_priority;
+                return 0;
+            }
         }
     }
+    return -1;
 }
 
-void update_priority(pid_t pid, unsigned int priority){
-    get_process_by_id(pid)->priority = priority;
-}
-
-void change_status(pid_t pid){
-    if(get_process_by_id(pid)->status == READY){
-        set_pStatus(pid, BLOCKED);
-    } else if(get_process_by_id(pid)->status == BLOCKED){
-        set_pStatus(pid, READY);
+int changeStatus(pid_t pid, pStatus new_status) {
+    for (int i = 0; i < processes_size; i++) {
+        if (processes[i].pid == pid) {
+            if (processes[i].status == KILLED)
+                return -1;
+            processes[i].status = new_status;
+            if (new_status == KILLED) {
+                updateProcess(&(processes[i]));
+                if (curr_process != NULL && curr_process->pid == pid) {
+                    curr_process = NULL;
+                    _halt_and_wait();
+                }
+                MyFree(processes[i].stack);
+                process_count--;
+            }
+            return 0;
+        }
     }
+    return -1;
 }
+
+int changeForegorundStatus(pid_t pid, unsigned int status) {
+    for (int i = 0; i < processes_size; i++) {
+        if (processes[i].pid == pid) {
+            if (processes[i].status == KILLED)
+                return -1;
+            processes[i].foreground = status;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+
+
+// pid_t set_pStatus(pid_t pid, pStatus status) {
+//     if(pid >= MAX_PROCESS_COUNT || pid < 0) //processes[pid] == NULL
+//         return ERROR;
+//     processes[pid].status = status;
+//     return pid;
+// }
+
+// void free_process(pid_t pid) {
+//     if (processes[pid].pid == NULL)
+//         return;
+
+//     if (processes[pid].stack.base != NULL)
+//         MyFree(processes[pid].stack.base);
+// }
+
+// process_t get_process_by_id(pid_t pid) {
+//     return processes[pid];
+// }
+
+// pStatus get_pStatus(pid_t pid) {
+//     if(pid >= MAX_PROCESS_COUNT || pid < 0 || processes[pid].pid == NULL) 
+//         return ERROR;
+    
+//     return processes[pid].status;
+// }
+
+// pid_t setPid() {
+//     pid_t current_pid = ERROR;
+//     for (int current_process = 0; current_process < MAX_PROCESS_COUNT; current_process++) {
+//         if (processes[current_process].pid == NULL) {
+//             current_pid = current_process;
+//             break;
+//         }
+//     }
+//     return current_pid;
+// }

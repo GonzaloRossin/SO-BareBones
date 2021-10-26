@@ -60,19 +60,11 @@ int main()
 	
 	//start shell process, createProcess de process.c con datos hardcodeados
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
-	char name[6] = "Shell";
-	main_func_t main_f;
-	main_f.f = sampleCodeModuleAddress;
-	main_f.argc = 0;
-	main_f.argv = NULL;
-	//pCreate(name, &main_f, MAX_STACK, MAX_STACK);
+	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
+	pCreate(&aux, "SampleCodeModule", 1);
 
-	//_halt_and_wait();
-	
-	//while(1){
-	//	draw_string("hola", 5);
-	//}
-	initHeap();
-	((EntryPoint)sampleCodeModuleAddress)();
+	_halt_and_wait();
+
+	// ((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }
