@@ -12,8 +12,8 @@ static stackProcess stackModel = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
 process_t processes[MAX_PROCESSES];
 QUEUE_HD queues[2][MAX_PRIORITY - MIN_PRIORITY + 1];
 int actual_queue = 0;
-QUEUE_HD * act_queue; //queue with active processes
-QUEUE_HD * exp_queue; //queue with those processes that have expired their quantum or are new or priority changed
+QUEUE_HD * act_queue = NULL; //queue with active processes
+QUEUE_HD * exp_queue = NULL; //queue with those processes that have expired their quantum or are new or priority changed
 unsigned quantum[MAX_PRIORITY - MIN_PRIORITY + 1];
 int quantum_started = 0;
 process_t* curr_process = NULL;
@@ -174,7 +174,6 @@ static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** 
 
 int exit() {
     kill(curr_process->pid);
-    _halt_and_wait();
     return 0;
 }
 
@@ -205,7 +204,7 @@ int changePriority(int pid, unsigned int new_priority) {
     return -1;
 }
 
-int changeStatus(int pid, pStatus new_status) {
+int changeStatus(int pid, unsigned int new_status) {
     for (int i = 0; i < processes_size; i++) {
         if (processes[i].pid == pid) {
             if (processes[i].status == KILLED)
@@ -241,37 +240,53 @@ int changeForegorundStatus(int pid, unsigned int status) {
 
 void printProcess(process_t process){
     sys_newline();
-    char* line = " -----\n ";
+    char* line = "------------- ";
     char* name = "name: ";
     draw_string(name, 6);
-    draw_string(process.name, 16); //hacer que no sea numero fijo
-    draw_string(line, 9);
+    draw_string(process.name, Strlen(process.name)); //hacer que no sea numero fijo
+    //draw_string(line, 9);
+    sys_newline();
     
     char* pid = "pid: ";
     draw_string(pid, 5);
     draw_decimal(process.pid);
-    //sys_print_num(process->pid,0);
-    draw_string(line, 7);
+   // draw_string(line, 7);
+    sys_newline();
 
     char* priority = "priority: ";
     draw_string(priority, 10);
     draw_decimal((uint64_t) process.priority);
-    //sys_print_num(process->priority,0);
-    draw_string(line, 7);
+   // draw_string(line, 7);
+    sys_newline();
+
+    char* status = "status: ";
+    draw_string(status, 8);
+    draw_decimal((uint64_t) process.status);
+    //draw_string(line, 7);
+    sys_newline();
     
     char* rbp = "rbp: ";
     draw_string(rbp, 5);
     draw_hex((uint64_t) process.rbp);
-    //sys_print_num(process->rbp,0);
-    draw_string(line, 7);
+   // draw_string(line, 7);
+    sys_newline();
     
     char* rsp = "rsp: ";
     draw_string(rsp, 5);
     draw_hex((uint64_t) process.rsp);
-    //sys_print_num(process->rsp,0);
     //draw_string(line, 7);
-
     sys_newline();
+
+    char* timeleft = "timeLeft: ";
+    draw_string(timeleft, Strlen(timeleft));
+    draw_decimal((uint64_t) process.given_time);
+    sys_newline();
+
+    char* quantums = "quantums: ";
+    draw_string(quantums, Strlen(quantums));
+    draw_decimal((uint64_t) process.aging);
+    sys_newline();
+    draw_string(line, Strlen(line));
 }
 
 void PS(){

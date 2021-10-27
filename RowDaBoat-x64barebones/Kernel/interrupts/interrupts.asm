@@ -25,6 +25,16 @@ section .text
 
 %macro pushState 0
 	push rax
+	pushStateNoRax
+%endmacro
+
+%macro popState 0
+	popStateNoRax
+	pop rax
+%endmacro
+
+
+%macro pushStateNoRax 0
 	push rbx
 	push rcx
 	push rdx
@@ -41,7 +51,7 @@ section .text
 	push r15
 %endmacro
 
-%macro popState 0
+%macro popStateNoRax 0
 	pop r15
 	pop r14
 	pop r13
@@ -56,7 +66,6 @@ section .text
 	pop rdx
 	pop rcx
 	pop rbx
-	pop rax
 %endmacro
 
 ;enable interrupts
@@ -141,12 +150,13 @@ readCharFromKeyboard:
 ;int 80h
 int_80:
 	sti
+	pushStateNoRax
 	call int80Dispatcher
-
-	push rax
-	mov al, 20h
-	out 20h, al
-	pop rax
+	popStateNoRax
+	;push rax
+	;mov al, 20h
+	;out 20h, al
+	;pop rax
 
 	iretq
 

@@ -166,16 +166,15 @@ int testProcess2Main(int argc, char ** argv) {
     print("in tester"); 
     for (unsigned int i = 0; i < argc; i++) { 
         print_num(i,0);
-        newLine(); 
+        //newLine();
     } 
     return 0; 
 } 
 
 void printLoop(int a1, int a2) { 
-    main_func_t proc2 = {testProcess2Main, 30, NULL}; 
+    main_func_t proc2 = {testProcess2Main, 100, NULL}; 
     int aux = exec(&proc2, "test Process", 0); 
     print("Process created");
-    newLine();
     print_num(aux, 0);
 } 
 

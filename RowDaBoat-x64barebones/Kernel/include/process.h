@@ -83,7 +83,7 @@ int exit(void);
 int getPid(void);
 unsigned int getProcessesAmount(void);
 int changePriority(int pid, unsigned int new_priority);
-int changeStatus(int pid, pStatus new_status);
+int changeStatus(int pid, unsigned int new_status);
 int changeForegroundStatus(int pid, unsigned int state);
 
 void PS();
