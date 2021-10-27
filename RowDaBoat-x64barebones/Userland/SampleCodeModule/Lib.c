@@ -55,43 +55,51 @@ void Mfree(void* pointer){//syscall15
 void* MemSet(void* ptr,uint32_t c,uint64_t string){//syscall16
    return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string,0);
 }
-mm_stat Mmem(){
+mm_stat Mmem(){//syscall17
    mm_stat aux;
    sys_call(17,(uint64_t)&aux,0,0,0);
    return aux;
 }
 
-//exec = 18
-pid_t exec(main_func_t *func, char* name, int rcx){ 
+pid_t exec(main_func_t *func, char* name, int rcx){ //syscall 18
    sys_call(18, (void*)func, (void*)name, (void*)(uint64_t)rcx, 0); 
 } 
 
-void ps(){
+void ps(){//syscall 19
   sys_call(19,0,0,0,0);
 }
 
 //loop = 20
 
-void kill(pid_t pid){
+void kill(pid_t pid){//syscall 21
    sys_call(21,pid,0,0,0);
 }
 
-void nice(pid_t pid, unsigned int priority){
+void nice(pid_t pid, unsigned int priority){//syscall 22
    sys_call(22,pid,priority,0,0);
 }
 
-void block(pid_t pid){
+void block(pid_t pid){//syscall 23
    sys_call(23,pid,0,0,0);
 }
-int* get_Minfo(){
-   return (int*)sys_call(24,0,0,0,0);
+
+sem_id s_init(const char* sname,unsigned int init_size){//syscall 24
+   return(sem_id)syscall(24,(void*)sname,(uint64_t)init_size);
+}
+
+sem_id s_open(const char* name){// syscall 25
+   return(sem_id)sys_call(25,(void*)name,0,0,0);
+}
+
+int s_wait(sem_id s_id){//syscall 26
+   return(int) sys_call(26,(uint64_t)s_id,0,0,0);
 }
 
 void argTest(int a1, int a2, int a3){
    sys_call(8,420,0,0,0);
    sys_call(99,a1,a2,a3,0);
 }
-
+//----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};
    getCursor(aux);
@@ -99,7 +107,6 @@ void save_screenCords(screenShell* shell){//desuso
    shell->coordY=aux[1];
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------------------------
 int strlen(char *str)
 {
    int i = 0;

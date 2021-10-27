@@ -10,6 +10,7 @@
 #include "../include/font.h"
 #include "../memory/buddy.h"
 #include "../memory/sbrk.h"
+#include "../sem/sem.h"
 
 // the int 80h dispatcher
 uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8);
