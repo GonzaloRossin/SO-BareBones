@@ -31,7 +31,7 @@ void sys_getCoords(int* rsi);// sys call 13
 void* MyMalloc(uint64_t rsi);// sys call 14
 void MyFree(void* rsi);// sys call 15
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
-void mem(mm_stat* mStats);// sys call 17
+void mem(mm_stat*rsi);// sys call 17
 
 
 int exec(main_func_t * rsi, char* rdx, int rcx); //18

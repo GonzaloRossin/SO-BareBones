@@ -2,9 +2,7 @@
 #define MEM_MAN_H
 
     #include <stdio.h>
-    #include "../include/lib.h"
     #include <stdint.h>
-    #include "../interrupts/int80.h"
     #include "sbrk.h"
     
     /* Define the linked list structure.  This is used to link free blocks in order

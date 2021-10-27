@@ -141,25 +141,25 @@ static void clean(){
 }
 
 void get_mem_info(){
-    mm_stat* aux=NULL;
-    Mmem((uint64_t)aux);
-    if(aux!=NULL){
-        print("total memory: ");
-        print_num((int)(aux->total),0);
-        newLine();
-        print("memory ocuppied: ");
-        print_num((int)(aux->occupied),0);
-        newLine();
-        print("free memory: ");
-        print_num((int)(aux->free),0);
-        newLine();
-        print("number of allocations: ");
-        print_num((int)(aux->successful_allocs),0);
-        newLine();
-    }else{
-        print("error");
-        newLine();
-    }
+    mm_stat aux=Mmem();
+    print("total memory: ");
+    print_num((int)(aux.total),0);
+    newLine();
+    print("memory ocuppied: ");
+    print_num((int)(aux.occupied),0);
+    newLine();
+    print("free memory: ");
+    print_num((int)(aux.free),0);
+    newLine();
+    print("number of allocations: ");
+    print_num((int)(aux.successful_allocs),0);
+    newLine();
+    print("number of frees: ");
+    print_num((int)(aux.successful_frees),0);
+    newLine();
+    print("memory manager: ");
+    print(aux.sys_name);
+    newLine();
 }
  
 int testProcess2Main(int argc, char ** argv) { 

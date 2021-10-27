@@ -1,5 +1,4 @@
 #include <test_mm.h>
-#include "Include/Lib.h"
 #include "Include/shell.h"
 
 #define MAX_BLOCKS 128
@@ -24,13 +23,13 @@ void test_mm(){
     while(rq < MAX_BLOCKS && total < MAX_MEMORY){
       mm_rqs[rq].size = GetUniform(MAX_MEMORY - total - 1) + 1;
       mm_rqs[rq].address = Mmalloc(mm_rqs[rq].size); // TODO: Port this call as required
-      get_mem_info();
       if(mm_rqs[rq].address==NULL){
         print("malloc returns NULL");
       }
       total += mm_rqs[rq].size;
       rq++;
     }
+    get_mem_info();
     // Set
     uint32_t i;
     for (i = 0; i < rq; i++)
@@ -52,8 +51,8 @@ void test_mm(){
       for (i = 0; i < rq; i++){
         if (mm_rqs[i].address != NULL){
             Mfree(mm_rqs[i].address);  // TODO: Port this call as required
-            get_mem_info();
         }
       }
     }
+    get_mem_info();
 }

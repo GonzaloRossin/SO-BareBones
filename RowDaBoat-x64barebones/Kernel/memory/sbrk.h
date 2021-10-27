@@ -1,7 +1,7 @@
 #ifndef SBRK_H
 #define SBRK_H
     
-#include "../include/lib.h"
+    #include "../include/lib.h"
     #define MIN_ADDRESS 0x600000
     #define MAX_ADDRESS 0xF00000
 
@@ -16,6 +16,6 @@
 
     void *RTOSMalloc( uint64_t size);
     void RTOSFree( void* ptr );
-    void getMMStats( mm_stat* );
+    void getMMStats(mm_stat*stats);
 
 #endif
