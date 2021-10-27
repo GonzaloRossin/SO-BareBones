@@ -15,7 +15,14 @@ typedef struct screenShell
    int coordY; 
 }screenShell;
 
-
+typedef struct mm_stat {
+    char * sys_name;  
+    uint64_t total;
+    uint64_t occupied;
+    uint64_t free;
+    uint64_t successful_allocs;
+    uint64_t successful_frees;
+} mm_stat;
 typedef unsigned long size_t;
 typedef void* address_t;
 typedef int pid_t;
@@ -110,7 +117,7 @@ void getCursor(int coords[2]);//syscall13
 void* Mmalloc(int size);//syscall14
 void Mfree(void* pointer);//syscall15
 void* MemSet(void* ptr,uint32_t c,uint64_t string);//syscall16
-void Mmem();//syscall17
+void Mmem(uint64_t stats);//syscall17
 //exec syscall18
 void ps();//syscall19
 //void loop();////syscall20

@@ -141,12 +141,25 @@ static void clean(){
 }
 
 void get_mem_info(){
-    int* info=get_Minfo();
-    print_num(info[1],0);
-    print(" bytes free from ");
-    print_num(info[0],0);
-    print(" total heap space");
-    newLine();
+    mm_stat* aux=NULL;
+    Mmem((uint64_t)aux);
+    if(aux!=NULL){
+        print("total memory: ");
+        print_num((int)(aux->total),0);
+        newLine();
+        print("memory ocuppied: ");
+        print_num((int)(aux->occupied),0);
+        newLine();
+        print("free memory: ");
+        print_num((int)(aux->free),0);
+        newLine();
+        print("number of allocations: ");
+        print_num((int)(aux->successful_allocs),0);
+        newLine();
+    }else{
+        print("error");
+        newLine();
+    }
 }
 
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)

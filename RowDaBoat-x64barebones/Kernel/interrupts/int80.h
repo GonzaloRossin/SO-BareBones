@@ -9,6 +9,7 @@
 #include "../include/process.h"
 #include "../include/font.h"
 #include "../memory/buddy.h"
+#include "../memory/sbrk.h"
 
 // the int 80h dispatcher
 uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8);
@@ -27,10 +28,10 @@ unsigned long sys_get_seconds();//sys call 10
 void sys_cursor(int rsi, int rdx);//sys call 11
 void sys_setMargins(int rsi,int rdx);//sys call 12
 void sys_getCoords(int* rsi);// sys call 13
-void* MyMalloc(unsigned int rsi);// sys call 14
+void* MyMalloc(uint64_t rsi);// sys call 14
 void MyFree(void* rsi);// sys call 15
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
-void mem();// sys call 17
+void mem(mm_stat* mStats);// sys call 17
 
 
 pid_t exec(main_func_t * rsi, char* rdx, int rcx); //18

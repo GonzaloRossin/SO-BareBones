@@ -50,7 +50,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		sys_getCoords((int*)rsi);
 		break;
 	case 14:
-		return (uint64_t) MyMalloc((unsigned int) rsi);
+		return (uint64_t) MyMalloc(rsi);
 		break;
 	case 15:
 		MyFree((void*)rsi);
@@ -59,7 +59,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		return (uint64_t) memSet((void*)rsi,(uint32_t)rdx,(uint64_t)rcx);
 		break;
 	case 17:
-		mem();
+		mem((mm_stat*)rsi);
 		break;
 	case 18:
 		return (pid_t) exec((main_func_t *) rsi, (char*) rdx, (int) rcx);
@@ -196,7 +196,7 @@ void sys_getCoords(int* rsi){
 	getCoords(rsi);
 }
 //SYS_CALL 14
-void* MyMalloc(unsigned int rsi){
+void* MyMalloc(uint64_t rsi){
 	return (void*)RTOSMalloc(rsi);
 }
 //SYS_CALL 15
@@ -208,8 +208,8 @@ void* memSet(void* rsi,uint32_t rdx,uint64_t rcx){
 	return (void*)memset(rsi, rdx, rcx);
 }
 //SYS_CALL 17
-void mem(){
-	//RTOSmem();
+void mem(mm_stat* mStats){
+	getMMStats(mStats);
 }
 //SYS_CALL 18
 pid_t exec(main_func_t *rsi, char* rdx, int rcx){

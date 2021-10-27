@@ -4,23 +4,27 @@
     #include <stdio.h>
     #include "../include/lib.h"
     #include <stdint.h>
+    #include "../interrupts/int80.h"
     #include "sbrk.h"
+    
+    /* Define the linked list structure.  This is used to link free blocks in order
+    of their memory address. */
+    typedef struct A_BLOCK_LINK
+    {
+        struct A_BLOCK_LINK *pxNextFreeBlock;	/*<< The next free block in the list. */
+        uint64_t xBlockSize;						/*<< The size of the free block. */
+    } BlockLink_t; //Free List
 
-    typedef struct Header {
-    struct Header* next;
-    size_t size;
-    } header;
+    /* Block sizes must not get too small. */
+    #define heapMINIMUM_BLOCK_SIZE	( ( uint64_t ) ( xHeapStructSize << 1 ) )
 
-    #define BYTE_ALIGNMENT 64
-    #define BYTE_ALIGNMENT_MASK ( 0x003f )
-    #define TOTAL_HEAP_SIZE 10 * 1024
-    #define heapBITS_PER_BYTE ((size_t) 8)
-    void const* minAddress=(void*) MIN_ADDRESS;
-    void const* maxAddress=(void*) MAX_ADDRESS;
+    /* Assumes 8bit bytes! */
+    #define heapBITS_PER_BYTE		( ( uint64_t ) 8 )
 
-    void RTOSFree(void *ptr);
-    void * RTOSMalloc(size_t requestedSize);
-    void RTOSmem();
-    int * get_MemInfo();
-    void initHeap();
+    /* 16 MB for the Heap in this case */
+    #define configTOTAL_HEAP_SIZE ( (uint64_t) maxAddress - ( uint64_t ) minAddress )
+
+    #define portBYTE_ALIGNMENT 64
+    #define portBYTE_ALIGNMENT_MASK 0x3F
+
 #endif
