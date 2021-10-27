@@ -26,8 +26,8 @@ typedef struct sem_t {
     sem_queue * last;
 } sem_t;
 
-sem_id sem_open(const char * name);
-sem_id sem_init_open(const char * name, unsigned int init_val);
+sem_id sem_open( char * name);
+sem_id sem_init_open( char * name, unsigned int init_val);
 int sem_wait(sem_id sem);
 
 #endif

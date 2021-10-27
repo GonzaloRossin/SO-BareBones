@@ -80,13 +80,13 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	// 	block((pid_t)rsi);
 	// 	break;
 	case 24:
-	 	return (uint64_t) sem_init_open((char*)rsi,(unsigned int) rdx);
+	 	return (uint64_t) sys_sem_init((char*)rsi,(unsigned int) rdx);
 	 	break;
 	case 25:
-		return (uint64_t) sem_open((char*)rsi);
+		return (uint64_t) sys_sem_open((char*)rsi);
 		break;
 	case 26:
-		return (uint64_t)sem_wait((sem_id)rsi);
+		return (uint64_t)sys_sem_wait((sem_id)rsi);
 		break;
 	case 99:
 		arg_test(rsi,rdx,rcx);
@@ -238,4 +238,16 @@ void ps(){
 // void block(pid_t pid){
 // 	change_status(pid);
 // }
+//SYS_CALL 24
+sem_id sys_sem_init(char*rsi,unsigned int rdx){
+	return sem_init_open(rsi,rdx);
+}
+//SYS CALL 25
+sem_id sys_sem_open(char*rsi){
+	return sem_open(rsi);
+}
+//SYS CALL 26
+int sys_sem_wait(sem_id rsi){
+	return sem_wait(rsi);
+}
 

@@ -8,11 +8,11 @@ static sem_t semaphores[MAX_SEMAPHORES];
 static unsigned int sem_size = 0; 
 static unsigned int sem_amount = 0; 
 
-sem_id sem_open(const char * name) {
+sem_id sem_open(char * name) {
     unsigned int i = 0;
     int pid = getPid();
     while (i < sem_size && semaphores[i].name[0] != '\0') {
-        if (strcmp(semaphores[i].name, name) == 0) {
+        if (Strcmp(semaphores[i].name, name) == 0) {
             unsigned int j = 0;
             while (j < semaphores[i].processes_size && semaphores[i].processes[j].pid != -1) {
                 if(semaphores[i].processes[j].pid == pid) // Process already opened this semaphore
@@ -31,7 +31,7 @@ sem_id sem_open(const char * name) {
         i++;
     }
     if (i < MAX_SEMAPHORES) {
-        strcpy(semaphores[i].name, name);
+        Strncpy(semaphores[i].name, name,0,Strlen(semaphores[i].name)+1);
         semaphores[i].first = NULL;
         semaphores[i].last = NULL;
         semaphores[i].value = 1;
@@ -50,7 +50,7 @@ sem_id sem_open(const char * name) {
         return -1;
 }
 
-sem_id sem_init_open(const char * name, unsigned int init_val) {
+sem_id sem_init_open(char * name, unsigned int init_val) {
     sem_id idx = sem_open(name);
     if (idx < 0)
         return idx;
@@ -70,7 +70,7 @@ int sem_wait(sem_id sem){
     while (semaphores[sem].lock);
     if (semaphores[sem].value == 0) {
         enqueue(&(semaphores[sem]), &(semaphores[sem].processes[idx]));
-        changeState(pid, BLOCKED);   
+        changeStatus(pid, BLOCKED);   
     }
     semaphores[sem].value--;
     semaphores[sem].lock = 0;
@@ -122,7 +122,7 @@ int sem_post(sem_id sem) {
         int pid = dequeuePid(&(semaphores[sem]));
         if (pid < 0)
             return -1; // Failed at dequeuing
-        changeState(pid, READY);
+        changeStatus(pid, READY);
     }
     return 0;
 }
@@ -155,7 +155,7 @@ int sem_getvalue(sem_id sem, int * sval) { // sval is either 0 is returned; or a
 int sem_unlink(const char * name){ //remove semaphore
     unsigned int i = 0;
     while (i < sem_size) {
-        if (semaphores[i].name[0] != '\0' && strcmp(semaphores[i].name, name) == 0) {
+        if (semaphores[i].name[0] != '\0' && Strcmp(semaphores[i].name, name) == 0) {
             semaphores[i].name[0] = '\0';
             if (i == sem_size - 1)
                 sem_size--;

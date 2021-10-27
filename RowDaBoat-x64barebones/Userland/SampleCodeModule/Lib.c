@@ -83,11 +83,11 @@ void block(pid_t pid){//syscall 23
    sys_call(23,pid,0,0,0);
 }
 
-sem_id s_init(const char* sname,unsigned int init_size){//syscall 24
-   return(sem_id)syscall(24,(void*)sname,(uint64_t)init_size);
+sem_id s_init(char* sname,unsigned int init_size){//syscall 24
+   return(sem_id)sys_call(24,(void*)sname,(uint64_t)init_size,0,0);
 }
 
-sem_id s_open(const char* name){// syscall 25
+sem_id s_open(char* name){// syscall 25
    return(sem_id)sys_call(25,(void*)name,0,0,0);
 }
 

@@ -8,7 +8,7 @@
 #include "../drivers/keyboard_driver.h"
 #include "../include/process.h"
 #include "../include/font.h"
-#include "../memory/buddy.h"
+//#include "../memory/buddy.h"
 #include "../memory/sbrk.h"
 #include "../sem/sem.h"
 
@@ -33,12 +33,13 @@ void* MyMalloc(uint64_t rsi);// sys call 14
 void MyFree(void* rsi);// sys call 15
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
 void mem(mm_stat*rsi);// sys call 17
-
-
 int exec(main_func_t * rsi, char* rdx, int rcx); //18
 void ps();// sys call 19
 void process_kill(int rsi);// sys call 21
 void nice(int rsi, unsigned int rdx);// sys call 22
 void block(int rsi);// sys call 23
+sem_id sys_sem_init(char*rsi,unsigned int rdx);//sys call 24
+sem_id sys_sem_open(char*rsi);// syscall 25
+int sys_sem_wait(sem_id sem);//sys call 26
 void arg_test(int rsi, int rdx, int rcx);// sys call 99
 #endif

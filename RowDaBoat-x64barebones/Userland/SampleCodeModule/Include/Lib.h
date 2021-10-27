@@ -42,8 +42,8 @@ void ps();//syscall19
 void kill(pid_t pid);//syscall21
 void nice(pid_t pid, unsigned int priority);//syscall22
 void block(pid_t pid);//syscall23
-sem_id s_init(const char* sname,unsigned int init_size);//syscall24
-sem_id s_open(const char* name);//syscall25
+sem_id s_init(char* sname,unsigned int init_size);//syscall24
+sem_id s_open(char* name);//syscall25
 int s_wait(sem_id s_id);//syscall26
 void argTest(int a1, int a2, int a3);//syscall99 de testing, despues se puede borrar
 
