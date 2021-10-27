@@ -69,8 +69,8 @@ static char const * sys_name = "FirstFit";
 /* Keeps track of the number of calls to allocate and free memory as well as the
 number of free bytes remaining, but says nothing about fragmentation. */
 
-static uint64_t xTotalSpace = 0U;
-static uint64_t xFreeBytesRemaining = 0U;
+static uint64_t xTotalSpace = 0;
+static uint64_t xFreeBytesRemaining = 0;
 static uint64_t xMinimumEverFreeBytesRemaining = 0U;
 static uint64_t xNumberOfSuccessfulAllocations = 0;
 static uint64_t xNumberOfSuccessfulFrees = 0;
@@ -241,7 +241,8 @@ static void prvHeapInit( void ) {
 	/* To start with there is a single free block that is sized to take up the
 	entire heap space, minus the space taken by pxEnd. */
 	pxFirstFreeBlock = ( void * ) pucAlignedHeap;
-	xTotalSpace = pxFirstFreeBlock->xBlockSize = uxAddress - ( uint64_t ) pxFirstFreeBlock;
+	pxFirstFreeBlock->xBlockSize = uxAddress - ( uint64_t ) pxFirstFreeBlock;
+	xTotalSpace=pxFirstFreeBlock->xBlockSize;
 	pxFirstFreeBlock->pxNextFreeBlock = pxEnd; //todo el espacio que tengo (sin pxend y sin la partecita alineada) es 1 solo block
 
 	/* Only one block exists - and it covers the entire usable heap space. */
@@ -302,13 +303,14 @@ static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert ) {
 }  
  
 
-void getMMStats( mm_stat*ptr ) {
+void getMMStats(mm_stat* stats) {
 	if( pxEnd == NULL )
 		prvHeapInit();
-    ptr->sys_name=(char*) sys_name;
-    ptr->total=xTotalSpace;
-    ptr->free=xFreeBytesRemaining;
-    ptr->occupied=xTotalSpace-xFreeBytesRemaining;
-    ptr->successful_frees=xNumberOfSuccessfulFrees;
-    ptr->successful_allocs=xNumberOfSuccessfulAllocations;
+	stats->free=xFreeBytesRemaining;
+	stats->total=xTotalSpace;
+	stats->occupied=xTotalSpace-xFreeBytesRemaining;
+	stats->successful_allocs=xNumberOfSuccessfulAllocations;
+	stats->successful_frees=xNumberOfSuccessfulFrees;
+	stats->sys_name=(char*) sys_name;
 }
+

@@ -1,5 +1,5 @@
 #include <libasm.h>
-#include <Lib.h>
+#include "Include/Lib.h"
 #include <stdint.h>
 
 char read_input(){//syscall0
@@ -55,8 +55,10 @@ void Mfree(void* pointer){//syscall15
 void* MemSet(void* ptr,uint32_t c,uint64_t string){//syscall16
    return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string,0);
 }
-void Mmem(uint64_t stats){
-   sys_call(17,stats,0,0,0);
+mm_stat Mmem(){
+   mm_stat aux;
+   sys_call(17,&aux,0,0,0);
+   return aux;
 }
 
 //exec = 18

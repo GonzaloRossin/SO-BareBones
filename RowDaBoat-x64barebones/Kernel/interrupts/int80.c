@@ -208,8 +208,8 @@ void* memSet(void* rsi,uint32_t rdx,uint64_t rcx){
 	return (void*)memset(rsi, rdx, rcx);
 }
 //SYS_CALL 17
-void mem(mm_stat* mStats){
-	getMMStats(mStats);
+void mem(mm_stat* rsi){
+	getMMStats(rsi);
 }
 //SYS_CALL 18
 pid_t exec(main_func_t *rsi, char* rdx, int rcx){

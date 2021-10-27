@@ -16,6 +16,6 @@
 
     void *RTOSMalloc( uint64_t size);
     void RTOSFree( void* ptr );
-    void getMMStats( mm_stat* );
+    void getMMStats(mm_stat*stats);
 
 #endif
