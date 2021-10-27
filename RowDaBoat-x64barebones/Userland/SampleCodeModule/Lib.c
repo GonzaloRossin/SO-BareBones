@@ -57,7 +57,7 @@ void* MemSet(void* ptr,uint32_t c,uint64_t string){//syscall16
 }
 mm_stat Mmem(){
    mm_stat aux;
-   sys_call(17,&aux,0,0,0);
+   sys_call(17,(uint64_t)&aux,0,0,0);
    return aux;
 }
 

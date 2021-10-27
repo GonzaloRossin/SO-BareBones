@@ -151,6 +151,12 @@ void get_mem_info(){
     print("free memory: ");
     print_num((int)(aux.free),0);
     newLine();
+    print("number of allocations: ");
+    print_num((int)(aux.successful_allocs),0);
+    newLine();
+    print("number of frees: ");
+    print_num((int)(aux.successful_frees),0);
+    newLine();
 }
 
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)

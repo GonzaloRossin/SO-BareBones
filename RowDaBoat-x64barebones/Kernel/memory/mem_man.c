@@ -200,6 +200,7 @@ void RTOSFree( void *pv ) {
 
 				prvInsertBlockIntoFreeList( ( ( BlockLink_t * ) pxLink ) );
 				xNumberOfSuccessfulFrees++;
+				xNumberOfSuccessfulAllocations--;
 			}
 		}
 	}
