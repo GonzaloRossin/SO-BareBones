@@ -83,16 +83,25 @@ void block(pid_t pid){//syscall 23
    sys_call(23,pid,0,0,0);
 }
 
-sem_id s_init(char* sname,unsigned int init_size){//syscall 24
-   return(sem_id)sys_call(24,(void*)sname,(uint64_t)init_size,0,0);
+sem_id s_init(char* name,unsigned int init_size){//syscall 24
+   return(sem_id)sys_call(24,0,(void*)name,(uint64_t)init_size,0);
 }
 
 sem_id s_open(char* name){// syscall 25
-   return(sem_id)sys_call(25,(void*)name,0,0,0);
+   return(sem_id)sys_call(24,1,(void*)name,0,0);
 }
 
 int s_wait(sem_id s_id){//syscall 26
-   return(int) sys_call(26,(uint64_t)s_id,0,0,0);
+   return(int) sys_call(24,2,(uint64_t)s_id,0,0);
+}
+int s_post(sem_id s_id){
+   return(int) sys_call(24,3,(uint64_t)s_id,0,0);
+}
+int s_close(sem_id s_id){
+   return(int) sys_call(24,4,(uint64_t)s_id,0,0);
+}
+int s_getValue(sem_id s_id,int* value_pointer){
+   return(int) sys_call(24,5,(uint64_t)s_id,(void*) value_pointer,0);
 }
 
 void argTest(int a1, int a2, int a3){

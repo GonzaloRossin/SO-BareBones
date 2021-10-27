@@ -38,8 +38,5 @@ void ps();// sys call 19
 void process_kill(int rsi);// sys call 21
 void nice(int rsi, unsigned int rdx);// sys call 22
 void block(int rsi);// sys call 23
-sem_id sys_sem_init(char*rsi,unsigned int rdx);//sys call 24
-sem_id sys_sem_open(char*rsi);// syscall 25
-int sys_sem_wait(sem_id sem);//sys call 26
-void arg_test(int rsi, int rdx, int rcx);// sys call 99
+uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx);//syscall 24
 #endif

@@ -29,5 +29,8 @@ typedef struct sem_t {
 sem_id sem_open( char * name);
 sem_id sem_init_open( char * name, unsigned int init_val);
 int sem_wait(sem_id sem);
+int sem_post(sem_id sem);
+int sem_close(sem_id sem);
+int sem_getvalue(sem_id sem, int * sval);
 
 #endif

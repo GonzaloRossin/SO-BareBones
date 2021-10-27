@@ -80,14 +80,8 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	// 	block((pid_t)rsi);
 	// 	break;
 	case 24:
-	 	return (uint64_t) sys_sem_init((char*)rsi,(unsigned int) rdx);
-	 	break;
-	case 25:
-		return (uint64_t) sys_sem_open((char*)rsi);
-		break;
-	case 26:
-		return (uint64_t)sys_sem_wait((sem_id)rsi);
-		break;
+		return (uint64_t)sys_sem((int)rsi, rdx,rcx);
+	break;
 	case 99:
 		arg_test(rsi,rdx,rcx);
 		break;
@@ -239,15 +233,28 @@ void ps(){
 // 	change_status(pid);
 // }
 //SYS_CALL 24
-sem_id sys_sem_init(char*rsi,unsigned int rdx){
-	return sem_init_open(rsi,rdx);
-}
-//SYS CALL 25
-sem_id sys_sem_open(char*rsi){
-	return sem_open(rsi);
-}
-//SYS CALL 26
-int sys_sem_wait(sem_id rsi){
-	return sem_wait(rsi);
+uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
+	switch (rsi)
+	{
+	case 0:
+		return (uint64_t) sem_init_open((char*) rdx,(unsigned int) rcx);
+		break;
+	case 1:
+		return (uint64_t) sem_open((char*) rdx);
+	break;
+	case 2:
+		return (uint64_t)sem_wait((sem_id)rdx);
+	break;
+	case 3:
+		return (uint64_t)sem_post((sem_id)rdx);
+	break;
+	case 4:
+		return (uint64_t)sem_close((sem_id)rdx);
+	break;
+	case 5:
+		return (uint64_t)sem_getvalue((sem_id)rdx,(int*)rcx);
+	break;
+	}
+	return -1;
 }
 

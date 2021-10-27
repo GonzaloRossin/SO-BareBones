@@ -1,6 +1,6 @@
 #include "Include/shell.h"
 #include "Include/Lib.h"
-#include "Include/test_mm.h"
+#include "Include/tests.h"
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
