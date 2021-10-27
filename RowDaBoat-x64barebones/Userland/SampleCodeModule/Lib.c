@@ -59,7 +59,9 @@ void Mmem(){
    sys_call(17,0,0,0,0);
 }
 
-//exec = 18
+pid_t exec(main_func_t *func, char* name, int rcx){
+   sys_call(18, (void*)func, (void*)name, (void*)(uint64_t)rcx, 0);
+}
 
 void ps(){
   sys_call(19,0,0,0,0);
@@ -83,7 +85,6 @@ int* get_Minfo(){
 }
 
 void argTest(int a1, int a2, int a3){
-   sys_call(8,420,0,0,0);
    sys_call(99,a1,a2,a3,0);
 }
 

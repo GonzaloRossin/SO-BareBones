@@ -149,6 +149,51 @@ void get_mem_info(){
     newLine();
 }
 
+
+void printN(int argc, char ** argv){
+    print("hola soy el printN TENGO QUE SER IMPRIMIDOO");
+    newLine();
+    for(unsigned int i=0; i<argc; i++){
+        print(argv[i]);
+    }
+    /*int i = 0;
+    for(i=0; i<n; i++){
+        print(c);
+    }*/
+}
+
+/*
+void printLoop(int a1, int a2) {
+    int argc = 2;
+    char ** argv = Mmalloc((argc + 1) * sizeof(char *));
+    char str1[] = "primer sting\n";
+    char str2[] = "arg 2\n";
+    argv[0] = Mmalloc(sizeof(str1));
+    strncpy(str1, argv[0],0, strlen(str1));
+    argv[1] = Mmalloc(sizeof(str2));
+    strncpy(str2, argv[1],0, strlen(str2));
+    argv[2] = NULL;
+
+    main_func_t aux = {printN, argc, (char)argv};
+    exec(&aux, "test Process", 1);
+}*/
+
+int testProcess2Main(int argc, char ** argv) {
+    print("in tester");
+    for (unsigned int i = 0; i < argc; i++) {
+        print("\nsoy el new proceso ");
+        print_num(i,0);
+    }
+    return 0;
+}
+
+void printLoop(int a1, int a2) {
+    main_func_t proc2 = {testProcess2Main, 200, NULL};
+    exec(&proc2, "test Process", 1);
+    //printf("Created process pid: %d\n", createProcess(&proc2, "Test Process 2", 0));
+}
+
+
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
     command aux;
@@ -176,6 +221,7 @@ void fillCommandList()
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block,1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest,3);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)",&get_mem_info,0);
+    fillCommand("printLoop",": testea la creación de un proceso",&printLoop,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){

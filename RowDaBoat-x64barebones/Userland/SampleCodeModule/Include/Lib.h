@@ -111,7 +111,7 @@ void* Mmalloc(int size);//syscall14
 void Mfree(void* pointer);//syscall15
 void* MemSet(void* ptr,uint32_t c,uint64_t string);//syscall16
 void Mmem();//syscall17
-//exec syscall18
+pid_t exec(main_func_t *func, char* name, int rcx);//exec syscall18
 void ps();//syscall19
 //void loop();////syscall20
 void kill(pid_t pid);//syscall21

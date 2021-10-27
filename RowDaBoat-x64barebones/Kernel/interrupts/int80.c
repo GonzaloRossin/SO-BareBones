@@ -82,9 +82,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	// case 24:
 	// 	return (uint64_t) get_MemInfo();
 	// 	break;
-	// case 99:
-	// 	arg_test(rsi,rdx,rcx);
-	// 	break;
+	 case 99:
+	 	arg_test(rsi,rdx,rcx);
+	 	break;
 	}
 	return 0;
 }
