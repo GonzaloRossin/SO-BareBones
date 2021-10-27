@@ -1,35 +1,62 @@
 #ifndef BUDDY_H
 #define BUDDY_H
+    
+    #include "sbrk.h"
 
-#include <stdint.h>
-#include <string.h>
-#include "sbrk.h"
+    /*
+    * Every allocation needs an 8-byte header to store the allocation size while
+    * staying 8-byte aligned. The address returned by "malloc" is the address
+    * right after this header (i.e. the size occupies the 8 bytes before the
+    * returned address).
+    */
+    #define HEADER_SIZE 8
 
-    #define BASE 2
-    #define GIGA 30
-    #define MIN_ALLOC_LOG2 6                            // Min size = 64 bytes
-    #define MAX_ALLOC_LOG2 (GIGA - MIN_ALLOC_LOG2)      // Max size = 1 GB
-    #define BINARY_POWER(x) (1 << (x))
-    #ifndef TOTAL_HEAP_SIZE
-    #define TOTAL_HEAP_SIZE 1024 * 10
-    #endif
+    /*
+    * The minimum allocation size is 16 bytes because we have an 8-byte header and
+    * we need to stay 8-byte aligned.
+    */
+    #define MIN_ALLOC_LOG2 4
+    #define MIN_ALLOC ((uint64_t)1 << MIN_ALLOC_LOG2)
 
-    #ifndef NULL
-        #define NULL ((void*)0)
-    #endif
+    /*
+    * This is the total size of the heap. It's technically also the maximum 
+    * allocation size because the heap could consist of a single allocation of 
+    * this size. But of course real heaps will have multiple allocations.
+    * 
+    *    __builtin_clzll : #ceros antes del 1
+    *   000010011101011 -> 64                            
+    *   000010000000000 -> 4
+    *   -----------------> 60 - 1 = 59
+    */
+    #define LOG2(X) ((unsigned) (8*sizeof (unsigned long long) - __builtin_clzll((X)) - 1))
+    #define MAX_ALLOC_LOG2 (LOG2((unsigned long long)(MAX_ADDRESS - MIN_ADDRESS)))
+    #define MAX_ALLOC ((uint64_t)1 << MAX_ALLOC_LOG2) //16 MB
 
-    typedef enum { false, true } bool;
+    /*
+    * Allocations are done in powers of two starting from MIN_ALLOC and ending at
+    * MAX_ALLOC inclusive. Each allocation size has a bucket that stores the free
+    * list for that allocation size.
+    *
+    * Given a bucket index, the size of the allocations in that bucket can be
+    * found with "(uint64_t)1 << (MAX_ALLOC_LOG2 - bucket)".
+    */
+    #define BUCKET_COUNT (MAX_ALLOC_LOG2 - MIN_ALLOC_LOG2 + 1)
 
-    typedef struct block_t
-    {
-        bool inUse;
-        unsigned short int level;
-        struct block_t* prev;
-        struct block_t *next;
-    } block_t;
-    void RTOSFree(void *ptr);
-    void *RTOSMalloc(size_t requestedSize);
-    int* get_MemInfo();
-    void initHeap();
+    /*
+    * Free lists are stored as circular doubly-linked lists. Every possible
+    * allocation size has an associated free list that is threaded through all
+    * currently free blocks of that size. That means MIN_ALLOC must be at least
+    * "sizeof(list_t)". MIN_ALLOC is currently 16 bytes, so this will be true for
+    * both 32-bit and 64-bit.
+    */
+    typedef struct list_t {
+        struct list_t *prev, *next;
+    } list_t;
+
+    static void const * maxAddress = (void *) MAX_ADDRESS;
+
+    static void const * minAddress = (void *) MIN_ADDRESS;
+
+    static char const * sys_name = "Buddy";
 
 #endif

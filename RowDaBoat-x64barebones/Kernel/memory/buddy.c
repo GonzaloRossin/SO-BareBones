@@ -1,288 +1,462 @@
 #include "buddy.h"
-
-static size_t getBlock(size_t request);
-static int getBlockToUse(size_t firstBlock);
-static block_t *getBuddy(block_t *block);
-static block_t *getPrincipalAdress(block_t *block);
-static void addBlockAndMerge(block_t *block);
-static void addNewBlock(block_t *block, block_t *lastNode, size_t level);
-
-// https://www.geeksforgeeks.org/check-if-a-number-is-power-of-another-number/
-static bool isPower(int x, long int y);
-
-static inline uint64_t log2(uint64_t n);
-static void pushBlock(block_t *oldBlock, block_t *newNode);
-static void deleteBlock(block_t *block);
-static block_t *popBlock(block_t *block);
-static int isBlockEmpty(block_t *block);
-static int myPow(int base, int power);
-static int biggestBuddy(size_t heap);
-
-static block_t *totalMemory;
-static bool began = false;
-static size_t heapSize;
-static size_t cantBlocks;
-static block_t buckets[MAX_ALLOC_LOG2];
-static size_t freeBytesRemaining;
-int info[2] = {0};
+// code taken from: https://github.com/evanw/buddy-malloc/blob/master/buddy-malloc.c
 
 
-//-----------------------------------------------------------------------------------------//
+void *sbrk(int increment);
+int brk(void * ptr);
 
-int * get_MemInfo()
-{
-    info[0]=(int) heapSize;
-    info[1]=(int) freeBytesRemaining; 
-    return info;
+/*
+ * Each bucket corresponds to a certain allocation size and stores a free list
+ * for that size. The bucket at index 0 corresponds to an allocation size of
+ * MAX_ALLOC (i.e. the whole address space).
+ */
+static list_t buckets[BUCKET_COUNT];
+
+/*
+ * We could initialize the allocator by giving it one free block the size of
+ * the entire address space. However, this would cause us to instantly reserve
+ * half of the entire address space on the first allocation, since the first
+ * split would store a free list entry at the start of the right child of the
+ * root. Instead, we have the tree start out small and grow the size of the
+ * tree as we use more memory. The size of the tree is tracked by this value.
+ */
+static uint64_t bucket_limit;
+
+/*
+ * This array represents a linearized binary tree of bits. Every possible
+ * allocation larger than MIN_ALLOC has a node in this tree (and therefore a
+ * bit in this array).
+ *
+ * Given the index for a node, lineraized binary trees allow you to traverse to
+ * the parent node or the child nodes just by doing simple arithmetic on the
+ * index:
+ *
+ * - Move to parent:         index = (index - 1) / 2;
+ * - Move to left child:     index = index * 2 + 1;
+ * - Move to right child:    index = index * 2 + 2;
+ * - Move to sibling:        index = ((index - 1) ^ 1) + 1;
+ *
+ * Each node in this tree can be in one of several states:
+ *
+ * - UNUSED (both children are UNUSED)
+ * - SPLIT (one child is UNUSED and the other child isn't)
+ * - USED (neither children are UNUSED)
+ *
+ * These states take two bits to store. However, it turns out we have enough
+ * information to distinguish between UNUSED and USED from context, so we only
+ * need to store SPLIT or not, which only takes a single bit.
+ *
+ * Note that we don't need to store any nodes for allocations of size MIN_ALLOC
+ * since we only ever care about parent nodes.
+ */
+static uint8_t node_is_split[(1 << (BUCKET_COUNT - 1)) / 8];
+
+/*
+ * This is the starting address of the address range for this allocator. Every
+ * returned allocation will be an offset of this pointer from 0 to MAX_ALLOC.
+ */
+static uint8_t *base_ptr;
+
+/*
+ * This is the maximum address that has ever been used by the allocator. It's
+ * used to know when to call "brk" to request more memory from the kernel.
+ */
+static uint8_t *max_ptr;
+
+
+static uint64_t free_space = MAX_ALLOC;
+static uint64_t successful_frees = 0;
+static uint64_t successful_allocs = 0;
+
+/*
+ * Make sure all addresses before "new_value" are valid and can be used. Memory
+ * is allocated in a 2gb address range but that memory is not reserved up
+ * front. It's only reserved when it's needed by calling this function. This
+ * will return false if the memory could not be reserved.
+ */
+static int update_max_ptr(uint8_t *new_value) {
+  if (new_value > max_ptr) {
+    if (brk(new_value)) {
+      return 0;
+    }
+    max_ptr = new_value;
+  }
+  return 1;
 }
 
-
-static int myPow(int base, int power)
-{
-    int result = 1;
-    int i;
-    for(i=0; i<power; i++)
-    {
-        result *= base;
-    }
-    return result;
+/*
+ * Initialize a list to empty. Because these are circular lists, an "empty"
+ * list is an entry where both links point to itself. This makes insertion
+ * and removal simpler because they don't need any branches.
+ */
+static void list_init(list_t *list) {
+  list->prev = list;
+  list->next = list;
 }
 
-
-int biggestBuddy(size_t heap)
-{
-    int i = 0;
-    size_t totalHeap = 1;
-    while(myPow(2,i) < heap)
-    {
-        totalHeap *=2; 
-        i++;
-    }
-    return totalHeap;
+/*
+ * Append the provided entry to the end of the list. This assumes the entry
+ * isn't in a list already because it overwrites the linked list pointers.
+ */
+static void list_push(list_t *list, list_t *entry) {
+  list_t *prev = list->prev;
+  entry->prev = prev;
+  entry->next = list;
+  prev->next = entry;
+  list->prev = entry;
 }
 
-
-void initHeap()
-{
-    static void* totalMemoryAux;    
-    heapSize= biggestBuddy(TOTAL_HEAP_SIZE);      // There will be only one block, taking up the entire space
-    freeBytesRemaining=heapSize;
-    sbrkHandler(heapSize, &totalMemoryAux);
-    totalMemory = (block_t *)totalMemoryAux;    
-    cantBlocks = log2(heapSize) - MIN_ALLOC_LOG2 + 1;
-
-    if (cantBlocks > MAX_ALLOC_LOG2)        // We have a max quantity of blocks in our heap
-    {
-        cantBlocks = MAX_ALLOC_LOG2;
-    }
-
-    block_t * aux = buckets;
-
-    for (int i = 0; i < cantBlocks; i++,aux++)      // Initialize blocks of every level (smallest to biggest)
-    {
-        buckets[i].level = i;
-        buckets[i].inUse = true;
-        buckets[i].prev = buckets[i].next = aux ;
-    }
-    addNewBlock(totalMemory, &buckets[cantBlocks - 1], cantBlocks - 1);     // Add the biggest to the heap
+/*
+ * Remove the provided entry from whichever list it's currently in. This
+ * assumes that the entry is in a list. You don't need to provide the list
+ * because the lists are circular, so the list's pointers will automatically
+ * be updated if the first or last entries are removed.
+ */
+static void list_remove(list_t *entry) {
+  list_t *prev = entry->prev;
+  list_t *next = entry->next;
+  prev->next = next;
+  next->prev = prev;
 }
 
+/*
+ * Remove and return the first entry in the list or NULL if the list is empty.
+ */
+static list_t *list_pop(list_t *list) {
+  list_t *back = list->prev;
+  if (back == list) return NULL;
+  list_remove(back);
+  return back;
+}
 
-void* RTOSMalloc(size_t requestedSize)
-{
-    if(began == false )     // If it's the first time, initialize the heap space
-    {
-        initHeap();
-        began = true;
+/*
+ * This maps from the index of a node to the address of memory that node
+ * represents. The bucket can be derived from the index using a loop but is
+ * required to be provided here since having them means we can avoid the loop
+ * and have this function return in constant time.
+ */
+static uint8_t *ptr_for_node(uint64_t index, uint64_t bucket) {
+  return base_ptr + ((index - (1 << bucket) + 1) << (MAX_ALLOC_LOG2 - bucket));
+}
+
+/*
+ * This maps from an address of memory to the node that represents that
+ * address. There are often many nodes that all map to the same address, so
+ * the bucket is needed to uniquely identify a node.
+ */
+static uint64_t node_for_ptr(uint8_t *ptr, uint64_t bucket) {
+  return ((ptr - base_ptr) >> (MAX_ALLOC_LOG2 - bucket)) + (1 << bucket) - 1;
+}
+/*
+ * Given the index of a node, this returns the "is split" flag of the parent.
+ */
+static int parent_is_split(uint64_t index) {
+  index = (index - 1) / 2;
+  return (node_is_split[index / 8] >> (index % 8)) & 1;
+}
+
+/*
+ * Given the index of a node, this flips the "is split" flag of the parent.
+ */
+static void flip_parent_is_split(uint64_t index) {
+  index = (index - 1) / 2;
+  node_is_split[index / 8] ^= 1 << (index % 8);
+}
+
+/*
+ * Given the requested size passed to "malloc", this function returns the index
+ * of the smallest bucket that can fit that size.
+ */
+static uint64_t bucket_for_request(uint64_t request) {
+  uint64_t bucket = BUCKET_COUNT - 1;
+  uint64_t size = MIN_ALLOC;
+
+  while (size < request) {
+    bucket--;
+    size *= 2;
+  }
+
+  return bucket;
+}
+
+/*
+ * The tree is always rooted at the current bucket limit. This call grows the
+ * tree by repeatedly doubling it in size until the root lies at the provided
+ * bucket index. Each doubling lowers the bucket limit by 1.
+ */
+static int lower_bucket_limit(uint64_t bucket) {
+  while (bucket < bucket_limit) {
+    uint64_t root = node_for_ptr(base_ptr, bucket_limit);
+    uint8_t *right_child;
+
+    /*
+     * If the parent isn't SPLIT, that means the node at the current bucket
+     * limit is UNUSED and our address space is entirely free. In that case,
+     * clear the root free list, increase the bucket limit, and add a single
+     * block with the newly-expanded address space to the new root free list.
+     */
+    if (!parent_is_split(root)) {
+      list_remove((list_t *)base_ptr);
+      list_init(&buckets[--bucket_limit]);
+      list_push(&buckets[bucket_limit], (list_t *)base_ptr);
+      continue;
     }
-    size_t totalBytes = requestedSize + sizeof(block_t);
-    if (requestedSize == 0 || totalBytes > freeBytesRemaining)      // If the requested size is zero or if there
-    {                                                               // isn't more space available, return NULL
+
+    /*
+     * Otherwise, the tree is currently in use. Create a parent node for the
+     * current root node in the SPLIT state with a right child on the free
+     * list. Make sure to reserve the memory for the free list entry before
+     * writing to it. Note that we do not need to flip the "is split" flag for
+     * our current parent because it's already on (we know because we just
+     * checked it above).
+     */
+    right_child = ptr_for_node(root + 1, bucket_limit);
+    if (!update_max_ptr(right_child + sizeof(list_t))) {
+      return 0;
+    }
+    list_push(&buckets[bucket_limit], (list_t *)right_child);
+    list_init(&buckets[--bucket_limit]);
+
+    /*
+     * Set the grandparent's SPLIT flag so if we need to lower the bucket limit
+     * again, we'll know that the new root node we just added is in use.
+     */
+    root = (root - 1) / 2;
+    if (root != 0) {
+      flip_parent_is_split(root);
+    }
+  }
+
+  return 1;
+}
+
+void * RTOSMalloc(uint64_t request) {
+  uint64_t original_bucket, bucket;
+
+  /*
+   * Make sure it's possible for an allocation of this size to succeed. There's
+   * a hard-coded limit on the maximum allocation size because of the way this
+   * allocator works.
+   */
+  if (request + HEADER_SIZE > MAX_ALLOC) {
+    return NULL;
+  }
+
+  /*
+   * Initialize our global state if this is the first call to "malloc". At the
+   * beginning, the tree has a single node that represents the smallest
+   * possible allocation size. More memory will be reserved later as needed.
+   */
+  if (base_ptr == NULL) {
+    base_ptr = max_ptr = (uint8_t *)sbrk(0);
+    bucket_limit = BUCKET_COUNT - 1;
+    update_max_ptr(base_ptr + sizeof(list_t));
+    list_init(&buckets[BUCKET_COUNT - 1]);
+    list_push(&buckets[BUCKET_COUNT - 1], (list_t *)base_ptr);
+  }
+
+  /*
+   * Find the smallest bucket that will fit this request. This doesn't check
+   * that there's space for the request yet.
+   */
+  bucket = bucket_for_request(request + HEADER_SIZE);
+  original_bucket = bucket;
+
+  /*
+   * Search for a bucket with a non-empty free list that's as large or larger
+   * than what we need. If there isn't an exact match, we'll need to split a
+   * larger one to get a match.
+   */
+  while (bucket + 1 != 0) {
+    uint64_t size, bytes_needed, i;
+    uint8_t *ptr;
+
+    /*
+     * We may need to grow the tree to be able to fit an allocation of this
+     * size. Try to grow the tree and stop here if we can't.
+     */
+    if (!lower_bucket_limit(bucket)) {
+      return NULL;
+    }
+
+    /*
+     * Try to pop a block off the free list for this bucket. If the free list
+     * is empty, we're going to have to split a larger block instead.
+     */
+    ptr = (uint8_t *)list_pop(&buckets[bucket]);
+    if (!ptr) {
+      /*
+       * If we're not at the root of the tree or it's impossible to grow the
+       * tree any more, continue on to the next bucket.
+       */
+      if (bucket != bucket_limit || bucket == 0) {
+        bucket--;
+        continue;
+      }
+
+      /*
+       * Otherwise, grow the tree one more level and then pop a block off the
+       * free list again. Since we know the root of the tree is used (because
+       * the free list was empty), this will add a parent above this node in
+       * the SPLIT state and then add the new right child node to the free list
+       * for this bucket. Popping the free list will give us this right child.
+       */
+      if (!lower_bucket_limit(bucket - 1)) {
         return NULL;
+      }
+      ptr = (uint8_t *)list_pop(&buckets[bucket]);
     }
 
-    size_t block = getBlock(totalBytes);
-    int parentBlock = getBlockToUse(block);
-
-    if (parentBlock == -1)      // There's no more blocks available
-    {
-        return NULL;
+    /*
+     * Try to expand the address space first before going any further. If we
+     * have run out of space, put this block back on the free list and fail.
+     */
+    size = (uint64_t)1 << (MAX_ALLOC_LOG2 - bucket);
+    bytes_needed = bucket < original_bucket ? size / 2 + sizeof(list_t) : size;
+    if (!update_max_ptr(ptr + bytes_needed)) {
+      list_push(&buckets[bucket], (list_t *)ptr);
+      return NULL;
     }
 
-    block_t *ptr;
-    for (ptr = popBlock(&buckets[parentBlock]); block < parentBlock; parentBlock--)     // Iterate the list and reorder
-    {
-        ptr->level--;
-        addNewBlock(getBuddy(ptr), &buckets[parentBlock - 1], parentBlock - 1);
+    /*
+     * If we got a node off the free list, change the node from UNUSED to USED.
+     * This involves flipping our parent's "is split" bit because that bit is
+     * the exclusive-or of the UNUSED flags of both children, and our UNUSED
+     * flag (which isn't ever stored explicitly) has just changed.
+     *
+     * Note that we shouldn't ever need to flip the "is split" bit of our
+     * grandparent because we know our buddy is USED so it's impossible for our
+     * grandparent to be UNUSED (if our buddy chunk was UNUSED, our parent
+     * wouldn't ever have been split in the first place).
+     */
+    i = node_for_ptr(ptr, bucket);
+    if (i != 0) {
+      flip_parent_is_split(i);
     }
-    ptr->inUse = true;
-    ptr++;
 
-    freeBytesRemaining -= BINARY_POWER(block + MIN_ALLOC_LOG2);     // Update the number of free bytes remaining
+    /*
+     * If the node we got is larger than we need, split it down to the correct
+     * size and put the new unused child nodes on the free list in the
+     * corresponding bucket. This is done by repeatedly moving to the left
+     * child, splitting the parent, and then adding the right child to the free
+     * list.
+     */
+    while (bucket < original_bucket) {
+      i = i * 2 + 1;
+      bucket++;
+      flip_parent_is_split(i);
+      list_push(&buckets[bucket], (list_t *)ptr_for_node(i + 1, bucket));
+    }
 
-    return (void *)ptr;
+    /*
+     * Now that we have a memory address, write the block header (just the size
+     * of the allocation) and return the address immediately after the header.
+     */
+    *(uint64_t *)ptr = request;
+
+    successful_allocs++;
+    free_space -= (uint64_t)1 << (MAX_ALLOC_LOG2 - bucket);
+
+    return ptr + HEADER_SIZE;
+  }
+
+  return NULL;
 }
 
+void RTOSFree(void *ptr) {
+  uint64_t bucket, original_bucket, i;
 
-void RTOSFree(void *ptr)
-{
-    if (ptr == NULL)
-    {
-        return;
-    }
-
-    block_t *blockNode = (block_t *)ptr - 1;
-    blockNode->inUse = false;
-    freeBytesRemaining += BINARY_POWER(blockNode->level + MIN_ALLOC_LOG2);
-    addBlockAndMerge(blockNode);    // Adds the block to the free list and cascades the merge if the buddies are also free
+  /*
+   * Ignore any attempts to free a NULL pointer.
+   */
+  if (!ptr) {
     return;
-}
+  }
 
+  /*
+   * We were given the address returned by "malloc" so get back to the actual
+   * address of the node by subtracting off the size of the block header. Then
+   * look up the index of the node corresponding to this address.
+   */
+  ptr = (uint8_t *)ptr - HEADER_SIZE;
+  original_bucket = bucket = bucket_for_request(*(uint64_t *)ptr + HEADER_SIZE);
+  i = node_for_ptr((uint8_t *)ptr, bucket);
 
-static bool isPower(int x, long int y)
-{
-    if (x == 1)     // The only power of 1 is 1 itself
-    {
-        return (y == 1);
+  /*
+   * Traverse up to the root node, flipping USED blocks to UNUSED and merging
+   * UNUSED buddies together into a single UNUSED parent.
+   */
+  while (i != 0) {
+    /*
+     * Change this node from UNUSED to USED. This involves flipping our
+     * parent's "is split" bit because that bit is the exclusive-or of the
+     * UNUSED flags of both children, and our UNUSED flag (which isn't ever
+     * stored explicitly) has just changed.
+     */
+    flip_parent_is_split(i);
+
+    /*
+     * If the parent is now SPLIT, that means our buddy is USED, so don't merge
+     * with it. Instead, stop the iteration here and add ourselves to the free
+     * list for our bucket.
+     *
+     * Also stop here if we're at the current root node, even if that root node
+     * is now UNUSED. Root nodes don't have a buddy so we can't merge with one.
+     */
+    if (parent_is_split(i) || bucket == bucket_limit) {
+      break;
     }
 
-    // Repeatedly comput power of x
-    long int pow = 1;
-    while (pow < y) {
-        pow *= x;
-    }
+    /*
+     * If we get here, we know our buddy is UNUSED. In this case we should
+     * merge with that buddy and continue traversing up to the root node. We
+     * need to remove the buddy from its free list here but we don't need to
+     * add the merged parent to its free list yet. That will be done once after
+     * this loop is finished.
+     */
+    list_remove((list_t *)ptr_for_node(((i - 1) ^ 1) + 1, bucket));
+    i = (i - 1) / 2;
+    bucket--;
+  }
 
-    return (pow == y);  // Check if power of x becomes y
+  /*
+   * Add ourselves to the free list for our bucket. We add to the back of the
+   * list because "malloc" takes from the back of the list and we want a "free"
+   * followed by a "malloc" of the same size to ideally use the same address
+   * for better memory locality.
+   */
+  list_push(&buckets[bucket], (list_t *)ptr_for_node(i, bucket));
+
+  successful_frees++;
+  successful_allocs--;
+  free_space += (uint64_t)1 << (MAX_ALLOC_LOG2 - original_bucket);
+}
+void getMMStats(mm_stat* stats) {
+	stats->free=free_space;
+	stats->total=MAX_ALLOC;
+	stats->occupied=MAX_ALLOC-free_space;
+	stats->successful_allocs=successful_allocs;
+	stats->successful_frees=successful_frees;
+	stats->sys_name=(char*) sys_name;
 }
 
+static char *p_break;
 
-static uint64_t log2(uint64_t n)
-{
-    uint64_t val = 0;
-    while(n > 1)
-    {
-        val++;
-        n >>= 1;
-    }
-    return val;
+void *sbrk(int increment){
+    if (p_break == 0)
+      p_break = (char *) minAddress;
+    char * const original =  p_break;
+    if (increment < (char *) minAddress - p_break  ||  increment >= (char *) maxAddress - p_break)
+        return (void*)-1;
+
+    p_break += increment;
+    return original;
 }
 
-
-static void pushBlock(block_t *oldBlock, block_t *newBlock)
-{
-    block_t* prev = oldBlock->prev;
-    newBlock->prev = prev;
-    newBlock->next = oldBlock;
-    prev->next = newBlock;
-    oldBlock->prev = newBlock;
-}
-
-
-static void deleteBlock(block_t *block)
-{
-    block_t *prev = block->prev;
-    block_t *next = block->next;
-    prev->next = next;
-    next->prev = prev;
-}
-
-
-static block_t *popBlock(block_t *block)
-{
-    block_t *aux = block->prev;
-    if (aux == block)
-    {
-        return NULL;
-    }
-    deleteBlock(aux);
-
-    return aux;
-}
-
-
-static int isBlockEmpty(block_t *block)
-{
-    return block->prev == block;
-}
-
-
-static void addNewBlock(block_t *block, block_t *lastNode, size_t level)
-{
-    block->inUse = false;
-    block->level = level;
-    pushBlock(lastNode, block);
-}
-
-
-static void addBlockAndMerge(block_t *block)
-{
-    block_t *buddy = getBuddy(block);
-
-    while (block->level != cantBlocks - 1 && buddy->inUse == false && buddy->level == block->level) // Merges buddies if they're free
-    {
-        deleteBlock(buddy);
-
-        block = getPrincipalAdress(block);
-        block->level++;
-
-        buddy = getBuddy(block);
-    }
-    pushBlock(&buckets[block->level], block);
-}
-
-
-static block_t *getBuddy(block_t *block)    // Gets the other half of the split block
-{
-
-    uint64_t currentOffset = (uint64_t)block - (uint64_t)totalMemory;
-    uint64_t newOffset = currentOffset ^ BINARY_POWER(MIN_ALLOC_LOG2 + block->level);
-
-    return (block_t *)((uint64_t)totalMemory + newOffset);
-}
-
-
-static block_t *getPrincipalAdress(block_t *block)      // Position of the blocks in the heap space
-{
-    uint64_t mask = BINARY_POWER(block->level +MIN_ALLOC_LOG2);
-    mask = ~mask;
-
-    uint64_t currentOffset = (uint64_t)block - (uint64_t)totalMemory;
-    uint64_t newOffset = currentOffset & mask;
-
-    return (block_t *)((uint64_t)totalMemory + newOffset);
-}
-
-
-static size_t getBlock(size_t request)
-{
-
-    size_t aux = log2(request);
-
-    if (aux < MIN_ALLOC_LOG2)
-    {
+int brk(void * ptr){
+    if ((char *) ptr >= p_break && (char *) ptr <= (char *) maxAddress) {
+        p_break = ptr;
         return 0;
     }
-
-    aux -= MIN_ALLOC_LOG2;
-
-    return isPower(BASE, request) == false ? aux + 1 : aux;
-}
-
-
-static int getBlockToUse(size_t firstBlock)
-{
-
-    int currentBlock = firstBlock;
-
-    while (currentBlock < cantBlocks && isBlockEmpty(&buckets[currentBlock]))
-    {
-        currentBlock++;
-    }
-
-    if (currentBlock == cantBlocks)
-    {
-        return -1;
-    }
-
-    return currentBlock;
+    return -1;
 }

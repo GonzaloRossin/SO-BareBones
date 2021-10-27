@@ -157,6 +157,9 @@ void get_mem_info(){
     print("number of frees: ");
     print_num((int)(aux.successful_frees),0);
     newLine();
+    print("memory manager: ");
+    print(aux.sys_name);
+    newLine();
 }
 
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
