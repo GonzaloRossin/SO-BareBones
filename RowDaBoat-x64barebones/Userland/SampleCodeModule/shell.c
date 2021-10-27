@@ -161,6 +161,23 @@ void get_mem_info(){
         newLine();
     }
 }
+ 
+int testProcess2Main(int argc, char ** argv) { 
+    print("in tester"); 
+    for (unsigned int i = 0; i < argc; i++) { 
+        print_num(i,0);
+        newLine(); 
+    } 
+    return 0; 
+} 
+
+void printLoop(int a1, int a2) { 
+    main_func_t proc2 = {testProcess2Main, 30, NULL}; 
+    int aux = exec(&proc2, "test Process", 0); 
+    print("Process created");
+    newLine();
+    print_num(aux, 0);
+} 
 
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
@@ -175,24 +192,25 @@ void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 
 void fillCommandList()
 {
-    fillCommand("help",": Despliega al usuario los comandos disponibles",&help,0);
-    fillCommand("get_time",": Muestra la hora actual",&get_time,0);
-    fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros (con ctrl se guardan los registros)", &inforeg,0);
-    fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0" ,&testDivisionBy0Command,0);
-    fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida" ,&testIvalidOpCodeCommand,0);
-    fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem,1);
-    fillCommand("clean", ": Limpia la pantalla", &clean,0);
-    fillCommand("test_mem", ": Testeo de memoria", &test_mm,0);
-    fillCommand("ps", ": Imprime el estado de los procesos vivos", &ps,0);
-    fillCommand("kill", ": Mata a un proceso dado su ID", &kill,1);
-    fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice,2);
-    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block,1);
-    fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest,3);
-    fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)",&get_mem_info,0);
+    fillCommand("help",": Despliega al usuario los comandos disponibles", &help, 0);
+    fillCommand("get_time",": Muestra la hora actual", &get_time, 0);
+    fillCommand("inforeg",": Imprime en pantalla el valor de todos los registros (con ctrl se guardan los registros)", &inforeg, 0);
+    fillCommand("test_divisionby0",": Ejemplo de excepcion de dividir por 0", &testDivisionBy0Command, 0);
+    fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida", &testIvalidOpCodeCommand, 0);
+    fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem, 1);
+    fillCommand("clean", ": Limpia la pantalla", &clean, 0);
+    fillCommand("test_mem", ": Testeo de memoria", &test_mm, 0);
+    fillCommand("ps", ": Imprime el estado de los procesos vivos", &ps, 0);
+    fillCommand("kill", ": Mata a un proceso dado su ID", &kill, 1);
+    fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
+    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block, 1);
+    fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
+    fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
+    fillCommand("printLoop",": testea la creacion de un proceso", &printLoop, 0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
-	int params_read=0, j=0, i=0;
+	int params_read = 0, j = 0, i = 0;
 
     //building command
 	while(potentialCommand[i] != '\0' && potentialCommand[i] != ' ' && i < BUFFER_SIZE){

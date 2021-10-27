@@ -34,10 +34,10 @@ void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
 void mem(mm_stat* mStats);// sys call 17
 
 
-pid_t exec(main_func_t * rsi, char* rdx, int rcx); //18
+int exec(main_func_t * rsi, char* rdx, int rcx); //18
 void ps();// sys call 19
-void process_kill(pid_t rsi);// sys call 21
-void nice(pid_t rsi, unsigned int rdx);// sys call 22
-void block(pid_t rsi);// sys call 23
+void process_kill(int rsi);// sys call 21
+void nice(int rsi, unsigned int rdx);// sys call 22
+void block(int rsi);// sys call 23
 void arg_test(int rsi, int rdx, int rcx);// sys call 99
 #endif

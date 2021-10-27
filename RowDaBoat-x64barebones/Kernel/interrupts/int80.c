@@ -62,7 +62,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		mem((mm_stat*)rsi);
 		break;
 	case 18:
-		return (pid_t) exec((main_func_t *) rsi, (char*) rdx, (int) rcx);
+		return exec((main_func_t *) rsi, (char*) rdx, (int) rcx);
 		break;
 	case 19:
 		ps();
@@ -82,9 +82,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	// case 24:
 	// 	return (uint64_t) get_MemInfo();
 	// 	break;
-	// case 99:
-	// 	arg_test(rsi,rdx,rcx);
-	// 	break;
+	case 99:
+		arg_test(rsi,rdx,rcx);
+		break;
 	}
 	return 0;
 }
@@ -212,8 +212,8 @@ void mem(mm_stat* mStats){
 	getMMStats(mStats);
 }
 //SYS_CALL 18
-pid_t exec(main_func_t *rsi, char* rdx, int rcx){
-	return pCreate(rsi, rdx, rcx);
+int exec(main_func_t *rsi, char* rdx, int rcx){
+	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx);
 }
 //SYS_CALL 19
 void ps(){

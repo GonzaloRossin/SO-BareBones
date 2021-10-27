@@ -60,6 +60,9 @@ void Mmem(uint64_t stats){
 }
 
 //exec = 18
+pid_t exec(main_func_t *func, char* name, int rcx){ 
+   sys_call(18, (void*)func, (void*)name, (void*)(uint64_t)rcx, 0); 
+} 
 
 void ps(){
   sys_call(19,0,0,0,0);
