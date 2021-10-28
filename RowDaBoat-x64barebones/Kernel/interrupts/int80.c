@@ -73,33 +73,33 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 21:
 	 	process_kill((int)rsi);
 	break;
-	// case 22:
-	// 	nice((pid_t)rsi, (unsigned int)rdx);
-	// 	break;
+	case 22:
+		nice((int)rsi, (unsigned int)rdx);
+		break;
 	// case 23:
 	// 	block((pid_t)rsi);
 	// 	break;
 	case 24:
 		return (uint64_t)sys_sem((int)rsi, rdx,rcx);
 	break;
-	case 99:
-		arg_test(rsi,rdx,rcx);
-		break;
+	// case 99:
+	// 	arg_test(rsi,rdx,rcx);
+	// 	break;
 	}
 	return 0;
 }
 //SYSCALL 99
-void arg_test(int a1, int a2, int a3){
-	char* msg = "Argumentos: ";
-	draw_string(msg, 12);
-	sys_newline();
-	draw_decimal(a1);
-	sys_newline();
-	draw_decimal(a2);
-	sys_newline();
-	draw_decimal(a3);
-	sys_newline();
-}
+// void arg_test(int a1, int a2, int a3){
+// 	char* msg = "Argumentos: ";
+// 	draw_string(msg, 12);
+// 	sys_newline();
+// 	draw_decimal(a1);
+// 	sys_newline();
+// 	draw_decimal(a2);
+// 	sys_newline();
+// 	draw_decimal(a3);
+// 	sys_newline();
+// }
 //SYSCALL 0
 char sys_read (){
 	return getChar();
@@ -224,10 +224,9 @@ void ps(){
 void process_kill(int pid){
  	kill(pid);
 }
-// //SYS_CALL 22
-// void nice(pid_t pid, unsigned int priority){
-// 	update_priority(pid, priority);
-// }
+void nice(int pid, unsigned int priority) {
+	changePriority(pid, priority);
+}
 // //SYS_CALL 23
 // void block(pid_t pid){
 // 	change_status(pid);
