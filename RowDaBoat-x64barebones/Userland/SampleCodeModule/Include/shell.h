@@ -9,5 +9,6 @@
 
 void shell();
 void get_mem_info();
+void sleep(int seg);
 
 #endif

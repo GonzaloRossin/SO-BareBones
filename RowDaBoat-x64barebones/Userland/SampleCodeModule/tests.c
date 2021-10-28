@@ -92,11 +92,11 @@ uint64_t my_sem_close(sem_id semId){
   return ret; 
 }
 
-#define N 1000000
+#define N 5
 #define TOTAL_PAIR_PROCESSES 2
 #define SEM_ID "sem"
 
-int64_t global;  //shared memory
+int64_t global=0;  //shared memory
 
 static void slowInc(uint64_t *p, int inc){
   uint64_t aux = *p;
@@ -119,12 +119,10 @@ static int my_process_inc(int argc, char ** argv){
     slowInc(&global, 1);
     my_sem_post(sem);
   }
-
-  my_sem_close(sem);
-  
-  print("SEM Final value: ");
-  print_num((int)global,0);
+  print("global=");
+  print_num(global,0);
   newLine();
+  my_sem_close(sem);
 
   return 0;
 }
@@ -142,15 +140,11 @@ static int my_process_dec(int argc, char ** argv){
     my_sem_wait(sem);
     slowInc(&global, -1);
     my_sem_post(sem);
-    print("Variable is: ");
-    print_num((int) global,0);
   }
-
-  my_sem_close(sem);
-
-  print("SEM Final value: ");
-  print_num((int) global,0);
+  print("global=");
+  print_num(global,0);
   newLine();
+  my_sem_close(sem);
 
   return 0;
 }
@@ -160,11 +154,9 @@ static int my_process_inc_no_sem(int argc, char ** argv){
   for (i = 0; i < N; i++){
     slowInc(&global, 1);
   }
-
-  print("NO Final value: ");
-  print_num((int)global,0);
+  print("global=");
+  print_num(global,0);
   newLine();
-
   return 0;
 }
 
@@ -173,9 +165,9 @@ static int my_process_dec_no_sem(int argc, char ** argv){
   for (i = 0; i < N; i++){
     slowInc(&global, -1);
   }
-
-  print("NO Final value: ");
-  print_num((int)global,0);
+  print("global=");
+  print_num(global,0);
+  newLine();
 
   return 0;
 }
@@ -183,7 +175,6 @@ static int my_process_dec_no_sem(int argc, char ** argv){
 void test_sync(){
   uint64_t i;
 
-  global = 0;
 
   print("CREATING PROCESSES...(WITH SEM)");
   newLine();
@@ -198,7 +189,6 @@ void test_sync(){
 void test_no_sync(){
   uint64_t i;
 
-  global = 0;
 
   print("CREATING PROCESSES...(WITHOUT SEM)");
   newLine();
@@ -207,5 +197,8 @@ void test_no_sync(){
     my_create_process(my_process_inc_no_sem, "pinc_no_sem");
     my_create_process(my_process_dec_no_sem, "pdec_no_sem");
   }
+  print("global=");
+  print_num(global,0);
+  newLine();
 }
 

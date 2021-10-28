@@ -125,7 +125,12 @@ static void testIvalidOpCodeCommand()
 {
     __asm__("ud2");
 }
+void sleep(int seg){
+    int actual_time=get_seconds(),aux;
+    while(aux=get_seconds()-actual_time<seg){
 
+    }
+}
 static void draw_Main_Screen(){
     print("Welcome to arquiOS");
     newLine();

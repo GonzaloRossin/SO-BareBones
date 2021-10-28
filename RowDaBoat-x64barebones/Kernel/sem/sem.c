@@ -31,7 +31,7 @@ sem_id sem_open( char * name) {
         i++;
     }
     if (i < MAX_SEMAPHORES) {
-        Strncpy(semaphores[i].name, name,0,Strlen(semaphores[i].name)+1);
+        Strncpy(semaphores[i].name, name,0,Strlen(semaphores[i].name));
         semaphores[i].first = NULL;
         semaphores[i].last = NULL;
         semaphores[i].value = 1;
