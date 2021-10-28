@@ -100,6 +100,7 @@ int changePriority(int pid, unsigned int new_priority);
 int changeStatus(int pid, unsigned int new_status);
 int getProcessStatus(int pid, unsigned int * status);
 int changeForegroundStatus(int pid, unsigned int status);
+int isCurrentForeground(void);
 
 void PS();
 

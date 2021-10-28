@@ -243,7 +243,7 @@ int changeStatus(int pid, unsigned int new_status) {
                     curr_process->status = BLOCKED;
                     curr_process->given_time = 1;
 
-                    _halt_and_wait(); //wait next process
+                    _halt_and_wait();//wait next process
                 } else {
                     updateProcess(&(processes[i]));
                 }
@@ -261,7 +261,8 @@ int changeStatus(int pid, unsigned int new_status) {
                     updateProcess(&(processes[i]));
                     curr_process = NULL;
                     MyFree(processes[i].stack);
-                    _halt_and_wait();
+                    _sti();
+                    _int81();
                 }
                 MyFree(processes[i].stack);                    
             }
@@ -312,6 +313,12 @@ int getProcessesInfo(process_info * arr, unsigned int max_size, unsigned int * s
     }
     *size = j;
     return 0;
+}
+
+int isCurrentForeground(void) {
+    if (curr_process == NULL)
+        return -1;
+    return curr_process->foreground;
 }
 
 

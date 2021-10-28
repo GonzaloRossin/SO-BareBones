@@ -1,16 +1,23 @@
-#include <interrupt_routines.h>
+#include "interrupt_routines.h"
 #include <stdint.h>
 #include "../drivers/keyboard_driver.h"
 #include "../include/lib.h"
 #include "../drivers/video_driver.h"
 #include "../include/naiveConsole.h"
-#include <interrupts.h>
-#include <process.h>
+#include "interrupts.h"
+#include "../include/process.h"
 
 static unsigned long ticks = 0;
 static unsigned long seconds=0;
 
 uint64_t snapshotIP, snapshotSP;
+
+static void pTimersHandler(void);
+static int addTimer(int pid, unsigned int millis);
+
+
+static process_waiting timers[MAX_PROCESSES];
+static unsigned int processes_waiting_size = 0;
 
 static char *regs[REG_SIZE] = {
 	"R15: 0x", "R14: 0x", "R13: ", "R12: 0x", "R11: 0x", "R10: 0x", "R9: 0x",
@@ -24,6 +31,7 @@ void * timerTickHandler(void * rsp)
 	if(ticks % 18 == 0) {
 		seconds++;
 	}
+	pTimersHandler();
 	return scheduler(rsp);
 }
 
@@ -86,4 +94,35 @@ void printRegister(uint64_t *pri)
 			break;
 		}	
 	}
+}
+
+static void pTimersHandler(void) {
+	for (int i = 0; i < processes_waiting_size; i++) {
+		timers[i].ticks_left--;
+		if (timers[i].ticks_left <= 0) {
+			changeStatus(timers[i].pid, READY);
+
+			for (int j = i; j < processes_waiting_size - 1; j++)
+				timers[j] = timers[j+1];
+			processes_waiting_size--;
+		}	
+	}
+}
+
+static int addTimer(int pid, unsigned int millis) {
+	if (processes_waiting_size == MAX_PROCESSES)  // This should never happen
+		return -1;
+		
+	timers[processes_waiting_size].pid = pid;
+	timers[processes_waiting_size].ticks_left = ( millis * PIT_FREQUENCY ) / 1000;
+	processes_waiting_size++;
+	return 0;
+}
+
+void wait(unsigned int millis) {
+	int pid;
+	getPid(&pid);
+
+	addTimer(pid, millis);
+	changeStatus(pid, BLOCKED); // No corre mas.
 }

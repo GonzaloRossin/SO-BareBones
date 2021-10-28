@@ -10,6 +10,8 @@ GLOBAL _halt_and_wait
 GLOBAL spin_lock
 GLOBAL spin_unlock
 EXTERN exit
+GLOBAL _int81
+
 
 
 section .text
@@ -125,6 +127,10 @@ _halt_and_wait:
     sti
 
     hlt
+    ret
+
+_int81:
+    int 81h
     ret
 
 getMemory:

@@ -18,6 +18,7 @@ EXTERN irqDispatcher
 EXTERN printRegister
 EXTERN printException
 EXTERN int_20
+EXTERN scheduler
 
 
 
@@ -158,6 +159,16 @@ int_80:
 	;out 20h, al
 	;pop rax
 
+	iretq
+
+int81:
+	pushState
+
+	mov rdi, rsp ; rsp
+	call scheduler
+	mov rsp, rax
+
+	popState
 	iretq
 
 %macro exception 1
