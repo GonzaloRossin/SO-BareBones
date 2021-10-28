@@ -62,11 +62,15 @@ mm_stat Mmem(){//syscall17
 }
 
 pid_t exec(main_func_t *func, char* name, int rcx){ //syscall 18
-   sys_call(18, (void*)func, (void*)name, (void*)(uint64_t)rcx, 0); 
+int pid;
+   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid);
+   return pid;
 } 
 
-void ps(){//syscall 19
-  sys_call(19,0,0,0,0);
+int ps(process_info* arr, unsigned int max_size) {//syscall 19
+   unsigned int size;
+   sys_call(19,(uint64_t)(void *) arr,(uint64_t)(void *) max_size,(uint64_t)(void *) &size,0);
+   return size;
 }
 
 //loop = 20

@@ -40,8 +40,8 @@ void* MyMalloc(uint64_t rsi);// sys call 14
 void MyFree(void* rsi);// sys call 15
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
 void mem(mm_stat*rsi);// sys call 17
-int exec(main_func_t * rsi, char* rdx, int rcx); //18
-void ps();// sys call 19
+int exec(main_func_t * rsi, char* rdx, int rcx, int * r8); //18
+int ps(process_info * rsi, unsigned int rdx, unsigned int * rcx);// sys call 19
 void process_kill(int rsi);// sys call 21
 void nice(int rsi, unsigned int rdx);// sys call 22
 void block(int rsi);// sys call 23

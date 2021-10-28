@@ -37,7 +37,7 @@ void Mfree(void* pointer);//syscall15
 void* MemSet(void* ptr,uint32_t c,uint64_t string);//syscall16
 pid_t exec(main_func_t *func, char* name, int rcx);//exec syscall18
 mm_stat Mmem();//syscall17
-void ps();//syscall19
+int ps(process_info* arr, unsigned int max_size);//syscall19
 //void loop();////syscall20
 void kill(pid_t pid);//syscall21
 void nice(pid_t pid, unsigned int priority);//syscall22

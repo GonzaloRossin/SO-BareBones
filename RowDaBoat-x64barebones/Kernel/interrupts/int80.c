@@ -62,17 +62,17 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		mem((mm_stat*)rsi);
 		break;
 	case 18:
-		return exec((main_func_t *) rsi, (char*) rdx, (int) rcx);
+		return exec((main_func_t *) rsi, (char*) rdx, (int) rcx, (int *) r8);
 		break;
 	case 19:
-		ps();
+		ps((process_info *)rsi, (unsigned int) rdx, (unsigned int*) rcx);
 		break;
 	// case 20:
 	// 	//loop();
 	// 	break;
 	case 21:
-	 	process_kill((int)rsi);
-	break;
+		process_kill((int)rsi);
+		break;
 	case 22:
 		nice((int)rsi, (unsigned int)rdx);
 		break;
@@ -212,18 +212,19 @@ void mem(mm_stat* rsi){
 	getMMStats(rsi);
 }
 //SYS_CALL 18
-int exec(main_func_t *rsi, char* rdx, int rcx){
-	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx);
+int exec(main_func_t *rsi, char* rdx, int rcx, int * r8){
+	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx, (int *) r8);
 }
 //SYS_CALL 19
-void ps(){
-	PS();
+int ps(process_info *rsi, unsigned int rdx, unsigned int* rcx) {
+	return getProcessesInfo((process_info *) rsi, (unsigned int) rdx, (unsigned int *) rcx);
 }
 // //SYS_CALL 20
 // //SYS_CALL 21
 void process_kill(int pid){
- 	kill(pid);
+	kill(pid);
 }
+//SYS_CALL 22
 void nice(int pid, unsigned int priority) {
 	changePriority(pid, priority);
 }

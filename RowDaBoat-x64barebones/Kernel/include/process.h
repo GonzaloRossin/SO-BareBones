@@ -72,19 +72,34 @@ typedef struct main_func_t {
     char ** argv;
 } main_func_t;
 
+typedef struct process_info {
+    char name[MAX_NAME_LENGTH];
+    void * rsp;
+    void * rbp;
+    int pid;
+    int ppid;
+    int foreground;
+    unsigned int status;
+    unsigned int priority;
+    unsigned int given_time;
+    unsigned int aging; 
+} process_info;
+
 #define NULL ((void *)0)
 
 
 void * scheduler(void * rsp);
 
-int pCreate(main_func_t * f, char *name, int foreground);
+int pCreate(main_func_t * f, char *name, int foreground, int * pid);
 int kill(int pid);
 int exit(void);
-int getPid(void);
-unsigned int getProcessesAmount(void);
+int getPid(int *pid);
+int getProcessesAlive(unsigned int * amount);
+int getProcessesInfo(process_info * arr, unsigned int max_size, unsigned int * size);
 int changePriority(int pid, unsigned int new_priority);
 int changeStatus(int pid, unsigned int new_status);
-int changeForegroundStatus(int pid, unsigned int state);
+int getProcessStatus(int pid, unsigned int * status);
+int changeForegroundStatus(int pid, unsigned int status);
 
 void PS();
 

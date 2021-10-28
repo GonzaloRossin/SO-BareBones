@@ -104,4 +104,17 @@ typedef struct sem_t {
     sem_queue * last;
 } sem_t;
 
+typedef struct process_info {
+    char name[50];
+    void * rsp;
+    void * rbp;
+    int pid;
+    int ppid;
+    int foreground;
+    unsigned int status;
+    unsigned int priority;
+    unsigned int given_time;
+    unsigned int aging; 
+} process_info;
+
 #endif

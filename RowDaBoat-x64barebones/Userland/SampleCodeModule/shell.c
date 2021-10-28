@@ -186,6 +186,25 @@ static void pKill(int pid){
     print_num(pid,0);
     print(" killed");
 }
+void printProcesses(void) {
+    process_info info[50];
+    int amount = ps(info, 50);
+    print("Processes:\n");
+    for (unsigned int i = 0; i < amount; i++) {
+        print("\\--- Process number "); print_num(i, 0); print(" ---/\n");newLine();
+        print("--> Process Name: "); print(info[i].name); print(" ---/\n");newLine();
+        print("PID: "); print_num(info[i].pid, 0); print(" ---/\n");newLine();
+        print("PPID: "); print_num(info[i].ppid, 0); print(" ---/\n");newLine();
+        print("Priority: "); print_num(info[i].priority, 0); print(" ---/\n");newLine();
+        print("RBP: "); print_num(info[i].rbp, 0); print(" ---/\n");newLine();
+        print("RSP: "); print_num(info[i].rsp, 0); print(" ---/\n");newLine();
+        print("State: "); print_num(info[i].status, 0); print(" ---/\n");newLine();
+        print("Foreground: "); print_num(info[i].foreground, 0); print(" ---/\n");newLine();
+        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks ---/\n");newLine();
+        print("Quantums: "); print_num(info[i].aging, 0); print(" ---/\n"); newLine();  
+   }
+}
+
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
     command aux;
@@ -207,7 +226,7 @@ void fillCommandList()
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem, 1);
     fillCommand("clean", ": Limpia la pantalla", &clean, 0);
     fillCommand("test_mem", ": Testeo de memoria", &test_mm, 0);
-    fillCommand("ps", ": Imprime el estado de los procesos vivos", &ps, 0);
+    fillCommand("ps", ": Imprime el estado de los procesos vivos", &printProcesses, 0);
     fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block, 1);
