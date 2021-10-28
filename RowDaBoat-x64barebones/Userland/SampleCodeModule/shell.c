@@ -183,6 +183,16 @@ void printLoop(int a1, int a2) {
 static void pKill(int pid){
     kill(pid);
 }
+static void test_sync1(){
+    test_sync();
+    newLine();
+    put_char('>');
+}
+static void test_sync2(){
+    test_no_sync();
+    newLine();
+    put_char('>');
+}
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
     command aux;
@@ -211,6 +221,8 @@ void fillCommandList()
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
     fillCommand("printLoop",": testea la creacion de un proceso", &printLoop, 0);
+    fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
+    fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -315,12 +327,6 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
-void sleep(int seg){
-    int actual_time=get_seconds(),aux;
-    while(aux=get_seconds()-actual_time<seg){
-
-    }
-}
 void shell()
 {
     fillCommandList();
@@ -330,6 +336,7 @@ void shell()
             CommandHandler();
             put_char('>');
             cleanBuffer();
+            sleep(1);
         }
     }
 }
