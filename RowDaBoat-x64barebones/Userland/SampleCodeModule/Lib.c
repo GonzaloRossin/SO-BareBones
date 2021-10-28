@@ -103,11 +103,6 @@ int s_close(sem_id s_id){
 int s_getValue(sem_id s_id,int* value_pointer){
    return(int) sys_call(24,5,(uint64_t)s_id,(void*) value_pointer,0);
 }
-
-void argTest(int a1, int a2, int a3){
-   sys_call(8,420,0,0,0);
-   sys_call(99,a1,a2,a3,0);
-}
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};
