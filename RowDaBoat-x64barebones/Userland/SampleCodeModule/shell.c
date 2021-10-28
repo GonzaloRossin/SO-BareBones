@@ -162,20 +162,19 @@ void get_mem_info(){
     newLine();
 }
  
-int testProcess2Main(int argc, char ** argv) { 
-    print("in tester"); 
-    for (unsigned int i = 0; i < argc; i++) {  
-        print("process in background\n");  
-        put_char('>'); 
-        sleep(1); 
+int loopMain(int argc, char ** argv) { 
+    int pid = getPid();
+    for (unsigned int i = 0; 1; i++) {  
+        sleep(argc);
+        print("hola soy pid: "); print_num(pid, 0);newLine();
     } 
     newLine();
     put_char('>');
     return 0; 
 } 
 
-void printLoop(int a1, int a2) { 
-    main_func_t proc2 = {testProcess2Main, 50, NULL}; 
+void loop(int a1) { 
+    main_func_t proc2 = {loopMain, a1, NULL}; 
     int aux = exec(&proc2, "test Process", 0); 
     print("Process created");
     print_num(aux, 0);
@@ -183,7 +182,6 @@ void printLoop(int a1, int a2) {
 
 static void pKill(int pid){
     kill(pid);
-    clearScreen();
     print("process: ");
     print_num(pid,0);
     print(" killed");
@@ -195,15 +193,18 @@ static void blockProcess(int pid) {
     } else {
         unsigned int status = 0;
         int ans = getProcessStatus(pid, &status);
-        print_num(status, 0);
+
         if(ans == -1 || status == KILLED) //it is KILLED or does not exist 
             print("Process not found\n"); 
         
-        else if ( status == READY )  
+        else if ( status == READY ) {
             block(pid, BLOCKED); 
-
-        else if( status == BLOCKED)
-            block(pid, READY); 
+            print("process "); print_num(pid, 0); print(" blocked\n");
+        }             
+        else if( status == BLOCKED) {
+            block(pid, READY);
+            print("process "); print_num(pid, 0); print(" ready\n"); 
+        }
     }
 }
 
@@ -212,17 +213,17 @@ void printProcesses(void) {
     int amount = ps(info, 50);
     print("Processes:\n");
     for (unsigned int i = 0; i < amount; i++) {
-        print("\\--- Process number "); print_num(i, 0); print(" ---/\n");newLine();
-        print("--> Process Name: "); print(info[i].name); print(" ---/\n");newLine();
-        print("PID: "); print_num(info[i].pid, 0); print(" ---/\n");newLine();
-        print("PPID: "); print_num(info[i].ppid, 0); print(" ---/\n");newLine();
-        print("Priority: "); print_num(info[i].priority, 0); print(" ---/\n");newLine();
-        print("RBP: "); print_num(info[i].rbp, 0); print(" ---/\n");newLine();
-        print("RSP: "); print_num(info[i].rsp, 0); print(" ---/\n");newLine();
-        print("State: "); print_num(info[i].status, 0); print(" ---/\n");newLine();
-        print("Foreground: "); print_num(info[i].foreground, 0); print(" ---/\n");newLine();
-        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks ---/\n");newLine();
-        print("Quantums: "); print_num(info[i].aging, 0); print(" ---/\n"); newLine();  
+        print("Process number "); print_num(i, 0); print(" ---");
+        print("Process Name: "); print(info[i].name); print(" ---");
+        print("PID: "); print_num(info[i].pid, 0); print(" ---");
+        print("PPID: "); print_num(info[i].ppid, 0); print(" ---");
+        print("Priority: "); print_num(info[i].priority, 0); print("\n");
+        print("RBP: "); print_num(info[i].rbp, 0); print(" ---");
+        print("RSP: "); print_num(info[i].rsp, 0); print(" ---");
+        print("State: "); print_num(info[i].status, 0); print(" ---");
+        print("Foreground: "); print_num(info[i].foreground, 0); print(" ---");
+        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks ---");
+        print("Quantums: "); print_num(info[i].aging, 0); print("\n");
    }
 }
 
@@ -253,7 +254,7 @@ void fillCommandList()
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("printLoop",": testea la creacion de un proceso", &printLoop, 0);
+    fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -358,7 +359,7 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
-void sleep(int seg){
+void sleep(int seg) {
     int actual_time=get_seconds(),aux;
     while(aux=get_seconds()-actual_time<seg){
 

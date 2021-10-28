@@ -81,9 +81,13 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		break;
 	case 24:
 		return (uint64_t)sys_sem((int)rsi, rdx,rcx);
-	break;
+		break;
 	case 25:
 		return get_process_status((int )rsi, (unsigned int *)rdx);
+		break;
+	case 26:
+		get_pid((int*) rsi);
+		break;
 	// case 99:
 	// 	arg_test(rsi,rdx,rcx);
 	// 	break;
@@ -262,5 +266,9 @@ uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 //SYS_CALL 25
 int get_process_status(int pid, unsigned int *status) {
 	return getProcessStatus((int) pid, (unsigned int *) status);
+}
+//SYS_CALL 26
+void get_pid(int* pid){
+	getPid((int *) pid);
 }
 
