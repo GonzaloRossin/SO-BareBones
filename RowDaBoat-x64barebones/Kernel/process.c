@@ -254,18 +254,16 @@ int changeStatus(int pid, unsigned int new_status) {
                 if (processes[i].foreground && processes[i].ppid > 0) {
                     changeStatus(processes[i].ppid, READY);
                 }
-                if (curr_process != NULL && curr_process->pid == pid) 
-                    updateProcess(&(processes[i]));
+                processes_alive--;
+                if (last_status == READY) 
+                    processes_ready--;
                 if (curr_process != NULL && curr_process->pid == pid) {
                     updateProcess(&(processes[i]));
                     curr_process = NULL;
                     MyFree(processes[i].stack);
                     _halt_and_wait();
                 }
-                MyFree(processes[i].stack);
-                processes_alive--;
-                processes_ready--;
-                    
+                MyFree(processes[i].stack);                    
             }
             return 0;
         }
@@ -286,7 +284,7 @@ int changeForegorundStatus(int pid, unsigned int status) {
 }
 
 int getProcessStatus(int pid, unsigned int * status) {
-    for(int i=0; i < processes_size; i++){
+    for(int i = 0; i < processes_size; i++) {
         if(processes[i].pid == pid) {
             *status = processes[i].status; 
             return 0;

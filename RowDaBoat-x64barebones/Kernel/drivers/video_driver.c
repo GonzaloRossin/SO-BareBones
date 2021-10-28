@@ -154,9 +154,13 @@ void draw_string_personalized(int x, int y, char * buffer, int count, int fontsi
 }
 
 void draw_string(char * buffer, int count){
-	for (int i = 0; i < count; i++){
-		draw_char(buffer[i]);
-	}
+	for (int i = 0; i < count; i++){ 
+		if(buffer[i]=='\n'){ 
+			newLine(); 
+		} 
+		else 
+			draw_char(buffer[i]); 
+	} 
 }
 
 void newLine(){

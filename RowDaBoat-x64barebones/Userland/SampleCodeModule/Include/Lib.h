@@ -41,7 +41,7 @@ int ps(process_info* arr, unsigned int max_size);//syscall19
 //void loop();////syscall20
 void kill(pid_t pid);//syscall21
 void nice(pid_t pid, unsigned int priority);//syscall22
-void block(pid_t pid);//syscall23
+void block(pid_t pid, unsigned int status);//syscall23
 sem_id s_init(char* name,unsigned int init_size);//syscall24
 sem_id s_open(char* name);
 int s_wait(sem_id s_id);
@@ -49,5 +49,6 @@ int s_post(sem_id s_id);
 int s_close(sem_id s_id);
 int s_getValue(sem_id s_id,int* value_pointer);
 void argTest(int a1, int a2, int a3);//syscall99 de testing, despues se puede borrar
+int getProcessStatus(int pid, unsigned int * status);
 
 #endif

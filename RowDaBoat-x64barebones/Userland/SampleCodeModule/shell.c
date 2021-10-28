@@ -164,9 +164,10 @@ void get_mem_info(){
  
 int testProcess2Main(int argc, char ** argv) { 
     print("in tester"); 
-    for (unsigned int i = 0; i < argc; i++) { 
-        print_num(i,0);
-        newLine();
+    for (unsigned int i = 0; i < argc; i++) {  
+        print("process in background\n");  
+        put_char('>'); 
+        sleep(1); 
     } 
     newLine();
     put_char('>');
@@ -174,11 +175,12 @@ int testProcess2Main(int argc, char ** argv) {
 } 
 
 void printLoop(int a1, int a2) { 
-    main_func_t proc2 = {testProcess2Main, 100, NULL}; 
+    main_func_t proc2 = {testProcess2Main, 50, NULL}; 
     int aux = exec(&proc2, "test Process", 0); 
     print("Process created");
     print_num(aux, 0);
-} 
+}
+
 static void pKill(int pid){
     kill(pid);
     clearScreen();
@@ -186,6 +188,25 @@ static void pKill(int pid){
     print_num(pid,0);
     print(" killed");
 }
+
+static void blockProcess(int pid) {
+    if(pid == 1){
+         print("Soy la shell hermano");
+    } else {
+        unsigned int status = 0;
+        int ans = getProcessStatus(pid, &status);
+        print_num(status, 0);
+        if(ans == -1 || status == KILLED) //it is KILLED or does not exist 
+            print("Process not found\n"); 
+        
+        else if ( status == READY )  
+            block(pid, BLOCKED); 
+
+        else if( status == BLOCKED)
+            block(pid, READY); 
+    }
+}
+
 void printProcesses(void) {
     process_info info[50];
     int amount = ps(info, 50);
@@ -229,7 +250,7 @@ void fillCommandList()
     fillCommand("ps", ": Imprime el estado de los procesos vivos", &printProcesses, 0);
     fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
-    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block, 1);
+    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
     fillCommand("printLoop",": testea la creacion de un proceso", &printLoop, 0);

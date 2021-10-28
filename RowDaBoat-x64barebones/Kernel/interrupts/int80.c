@@ -76,12 +76,14 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 22:
 		nice((int)rsi, (unsigned int)rdx);
 		break;
-	// case 23:
-	// 	block((pid_t)rsi);
-	// 	break;
+	case 23:
+		block((int)rsi, (unsigned int) rdx);
+		break;
 	case 24:
 		return (uint64_t)sys_sem((int)rsi, rdx,rcx);
 	break;
+	case 25:
+		return get_process_status((int )rsi, (unsigned int *)rdx);
 	// case 99:
 	// 	arg_test(rsi,rdx,rcx);
 	// 	break;
@@ -229,9 +231,9 @@ void nice(int pid, unsigned int priority) {
 	changePriority(pid, priority);
 }
 // //SYS_CALL 23
-// void block(pid_t pid){
-// 	change_status(pid);
-// }
+void block(int pid, unsigned int new_status){
+	changeStatus(pid, new_status);
+}
 //SYS_CALL 24
 uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 	switch (rsi)
@@ -256,5 +258,9 @@ uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 	break;
 	}
 	return -1;
+}
+//SYS_CALL 25
+int get_process_status(int pid, unsigned int *status) {
+	return getProcessStatus((int) pid, (unsigned int *) status);
 }
 

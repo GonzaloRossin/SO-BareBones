@@ -22,7 +22,7 @@ typedef struct mm_stat {
 typedef unsigned long size_t;
 typedef void* address_t;
 typedef int pid_t;
-typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
+typedef enum {READY = 0, BLOCKED, KILLED} pStatus;
 
 typedef struct {
     address_t base;
