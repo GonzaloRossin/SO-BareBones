@@ -22,7 +22,7 @@ typedef struct mm_stat {
 typedef unsigned long size_t;
 typedef void* address_t;
 typedef int pid_t;
-typedef enum { KILLED = 0, READY, BLOCKED } pStatus;
+typedef enum {READY = 0, BLOCKED, KILLED} pStatus;
 
 typedef struct {
     address_t base;
@@ -103,5 +103,18 @@ typedef struct sem_t {
     sem_queue * first;
     sem_queue * last;
 } sem_t;
+
+typedef struct process_info {
+    char name[50];
+    void * rsp;
+    void * rbp;
+    int pid;
+    int ppid;
+    int foreground;
+    unsigned int status;
+    unsigned int priority;
+    unsigned int given_time;
+    unsigned int aging; 
+} process_info;
 
 #endif

@@ -62,11 +62,15 @@ mm_stat Mmem(){//syscall17
 }
 
 pid_t exec(main_func_t *func, char* name, int rcx){ //syscall 18
-   sys_call(18, (void*)func, (void*)name, (void*)(uint64_t)rcx, 0); 
+int pid;
+   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid);
+   return pid;
 } 
 
-void ps(){//syscall 19
-  sys_call(19,0,0,0,0);
+int ps(process_info* arr, unsigned int max_size) {//syscall 19
+   unsigned int size;
+   sys_call(19,(uint64_t)(void *) arr,(uint64_t)(void *) max_size,(uint64_t)(void *) &size,0);
+   return size;
 }
 
 //loop = 20
@@ -79,8 +83,8 @@ void nice(pid_t pid, unsigned int priority){//syscall 22
    sys_call(22,pid,priority,0,0);
 }
 
-void block(pid_t pid){//syscall 23
-   sys_call(23,pid,0,0,0);
+void block(pid_t pid, unsigned int new_status){//syscall 23
+   sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
 }
 
 sem_id s_init(char* name,unsigned int init_size){//syscall 24
@@ -102,6 +106,15 @@ int s_close(sem_id s_id){
 }
 int s_getValue(sem_id s_id,int* value_pointer){
    return(int) sys_call(24,5,(uint64_t)s_id,(uint64_t) value_pointer,0);
+}
+
+int getProcessStatus(int pid, unsigned int * status) {//syscall 25
+   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
+}
+int getPid(void) {
+   int pid;
+   sys_call(26, (void* )&pid, 0, 0, 0);
+   return pid;
 }
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso

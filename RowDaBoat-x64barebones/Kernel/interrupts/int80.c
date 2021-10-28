@@ -62,26 +62,32 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		mem((mm_stat*)rsi);
 		break;
 	case 18:
-		return exec((main_func_t *) rsi, (char*) rdx, (int) rcx);
+		return exec((main_func_t *) rsi, (char*) rdx, (int) rcx, (int *) r8);
 		break;
 	case 19:
-		ps();
+		ps((process_info *)rsi, (unsigned int) rdx, (unsigned int*) rcx);
 		break;
 	// case 20:
 	// 	//loop();
 	// 	break;
 	case 21:
-	 	process_kill((int)rsi);
-	break;
+		process_kill((int)rsi);
+		break;
 	case 22:
 		nice((int)rsi, (unsigned int)rdx);
 		break;
-	// case 23:
-	// 	block((pid_t)rsi);
-	// 	break;
+	case 23:
+		block((int)rsi, (unsigned int) rdx);
+		break;
 	case 24:
 		return (uint64_t)sys_sem((int)rsi, rdx,rcx);
-	break;
+		break;
+	case 25:
+		return get_process_status((int )rsi, (unsigned int *)rdx);
+		break;
+	case 26:
+		get_pid((int*) rsi);
+		break;
 	}
 	return 0;
 }
@@ -197,25 +203,26 @@ void mem(mm_stat* rsi){
 	getMMStats(rsi);
 }
 //SYS_CALL 18
-int exec(main_func_t *rsi, char* rdx, int rcx){
-	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx);
+int exec(main_func_t *rsi, char* rdx, int rcx, int * r8){
+	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx, (int *) r8);
 }
 //SYS_CALL 19
-void ps(){
-	PS();
+int ps(process_info *rsi, unsigned int rdx, unsigned int* rcx) {
+	return getProcessesInfo((process_info *) rsi, (unsigned int) rdx, (unsigned int *) rcx);
 }
 // //SYS_CALL 20
 // //SYS_CALL 21
 void process_kill(int pid){
- 	kill(pid);
+	kill(pid);
 }
+//SYS_CALL 22
 void nice(int pid, unsigned int priority) {
 	changePriority(pid, priority);
 }
 // //SYS_CALL 23
-// void block(pid_t pid){
-// 	change_status(pid);
-// }
+void block(int pid, unsigned int new_status){
+	changeStatus(pid, new_status);
+}
 //SYS_CALL 24
 uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 	switch (rsi)
@@ -240,5 +247,13 @@ uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 	break;
 	}
 	return -1;
+}
+//SYS_CALL 25
+int get_process_status(int pid, unsigned int *status) {
+	return getProcessStatus((int) pid, (unsigned int *) status);
+}
+//SYS_CALL 26
+void get_pid(int* pid){
+	getPid((int *) pid);
 }
 

@@ -167,26 +167,29 @@ void get_mem_info(){
     newLine();
 }
  
-int testProcess2Main(int argc, char ** argv) { 
-    print("in tester"); 
-    for (unsigned int i = 0; i < argc; i++) { 
-        print("process\n");
-        put_char('>');
-        sleep(1);
+int loopMain(int argc, char ** argv) { 
+    int pid = getPid();
+    for (unsigned int i = 0; 1; i++) {  
+        sleep(argc);
+        print("hola soy pid: "); print_num(pid, 0);newLine();
     } 
     newLine();
     put_char('>');
     return 0; 
 } 
 
-void printLoop(int a1, int a2) { 
-    main_func_t proc2 = {testProcess2Main, 100, NULL}; 
+void loop(int a1) { 
+    main_func_t proc2 = {loopMain, a1, NULL}; 
     int aux = exec(&proc2, "test Process", 0); 
     print("Process created ");
     print_num(aux, 0);
-} 
+}
+
 static void pKill(int pid){
     kill(pid);
+    print("process: ");
+    print_num(pid,0);
+    print(" killed");
 }
 static void test_sync1(){
     test_sync();
@@ -198,6 +201,47 @@ static void test_sync2(){
     newLine();
     put_char('>');
 }
+
+static void blockProcess(int pid) {
+    if(pid == 1){
+         print("Soy la shell hermano");
+    } else {
+        unsigned int status = 0;
+        int ans = getProcessStatus(pid, &status);
+
+        if(ans == -1 || status == KILLED) //it is KILLED or does not exist 
+            print("Process not found\n"); 
+        
+        else if ( status == READY ) {
+            block(pid, BLOCKED); 
+            print("process "); print_num(pid, 0); print(" blocked\n");
+        }             
+        else if( status == BLOCKED) {
+            block(pid, READY);
+            print("process "); print_num(pid, 0); print(" ready\n"); 
+        }
+    }
+}
+
+void printProcesses(void) {
+    process_info info[50];
+    int amount = ps(info, 50);
+    print("Processes:\n");
+    for (unsigned int i = 0; i < amount; i++) {
+        print("Process number "); print_num(i, 0); print(" ---");
+        print("Process Name: "); print(info[i].name); print(" ---");
+        print("PID: "); print_num(info[i].pid, 0); print(" ---");
+        print("PPID: "); print_num(info[i].ppid, 0); print(" ---");
+        print("Priority: "); print_num(info[i].priority, 0); print("\n");
+        print("RBP: "); print_num(info[i].rbp, 0); print(" ---");
+        print("RSP: "); print_num(info[i].rsp, 0); print(" ---");
+        print("State: "); print_num(info[i].status, 0); print(" ---");
+        print("Foreground: "); print_num(info[i].foreground, 0); print(" ---");
+        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks ---");
+        print("Quantums: "); print_num(info[i].aging, 0); print("\n");
+   }
+}
+
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
     command aux;
@@ -219,14 +263,14 @@ void fillCommandList()
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem, 1);
     fillCommand("clean", ": Limpia la pantalla", &clean, 0);
     fillCommand("test_mem", ": Testeo de memoria", &test_mm, 0);
-    fillCommand("ps", ": Imprime el estado de los procesos vivos", &ps, 0);
+    fillCommand("ps", ": Imprime el estado de los procesos vivos", &printProcesses, 0);
     fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
-    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block, 1);
+    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
+    fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
-    fillCommand("loop",": testea la creacion de un proceso", &printLoop, 0);
+    fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -330,6 +374,12 @@ void initializeOS(){
     draw_Main_Screen();
     put_char('>');
     buffersize=0;
+}
+void sleep(int seg) {
+    int actual_time=get_seconds(),aux;
+    while(aux=get_seconds()-actual_time<seg){
+
+    }
 }
 void shell()
 {
