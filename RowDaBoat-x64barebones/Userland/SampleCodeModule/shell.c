@@ -165,8 +165,7 @@ void get_mem_info(){
 int testProcess2Main(int argc, char ** argv) { 
     print("in tester"); 
     for (unsigned int i = 0; i < argc; i++) { 
-        print("process in background");
-        newLine();
+        print("process\n");
         put_char('>');
         sleep(1);
     } 
@@ -178,7 +177,7 @@ int testProcess2Main(int argc, char ** argv) {
 void printLoop(int a1, int a2) { 
     main_func_t proc2 = {testProcess2Main, 100, NULL}; 
     int aux = exec(&proc2, "test Process", 0); 
-    print("Process created");
+    print("Process created ");
     print_num(aux, 0);
 } 
 static void pKill(int pid){
