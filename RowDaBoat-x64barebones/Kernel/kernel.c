@@ -7,8 +7,12 @@
 #include "include/font.h"
 #include <interrupt_routines.h>
 #include "include/process.h"
-#include "memory/mem_man.h"
-//#include "memory/buddy.h"
+
+#ifdef BUDDY_H
+#include "../memory/buddy.h"
+#else
+#include "../memory/mem_man.h"
+#endif
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -62,6 +66,16 @@ int main()
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
 	pCreate(&aux, "SampleCodeModule", 1);
+
+/*
+	#ifdef BUDDY_H
+		draw_string("buddy",5);
+	#else
+		#ifdef MEM_MAN_H
+			draw_string("mem man h",9);
+		#endif
+	#endif
+	*/
 
 	_halt_and_wait();
 

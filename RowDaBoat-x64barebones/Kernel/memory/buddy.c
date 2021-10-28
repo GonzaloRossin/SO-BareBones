@@ -1,3 +1,5 @@
+#ifdef BUDDY_H
+
 #include "buddy.h"
 // code taken from: https://github.com/evanw/buddy-malloc/blob/master/buddy-malloc.c
 
@@ -460,3 +462,5 @@ int brk(void * ptr){
     }
     return -1;
 }
+
+#endif

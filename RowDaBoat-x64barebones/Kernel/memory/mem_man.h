@@ -1,6 +1,4 @@
-#ifndef MEM_MAN_H
-#define MEM_MAN_H
-
+#ifdef MEM_MAN_H
     #include <stdio.h>
     #include <stdint.h>
     #include "sbrk.h"

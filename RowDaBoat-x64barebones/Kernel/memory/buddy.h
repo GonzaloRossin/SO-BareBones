@@ -1,5 +1,4 @@
-#ifndef BUDDY_H
-#define BUDDY_H
+#ifdef BUDDY_H
     
     #include "sbrk.h"
 

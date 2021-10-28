@@ -1,3 +1,4 @@
+#ifdef MEM_MAN_H
 #include "mem_man.h"
 
 /*
@@ -314,4 +315,4 @@ void getMMStats(mm_stat* stats) {
 	stats->successful_frees=xNumberOfSuccessfulFrees;
 	stats->sys_name=(char*) sys_name;
 }
-
+#endif

@@ -1,4 +1,6 @@
 include Makefile.inc
+#MEM_MAN_H o BUDDY_H
+MM=-D BUDDY_H
 
 KERNEL=kernel.bin
 SOURCES=$(wildcard *.c)
@@ -6,25 +8,28 @@ SOURCES_ASM=$(wildcard asm/*.asm)
 SOURCES_INTERRUPTS=$(wildcard interrupts/*.c)
 SOURCES_INTERRUPTS_ASM=$(wildcard interrupts/*.asm)
 SOURCES_DRIVERS=$(wildcard drivers/*.c)
-SOURCES_MEM_MANAGER=$(filter-out memory/buddy.c, $(wildcard memory/*.c))
-SOURCES_MEM2=$(filter-out memory/mem_man.c, $(wildcard memory/*.c))
-SOURCES_SEM=$(wildcard sem/*.c)
-OBJECTS_MEM2=$(SOURCES_MEM2:.c=.o)
+
+SOURCES_MEM_MANAGER=$(wildcard memory/*.c)
+OBJECTS_MEM_MANAGER=$(SOURCES_MEM_MANAGER:.c=.o)
+
 OBJECTS_SEM=$(SOURCES_SEM:.c=.o)
+SOURCES_SEM=$(wildcard sem/*.c)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
 OBJECTS_INTERRUPTS=$(SOURCES_INTERRUPTS:.c=.o)
 OBJECTS_INTERRUPTS_ASM=$(SOURCES_INTERRUPTS_ASM:.asm=.o)
 OBJECTS_DRIVERS=$(SOURCES_DRIVERS:.c=.o)
-OBJECTS_MEM_MANAGER=$(SOURCES_MEM_MANAGER:.c=.o)
+
 LOADERSRC=loader.asm
 
 LOADEROBJECT=$(LOADERSRC:.asm=.o)
 STATICLIBS=
 
 all: $(KERNEL)
+	echo "ALLLLLLLLLLLLLLLLLLLLL"
 
 buddy: $(KERNEL2)
+	echo "BUDDYYYYYYYYYYYYYYYYYYYY"
 
 $(KERNEL2): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM) $(OBJECTS_INTERRUPTS) $(OBJECTS_INTERRUPTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_MEM2) $(OBJECTS_SEM)
 	$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(OBJECTS_MEM2) $(OBJECTS_DRIVERS) $(OBJECTS_INTERRUPTS) $(OBJECTS_INTERRUPTS_ASM) $(OBJECTS_SEM) $(STATICLIBS)
@@ -36,7 +41,7 @@ $(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM) $(OBJECTS_INT
 
 
 %.o: %.c
-	$(GCC) $(GCCFLAGS) -I./include -I./interrupts -I./drivers -I./memory -I./sem -c $< -o $@
+	$(GCC) $(GCCFLAGS) $(MM) -I./include -I./interrupts -I./drivers -I./memory -I./sem -c $< -o $@
 
 %.o : %.asm
 	$(ASM) $(ASMFLAGS) $< -o $@
@@ -45,6 +50,6 @@ $(LOADEROBJECT):
 	$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	rm -rf interrupts/*.o asm/*.o drivers/*.o *.o *.bin
+	rm -rf interrupts/*.o asm/*.o drivers/*.o *.o *.bin */*.o
 
 .PHONY: all clean

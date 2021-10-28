@@ -6,6 +6,10 @@
         "test_util.h": "c",
         "stdlib.h": "c",
         "lib.h": "c",
-        "video_driver.h": "c"
+        "video_driver.h": "c",
+        "int80.h": "c",
+        "sbrk.h": "c",
+        "buddy.h": "c",
+        "mem_man.h": "c"
     }
 }
