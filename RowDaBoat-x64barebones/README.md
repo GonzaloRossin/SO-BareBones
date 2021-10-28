@@ -20,33 +20,60 @@ Sistema operativo basado en Barebonesx64 por RowDaBoat. Primero se debe tener in
 3. Finalmente solo queda ejecutar el sistema, ya sea con el comando ```run.sh``` desde Linux, o ```./run.bat``` desde Windows.
 
 ## Shell
-Intéprete de comandos del usuario, el sistema inicia al mismo por defecto. 
-Dispone de las siguientes funcionalidades:
-- **help**: Despliega en pantalla las funciones disponibles para el usuario. 
-- **get_time**: Despliega en pantalla información sobre el día y hora actual del sistema.
-- **inforeg**: Despliega en pantalla un snapshot de los registros al momento que es llamado.
-- **test_divisionby0**: Verifica el funcionamiento correcto de la excepción de tipo operación de código inválido.
-- **test_invalidop**: Verifica el funcionamiento correcto de la excepción de tipo división por cero.
-- **printmem**: Despliega en pantalla un volcado de memoria de 32 bytes a partir de una dirección de memoria válida recibida como argumento.
+Es entéprete de comandos del usuario, es el primer proceso lanzado por el sisyema, y dispone de las siguientes funcionalidades:
+- **help**: Despliega al usuario los comandos disponibles. 
+- **get_time**: Muestra la hora actual (UTC).
+- **inforeg**: Imprime en pantalla el valor de todos los registros (con ctrl se guardan los registros).
+- **test_divisionby0**: Ejemplo de excepcion de dividir por 0.
+- **test_invalidop**: Ejemplo de excepcion por operacion invalida.
+- **printmem**: realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida.
 - **clean**: Limpia la pantalla.
 - **test_mem**: Testeo de memoria.
-- ***ps:*** Despliega el estado de los procesos.
-- ***kill:*** Elimina el proceso cuyo pid es el recibido como argumento de entrada.
-- ***nice:*** Cambia la prioridad del proceso cuyo pid es el recibido como argumento de entrada.
-- ***block:*** Bloquea el proceso cuyo pid es el recibido como argumento de entrada.
+- ***ps:*** Imprime el estado de los procesos vivos.
+- ***kill:*** Mata a un proceso dado su ID.
+- ***nice:*** Cambia la prioridad de un proceso dado su ID y la nueva prioridad.
+- ***block:*** Cambia el estado de un proceso entre bloqueado y listo dado su ID.
+- ***mem:*** muestra el estado de la memoria heap (bytes libres respecto del total).
 - ***FALTA loop:*** Crea un proceso el cual itera sobre si mismo.
-- ***mem:*** Imprime el estado de la memoria del memory manager por bloques.
 -----------------
 faltan estos:
+- ***sem:*** Imprime la lista de todos los semáforos con sus propiedades.
+- ***cat:*** Imprime el stdin tal como lo recibe.
+- ***wc:*** Cuenta la cantidad de líneas del input
+- ***filter:*** Filtra las vocales recibidas como argumento de entrada.
+- ***pipe:*** Imprime la lista de todos los pipes con sus propiedades.
+
+- ***phylo:*** Dilema de los filosofos comiendo, inicia con 5 filosofos, más indiaciones son dadas al ejecutarlo.
+
+y estos testeos de la catedra:
 - ***test_processes:*** Prueba la creacion de procesos con el scheduler (archivo dado por la cátedra).
 - ***test_prio:*** Prueba la prioridad del scheduler (archivo dado por la cátedra).
 - ***test_sync:*** Prueba la sincronizacion de semaforos (archivo dado por la cátedra).
 - ***test_no_sync:*** Prueba la sincronizacion sin el uso de semaforos (archivo dado por la cátedra).
 - ***test_mm:*** Prueba el manejo de memoria del memory manager (archivo dado por la cátedra).
-- ***pipe:*** Despliega información sobre de los pipes activos.
-- ***sem:*** Despliega información sobre de los semaforos activos.
-- ***wc:*** Cuenta las lineas recibidas como argumento de entrada.
-- ***filter:*** Filtra las vocales recibidas como argumento de entrada.
-- ***cat:*** Imprime en pantalla los caracteres recibidos como argumento de entrada.
-- ***phylo:*** Dilema de los filosofos comiendo, inicia con 5 filosofos, más indiaciones son dadas al ejecutarlo.
+
+
 --------------------
+
+
+--------------------------
+también faltarían estos testeos PVS y CPP
+
+## Testeo
+
+Para el testeo con tanto **PVS-Studio** y **Cppcheck** se debe primero instalar **PVS-Studio** de no tenerlo, de la siguiente manera en su contenedor de *docker*.
+```bash
+apt-get update
+apt-get install pvs-studio
+pvs-studio-analyzer credentials "PVS-Studio Free" "FREE-FREE-FREE-FREE"
+```
+Luego correr el siguiente comando:
+```bash
+ make test
+```
+Los resultados se encontrarán de la siguiente manera:
+
+ - **PVS-Studio:** report.tasks
+ - **Cppcheck:** cppoutput.cppOut
+
+Para remover los mismos, correr el comando `make cleanTest` en el mismo directorio donde fue realizada la compilación.
