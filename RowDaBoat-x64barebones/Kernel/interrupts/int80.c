@@ -70,9 +70,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	// case 20:
 	// 	//loop();
 	// 	break;
-	// case 21:
-	// 	process_kill((pid_t)rsi);
-	// 	break;
+	case 21:
+	 	process_kill((int)rsi);
+	break;
 	// case 22:
 	// 	nice((pid_t)rsi, (unsigned int)rdx);
 	// 	break;
@@ -102,7 +102,7 @@ void arg_test(int a1, int a2, int a3){
 }
 //SYSCALL 0
 char sys_read (){
-	return getLastInput();
+	return getChar();
 }
 //SYSCALL 1
 void sys_write( char * rsi, int rdx)
@@ -221,9 +221,9 @@ void ps(){
 }
 // //SYS_CALL 20
 // //SYS_CALL 21
-// void process_kill(pid_t pid){
-// 	kill(pid);
-// }
+void process_kill(int pid){
+ 	kill(pid);
+}
 // //SYS_CALL 22
 // void nice(pid_t pid, unsigned int priority){
 // 	update_priority(pid, priority);

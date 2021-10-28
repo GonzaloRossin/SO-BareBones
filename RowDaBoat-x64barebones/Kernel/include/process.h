@@ -2,7 +2,7 @@
 #define PROCESS_H
 
 #include "lib.h"
-#include "video_driver.h"
+#include "../drivers/video_driver.h"
 
 
 #define MAX_PROCESSES 50
@@ -15,7 +15,7 @@
 #define MAX_PRIORITY 6
 #define BASE_PRIORITY ((MAX_PRIORITY - MIN_PRIORITY)/2)
 #define MIN_TICKS 10
-#define MAX_TICKS 100
+#define MAX_TICKS 30
 
 #define PRIOR_SLOPE ((MAX_TICKS - MIN_TICKS)/(MIN_PRIORITY - MAX_PRIORITY)) //To calculate the quantum of each queue (quantum(priorirty) = m*p + b)
 #define PRIOR_INDVAR (MAX_TICKS - MIN_PRIORITY * PRIOR_SLOPE)

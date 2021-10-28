@@ -166,8 +166,10 @@ int testProcess2Main(int argc, char ** argv) {
     print("in tester"); 
     for (unsigned int i = 0; i < argc; i++) { 
         print_num(i,0);
-        //newLine();
+        newLine();
     } 
+    newLine();
+    put_char('>');
     return 0; 
 } 
 
@@ -177,7 +179,13 @@ void printLoop(int a1, int a2) {
     print("Process created");
     print_num(aux, 0);
 } 
-
+static void pKill(int pid){
+    kill(pid);
+    clearScreen();
+    print("process: ");
+    print_num(pid,0);
+    print(" killed");
+}
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
     command aux;
@@ -200,7 +208,7 @@ void fillCommandList()
     fillCommand("clean", ": Limpia la pantalla", &clean, 0);
     fillCommand("test_mem", ": Testeo de memoria", &test_mm, 0);
     fillCommand("ps", ": Imprime el estado de los procesos vivos", &ps, 0);
-    fillCommand("kill", ": Mata a un proceso dado su ID", &kill, 1);
+    fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block, 1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
@@ -246,7 +254,6 @@ int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX
 
 	return params_read; 
 }
-
 static void CommandHandler()
 {
     char potentialCommand[MAX_COMDESC] = {0};
@@ -311,12 +318,17 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
+void sleep(int seg){
+    int actual_time=get_seconds(),aux;
+    while(aux=get_seconds()-actual_time<seg){
 
+    }
+}
 void shell()
 {
     fillCommandList();
     initializeOS();
-    while(1) {
+    while(1){
         if(readNewInput()){
             CommandHandler();
             put_char('>');
