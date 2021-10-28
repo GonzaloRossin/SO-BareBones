@@ -58,7 +58,7 @@ void test_mm(){
 }
 
 uint64_t my_create_process(char * name){
-  return 0;
+  //return (pid_t)exec();
 }
 
 uint64_t my_sem_open(char *sem_id, uint64_t initialValue){

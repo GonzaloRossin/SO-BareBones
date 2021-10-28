@@ -40,7 +40,6 @@ void * scheduler(void * rsp) {
             (curr_process->given_time--);
 
             if (curr_process->given_time == 0) {
-
                 updateProcess(curr_process);
                 curr_process->rsp = rsp;
 
@@ -292,7 +291,9 @@ void printProcess(process_t process){
 void PS(){
     int i;
     for(i = 0; i < processes_size; i++) {
-        printProcess(processes[i]);
+        if(processes[i].status!=KILLED){
+            printProcess(processes[i]);
+        }
     }
 }
 

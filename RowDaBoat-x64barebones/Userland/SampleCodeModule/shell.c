@@ -165,8 +165,10 @@ void get_mem_info(){
 int testProcess2Main(int argc, char ** argv) { 
     print("in tester"); 
     for (unsigned int i = 0; i < argc; i++) { 
-        print_num(i,0);
+        print("process in background");
         newLine();
+        put_char('>');
+        sleep(1);
     } 
     newLine();
     put_char('>');
@@ -181,10 +183,6 @@ void printLoop(int a1, int a2) {
 } 
 static void pKill(int pid){
     kill(pid);
-    clearScreen();
-    print("process: ");
-    print_num(pid,0);
-    print(" killed");
 }
 void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
 {
