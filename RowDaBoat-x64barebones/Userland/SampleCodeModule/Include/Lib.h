@@ -50,5 +50,6 @@ int s_close(sem_id s_id);
 int s_getValue(sem_id s_id,int* value_pointer);
 void argTest(int a1, int a2, int a3);//syscall99 de testing, despues se puede borrar
 int getProcessStatus(int pid, unsigned int * status);
+int getPid(void);
 
 #endif

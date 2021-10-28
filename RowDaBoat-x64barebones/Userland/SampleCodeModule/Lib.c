@@ -108,9 +108,15 @@ int s_getValue(sem_id s_id,int* value_pointer){
    return(int) sys_call(24,5,(uint64_t)s_id,(void*) value_pointer,0);
 }
 
-int getProcessStatus(int pid, unsigned int * status) {
+int getProcessStatus(int pid, unsigned int * status) {//syscall 25
    return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
 }
+int getPid(void) {
+   int pid;
+   sys_call(26, (void* )&pid, 0, 0, 0);
+   return pid;
+}
+
 
 void argTest(int a1, int a2, int a3){
    sys_call(8,420,0,0,0);
