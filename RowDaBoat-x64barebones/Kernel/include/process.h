@@ -8,6 +8,7 @@
 #define MAX_PROCESSES 50
 #define MAX_NAME_LENGTH 50
 #define MAX_STACK 50000
+#define HALTER_EXTRA_STACK_SPACE 20
 #define STATE_SIZE 5
 #define REGS_SIZE 15
 
@@ -100,6 +101,7 @@ int changePriority(int pid, unsigned int new_priority);
 int changeStatus(int pid, unsigned int new_status);
 int getProcessStatus(int pid, unsigned int * status);
 int changeForegroundStatus(int pid, unsigned int status);
+int isCurrentForeground(void);
 
 void PS();
 

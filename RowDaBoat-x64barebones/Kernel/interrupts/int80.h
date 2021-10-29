@@ -48,4 +48,5 @@ void block(int rsi, unsigned int rdx);// sys call 23
 uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx);//syscall 24
 int get_process_status(int rsi, unsigned int *rdx);//syscall 25
 void get_pid(int* rsi);//syscall26
+void _wait(unsigned int millis);//syscall27
 #endif

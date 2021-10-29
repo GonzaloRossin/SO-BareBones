@@ -169,9 +169,11 @@ void get_mem_info(){
  
 int loopMain(int argc, char ** argv) { 
     int pid = getPid();
+    
     for (unsigned int i = 0; 1; i++) {  
-        sleep(argc);
-        print("hola soy pid: "); print_num(pid, 0);newLine();
+        //sleep(argc);
+        wait(argc * 1000);
+        print("hola soy pid: "); print_num(pid, 0); newLine();
     } 
     newLine();
     put_char('>');

@@ -38,6 +38,14 @@ int _start_process(int (*main)(int argc, char * argv), int argc, char * argv);
 
 void _halt_and_wait(void);
 
+void _halter(void);
+
+void _int81(void);
+
+void _sti(void);
+
+void _cli(void);
+
 void spin_lock(char * lock);
 
 void spin_unlock(char * lock);
