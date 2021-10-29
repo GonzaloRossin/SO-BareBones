@@ -211,3 +211,44 @@ char readPipe(uint64_t pipeIndex)
     }
     return c;
 }
+
+void pipe()
+{
+    print("NOMBRE\t\tESTADO\t\tSEM USADO\t\t\t\tPROCESOS BLOQUEADOS\n");
+    int i;
+    for(i = 0; i < MAX_PIPES; i++)
+    {
+        if(!(pipes[i].available))
+        {
+            printPipe(pipes[i].pipe);
+        }
+    }
+    print("\n");
+}
+void printPipe(pipe_t pipe)
+{
+    print(pipe.name);
+    print("\t\t\t");
+    print("Activo\t\t");
+    printSemsInvovled(pipe);
+    print("\t");
+    printProcesses(pipe);
+    print("\n");
+}
+
+void printSemsInvovled(pipe_t pipe)
+{
+    print(getSemName(pipe.semRead));
+    print(", ");
+    print(getSemName(pipe.semWrite));
+    print(", ");
+    print(getSemName(semPipeManager));
+}
+void printProcesses(pipe_t pipe)
+{
+    printProcessesSem(pipe.semRead);
+    print(" ");
+    printProcessesSem(pipe.semWrite);
+    print(" ");
+    printProcessesSem(semPipeManager);
+}

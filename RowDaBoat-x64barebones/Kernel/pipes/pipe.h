@@ -35,3 +35,8 @@ static uint64_t createPipe(char *name);
 static uint64_t findPipe(char *name);
 static uint64_t findAvailable();
 uint64_t writeChar(uint64_t pipeIndex, char c);
+
+void pipe();
+void printPipe(pipe_t pipe);
+void printSemsInvovled(pipe_t pipe);
+void printProcesses(pipe_t pipe);

@@ -185,7 +185,6 @@ void test_sync(){
   }
 }
 
-
 void test_no_sync(){
   uint64_t i;
 
@@ -202,3 +201,4 @@ void test_no_sync(){
   newLine();
 }
 
+void pipe_test(){}

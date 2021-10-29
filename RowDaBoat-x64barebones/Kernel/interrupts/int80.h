@@ -9,6 +9,7 @@
 #include "../include/font.h"
 #include "../memory/sbrk.h"
 #include "../sem/sem.h"
+#include "../pipes/pipe.h"
 
 /*
 #ifdef BUDDY_H

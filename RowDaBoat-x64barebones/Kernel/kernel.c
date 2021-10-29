@@ -7,6 +7,7 @@
 #include "include/font.h"
 #include <interrupt_routines.h>
 #include "include/process.h"
+#include "pipes/pipe.h"
 
 #ifdef BUDDY_H
 #include "../memory/buddy.h"
@@ -65,7 +66,11 @@ int main()
 	//start shell process, createProcess de process.c con datos hardcodeados
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
-	pCreate(&aux, "SampleCodeModule", 1);
+	int pid;
+	pCreate(&aux, "SampleCodeModule", 1, &pid);
+
+	initPipes();
+
 
 /*
 	#ifdef BUDDY_H
