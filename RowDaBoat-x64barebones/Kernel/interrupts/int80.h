@@ -10,6 +10,7 @@
 #include "../memory/sbrk.h"
 #include "../sem/sem.h"
 #include "../pipes/pipe.h"
+#include "../pipes/pipe.h"
 
 /*
 #ifdef BUDDY_H
@@ -52,6 +53,6 @@ void get_pid(int* rsi);//syscall26
 void _wait(unsigned int millis);//syscall27
 uint64_t pipe_open(char* name);//SYS_CALL 28
 uint64_t pipe_close(uint64_t pipeId);//SYS_CALL 29
-uint64_t read_pipe(uint64_t pipeId);//SYS_CALL 30
+char read_pipe(uint64_t pipeId);//SYS_CALL 30
 uint64_t write_pipe(uint64_t pipeId, char* string);//SYS_CALL 31
 #endif

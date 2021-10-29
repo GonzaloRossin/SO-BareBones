@@ -289,8 +289,8 @@ uint64_t pipe_close(uint64_t pipeId){
 }
 
 //SYS_CALL 30
-uint64_t read_pipe(uint64_t pipeId){
-	return readPipe((uint64_t) pipeId);
+char read_pipe(uint64_t pipeId){
+	return (char)readPipe((uint64_t) pipeId);
 }
 
 //SYS_CALL 31
