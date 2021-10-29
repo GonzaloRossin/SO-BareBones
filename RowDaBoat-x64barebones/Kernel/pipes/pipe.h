@@ -9,8 +9,8 @@ typedef struct
 {
     uint64_t rIndex;
     uint64_t wIndex;
-    int semRead;  // id del sem para leer en este pipe
-    int semWrite; // id del sem para escribir en este pipe
+    sem_id semRead;  // id del sem para leer en este pipe
+    sem_id semWrite; // id del sem para escribir en este pipe
     char buffer[BUFFER_SIZE];
     char name[MAX_LEN];
     int amountProcesses; // cantidad de procesos que estan usando el pipe

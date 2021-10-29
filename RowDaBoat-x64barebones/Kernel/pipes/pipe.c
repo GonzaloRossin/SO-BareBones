@@ -110,6 +110,7 @@ uint64_t pipeOpen(char *name)
     return id;
 }
 
+//returns TRUE if pipe exists and is being used by someone
 static uint64_t validIndex(uint64_t pipeIndex)
 {
     if(pipeIndex < 0 || pipeIndex > MAX_PIPES){
@@ -153,4 +154,60 @@ uint64_t pipeClose(uint64_t pipeIndex)
         return -1;
     }
     return 1;
+}
+
+uint64_t writeChar(uint64_t pipeIndex, char c)
+{
+    if (!validIndex(pipeIndex))
+        return -1;
+
+    pipe_t pipe = pipes[pipeIndex].pipe;
+
+    if (sem_wait(pipe.semWrite) == -1)
+    {
+        print("Error semWait en writeChar\n");
+        return -1;
+    }
+    pipe.buffer[pipe.wIndex % BUFFER_SIZE] = c;
+    pipe.wIndex++;
+    if (sem_post(pipe.semWrite) == -1)
+    {
+        print("Error semPost en writeChar\n");
+        return -1;
+    }
+    return 1;
+}
+
+uint64_t writePipe(uint64_t pipeIndex, char *string)
+{
+    if (!validIndex(pipeIndex))
+        return -1;
+
+    while (*string != 0)
+    {
+        if ((writeChar(pipeIndex, *string++)) == -1)
+            return -1;
+    }
+    return 0;
+}
+
+char readPipe(uint64_t pipeIndex)
+{
+    if (!validIndex(pipeIndex))
+        return -1;
+
+    pipe_t pipe = pipes[pipeIndex].pipe;
+    if (sem_wait(pipe.semRead) == -1)
+    {
+        print("Error semWait en readPipe\n");
+        return -1;
+    }
+    char c = pipe.buffer[pipe.rIndex % BUFFER_SIZE];
+    pipe.rIndex--;
+    if (sem_post(pipe.semRead) == -1)
+    {
+        print("Error semPost en readPipe\n");
+        return -1;
+    }
+    return c;
 }
