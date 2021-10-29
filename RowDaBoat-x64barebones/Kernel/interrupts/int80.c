@@ -1,7 +1,7 @@
 #include "int80.h"
 
 //Software interrupt used for interaction between user and kernel space
-uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8)
+uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8, uint64_t r9)
 {
 
 	switch (rdi)
@@ -62,7 +62,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		mem((mm_stat*)rsi);
 		break;
 	case 18:
-		return exec((main_func_t *) rsi, (char*) rdx, (int) rcx, (int *) r8);
+		return exec((main_func_t *) rsi, (char*) rdx, (int) rcx, (int *) r8, (int *)r9);
 		break;
 	case 19:
 		ps((process_info *)rsi, (unsigned int) rdx, (unsigned int*) rcx);
@@ -221,8 +221,8 @@ void mem(mm_stat* rsi){
 	getMMStats(rsi);
 }
 //SYS_CALL 18
-int exec(main_func_t *rsi, char* rdx, int rcx, int * r8){
-	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx, (int *) r8);
+int exec(main_func_t *rsi, char* rdx, int rcx, int * r8, int* r9){
+	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx, (int *) r8, (int *) r9);
 }
 //SYS_CALL 19
 int ps(process_info *rsi, unsigned int rdx, unsigned int* rcx) {

@@ -22,10 +22,11 @@ typedef struct
     int available;
 } space;
 
+/*
 typedef struct
 {
     
-} pipes_info;
+} pipes_info;*/
 
 
 

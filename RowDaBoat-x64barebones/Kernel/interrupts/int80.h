@@ -21,7 +21,7 @@
 
 
 // the int 80h dispatcher
-uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8);
+uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,uint64_t r8,uint64_t r9);
 
 char sys_read();			//sys call 0
 void sys_write(char * rsi, int rdx);			//sys call 1
@@ -41,7 +41,7 @@ void* MyMalloc(uint64_t rsi);// sys call 14
 void MyFree(void* rsi);// sys call 15
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
 void mem(mm_stat*rsi);// sys call 17
-int exec(main_func_t * rsi, char* rdx, int rcx, int * r8); //18
+int exec(main_func_t * rsi, char* rdx, int rcx, int * r8, int* r9); //18
 void pYield();
 int ps(process_info * rsi, unsigned int rdx, unsigned int * rcx);// sys call 19
 void process_kill(int rsi);// sys call 21

@@ -184,7 +184,7 @@ int loopMain(int argc, char ** argv) {
 void loop(char* a1_char) {
     int a1 = strToInt(a1_char);
     main_func_t proc2 = {loopMain, a1, NULL};
-    int aux = exec(&proc2, "test Process", 0);
+    int aux = exec(&proc2, "test Process", 0, NULL);
     print("Process created ");
     print_num(aux, 0);
 }
@@ -205,13 +205,13 @@ static void pNice(char* pid_char, char* priority_char){
 
 static void test_sync1(){
     main_func_t aux = {main_test_sync, 0, NULL};
-    int pid = exec(&aux, "test sync", 0);
+    int pid = exec(&aux, "test sync", 0, NULL);
     newLine();
     put_char('>');
 }
 static void test_sync2(){
     main_func_t aux = {main_test_no_sync, 0, NULL};
-    int pid = exec(&aux, "test no sync", 0);
+    int pid = exec(&aux, "test no sync", 0, NULL);
     newLine();
     put_char('>');
 }

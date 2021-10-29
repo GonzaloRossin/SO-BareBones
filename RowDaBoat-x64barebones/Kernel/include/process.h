@@ -57,7 +57,9 @@ typedef struct process_t {
     void * stack;
     void * rbp;
     void * rsp;
-    struct process_t * next_in_queue;    
+    struct process_t * next_in_queue;   
+    uint64_t fdIn;
+    uint64_t fdOut; 
 } process_t;
 
 typedef struct QUEUE_HD {
@@ -90,7 +92,7 @@ typedef struct process_info {
 
 void * scheduler(void * rsp);
 
-int pCreate(main_func_t * f, char *name, int foreground, int * pid);
+int pCreate(main_func_t * f, char *name, int foreground, int * pid, int fd[2]);
 int kill(int pid);
 int exit(void);
 void getPid(int *pid);

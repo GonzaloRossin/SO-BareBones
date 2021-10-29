@@ -63,7 +63,7 @@ void test_mm(){
 static uint64_t my_create_process(int (f)(int, char**), char * name){
   uint64_t pid = 0;
   main_func_t f_ps = {f, 0, NULL};
-  int aux = exec( &f_ps, name, 0); //CHECKEAR ERROR!!!!!
+  int aux = exec(&f_ps, name, 0,NULL); //CHECKEAR ERROR!!!!!
   if(aux < 0) {
     print("ERROR: createProcess!\n");
   }

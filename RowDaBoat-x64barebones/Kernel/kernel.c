@@ -69,7 +69,7 @@ int main()
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
 	int pid;
-	pCreate(&aux, "SampleCodeModule", 1, &pid);
+	pCreate(&aux, "SampleCodeModule", 1, &pid, NULL);
 
 	initPipes();
 

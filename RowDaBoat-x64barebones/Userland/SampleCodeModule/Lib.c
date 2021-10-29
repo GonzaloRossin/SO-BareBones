@@ -3,138 +3,138 @@
 #include <stdint.h>
 
 char read_input(){//syscall0
-   return (char) sys_call(0,0,0,0,0);
+   return (char) sys_call(0,0,0,0,0,0);
 }
 void print(char *buffer)//syscall1
 {
    int length=strlen(buffer)+1;
-   sys_call(1,(uint64_t)buffer,(uint64_t)length,0,0);
+   sys_call(1,(uint64_t)buffer,(uint64_t)length,0,0,0);
 }
 void get_Memory(uint8_t* mem,uint8_t* v){//syscall2
-   sys_call(2,(uint64_t) mem,(uint64_t)v,0,0);
+   sys_call(2,(uint64_t) mem,(uint64_t)v,0,0,0);
 }
 void newLine(){//syscall3
-   sys_call(3,0,0,0,0);
+   sys_call(3,0,0,0,0,0);
 }
 void get_InfoReg(uint64_t* reg_pointer){//syscall4
-   sys_call(4,(uint64_t)reg_pointer,0,0,0);
+   sys_call(4,(uint64_t)reg_pointer,0,0,0,0);
 }
 void put_char(char c){//syscall5
-   sys_call(5,(uint64_t)c,0,0,0);
+   sys_call(5,(uint64_t)c,0,0,0,0);
 }
 void actionCall(int action){//syscall6
-   sys_call(6,(uint64_t) action,0,0,0);
+   sys_call(6,(uint64_t) action,0,0,0,0);
 }
 uint64_t get_RTC(uint64_t c){//syscall7
-   return sys_call(7,c,0,0,0);
+   return sys_call(7,c,0,0,0,0);
 }
 void print_num(int num, int base_option){//syscall8
-   sys_call(8,(uint64_t)num,(uint64_t)base_option,0,0);
+   sys_call(8,(uint64_t)num,(uint64_t)base_option,0,0,0);
 }
 void clearScreen(){//syscall9
-   sys_call(9,0,0,0,0);
+   sys_call(9,0,0,0,0,0);
 }
 unsigned long get_seconds(){//syscall10
-   return (unsigned long) sys_call(10,0,0,0,0);
+   return (unsigned long) sys_call(10,0,0,0,0,0);
 }
 void set_cursor(int x, int y){//syscall11
-   sys_call(11,(uint64_t)x,(uint64_t)y,0,0);
+   sys_call(11,(uint64_t)x,(uint64_t)y,0,0,0);
 }
 void set_margins(int mLeft,int mRight){//syscall12-----------desuso
-   sys_call(12,(uint64_t)mLeft,(uint64_t)mRight,0,0);
+   sys_call(12,(uint64_t)mLeft,(uint64_t)mRight,0,0,0);
 }
 void getCursor(int coords[2]){//syscall13
-   sys_call(13,(uint64_t) coords,0,0,0);
+   sys_call(13,(uint64_t) coords,0,0,0,0);
 }
 void* Mmalloc(int size){
-   return (void*)sys_call(14,(uint64_t)size,0,0,0);//syscall14
+   return (void*)sys_call(14,(uint64_t)size,0,0,0,0);//syscall14
 }
 void Mfree(void* pointer){//syscall15
-   sys_call(15,(uint64_t)pointer,0,0,0);
+   sys_call(15,(uint64_t)pointer,0,0,0,0);
 }
 void* MemSet(void* ptr,uint32_t c,uint64_t string){//syscall16
-   return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string,0);
+   return (void*)sys_call(16,(uint64_t)ptr,(uint64_t)c,string,0,0);
 }
 mm_stat Mmem(){//syscall17
    mm_stat aux;
-   sys_call(17,(uint64_t)&aux,0,0,0);
+   sys_call(17,(uint64_t)&aux,0,0,0,0);
    return aux;
 }
 
-pid_t exec(main_func_t *func, char* name, int rcx){ //syscall 18
+pid_t exec(main_func_t *func, char* name, int rcx, int fd[2]){ //syscall 18
 int pid;
-   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid);
+   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid, (uint16_t)(void *)fd);
    return pid;
 }
 
 int ps(process_info* arr, unsigned int max_size) {//syscall 19
    unsigned int size;
-   sys_call(19,(uint64_t)(void *) arr,(uint64_t)(void *) max_size,(uint64_t)(void *) &size,0);
+   sys_call(19,(uint64_t)(void *) arr,(uint64_t)(void *) max_size,(uint64_t)(void *) &size,0,0);
    return size;
 }
 
 void _yield(){//syscall 20
-   sys_call(20,0,0,0,0);
+   sys_call(20,0,0,0,0,0);
 }
 
 void kill(pid_t pid){//syscall 21
-   sys_call(21,pid,0,0,0);
+   sys_call(21,pid,0,0,0,0);
 }
 
 void nice(pid_t pid, unsigned int priority){//syscall 22
-   sys_call(22, pid, priority, 0, 0);
+   sys_call(22, pid, priority, 0, 0,0);
 }
 
 void block(pid_t pid, unsigned int new_status){//syscall 23
-   sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
+   sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0,0);
 }
 
 void s_init(){//syscall 24
-   sys_call(24,0,0,0,0);
+   sys_call(24,0,0,0,0,0);
 }
 
 uint64_t s_open(char* name,int value){// syscall 25
-   return sys_call(24,1,(uint64_t)name,(uint64_t)value,0);
+   return sys_call(24,1,(uint64_t)name,(uint64_t)value,0,0);
 }
 
 uint64_t s_wait(uint64_t s_id){//syscall 26
-   return sys_call(24,2,s_id,0,0);
+   return sys_call(24,2,s_id,0,0,0);
 }
 uint64_t s_post(uint64_t s_id){
-   return sys_call(24,3,s_id,0,0);
+   return sys_call(24,3,s_id,0,0,0);
 }
 uint64_t s_close(uint64_t s_id){
-   return sys_call(24,4,s_id,0,0);
+   return sys_call(24,4,s_id,0,0,0);
 }
 void list_sem(){
-   sys_call(24,5,0,0,0);
+   sys_call(24,5,0,0,0,0);
 }
 int getProcessStatus(int pid, unsigned int * status) {//syscall 25
-   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
+   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0,0);
 }
 int getPid(void) {
    int pid;
-   sys_call(26, (void* )&pid, 0, 0, 0);
+   sys_call(26, (void* )&pid, 0, 0, 0,0);
    return pid;
 }
 void wait(unsigned int millis) {
-   sys_call(27,(void *)(uint64_t) millis, 0, 0, 0);
+   sys_call(27,(void *)(uint64_t) millis, 0, 0, 0,0);
 }
 
 uint64_t p_open(char* name){
-   return(uint64_t)sys_call(28,(uint64_t)name,0,0,0);
+   return(uint64_t)sys_call(28,(uint64_t)name,0,0,0,0);
 }
 uint64_t p_close(uint64_t pipeIndex){
-   return(uint64_t)sys_call(29,(uint64_t)pipeIndex,0,0,0);
+   return(uint64_t)sys_call(29,(uint64_t)pipeIndex,0,0,0,0);
 }
 uint64_t p_read(uint64_t pipeIndex){
-   return(uint64_t)sys_call(30,(uint64_t)pipeIndex,0,0,0);
+   return(uint64_t)sys_call(30,(uint64_t)pipeIndex,0,0,0,0);
 }
 uint64_t p_write(uint64_t pipeIndex, char* string){
-   return(uint64_t)sys_call(31,(uint64_t)pipeIndex,(uint64_t)string,0,0);
+   return(uint64_t)sys_call(31,(uint64_t)pipeIndex,(uint64_t)string,0,0,0);
 }
 uint64_t p_list(){
-   return(uint64_t)sys_call(32,0,0,0,0);
+   return(uint64_t)sys_call(32,0,0,0,0,0);
 }
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso

@@ -35,7 +35,7 @@ void getCursor(int coords[2]);//syscall13
 void* Mmalloc(int size);//syscall14
 void Mfree(void* pointer);//syscall15
 void* MemSet(void* ptr,uint32_t c,uint64_t string);//syscall16
-pid_t exec(main_func_t *func, char* name, int rcx);//exec syscall18
+pid_t exec(main_func_t *func, char* name, int rcx, int fd[2]);//exec syscall18
 mm_stat Mmem();//syscall17
 int ps(process_info* arr, unsigned int max_size);//syscall19
 void _yield();//syscall20

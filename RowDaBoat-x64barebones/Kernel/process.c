@@ -152,7 +152,7 @@ static void enqueueProcess(process_t * process) {
 }
 
 
-int pCreate(main_func_t * main_f, char *name, int foreground, int * pid) { // int (*code)(int, char **) el parametro de _start_process
+int pCreate(main_func_t * main_f, char *name, int foreground, int * pid, int fd[2]) { // int (*code)(int, char **) el parametro de _start_process
     //falta: back or foreground, *funcion con argc y argv,
     //draw_string("Creando proceso", 16);
     int i = 0;
@@ -200,6 +200,14 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid) { // in
             changeStatus(curr_process->pid, BLOCKED);
         }
 
+        if(fd == NULL){
+            processes[i].fdIn = 0;
+            processes[i].fdOut = 0;
+        } else {
+            processes[i].fdIn = fd[0];
+            processes[i].fdOut = fd[1];
+        }
+
         return 0;
     }
     return -1;
@@ -223,6 +231,16 @@ int exit() {
 
 int kill(int pid) {
     return changeStatus(pid, KILLED);
+}
+
+uint64_t getFdIn()
+{
+    return curr_process->fdIn;
+}
+
+uint64_t getFdOut()
+{
+    return curr_process->fdOut;
 }
 
 void getPid(int * pid) {
