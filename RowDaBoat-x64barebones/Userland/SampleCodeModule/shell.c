@@ -256,7 +256,8 @@ void fillCommandList()
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
+    fillCommand("loop",": crea un proceso que corre en background", &loop, 1);
+    fillCommand("test_process",": testea la creacion de un proceso", &test_processes, 0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){

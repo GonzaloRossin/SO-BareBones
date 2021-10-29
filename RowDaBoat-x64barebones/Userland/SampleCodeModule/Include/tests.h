@@ -10,4 +10,6 @@ void test_mm();
 void test_sync();
 void test_no_sync();
 
+void test_processes();
+
 #endif

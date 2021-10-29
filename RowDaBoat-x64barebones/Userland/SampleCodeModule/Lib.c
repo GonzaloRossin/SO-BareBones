@@ -75,16 +75,16 @@ int ps(process_info* arr, unsigned int max_size) {//syscall 19
 
 //loop = 20
 
-void kill(pid_t pid){//syscall 21
-   sys_call(21,pid,0,0,0);
+int kill(pid_t pid){//syscall 21
+   return sys_call(21,pid,0,0,0);
 }
 
 void nice(pid_t pid, unsigned int priority){//syscall 22
    sys_call(22,pid,priority,0,0);
 }
 
-void block(pid_t pid, unsigned int new_status){//syscall 23
-   sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
+int block(pid_t pid, unsigned int new_status){//syscall 23
+   return sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
 }
 
 sem_id s_init(char* name,unsigned int init_size){//syscall 24

@@ -39,9 +39,9 @@ pid_t exec(main_func_t *func, char* name, int rcx);//exec syscall18
 mm_stat Mmem();//syscall17
 int ps(process_info* arr, unsigned int max_size);//syscall19
 //void loop();////syscall20
-void kill(pid_t pid);//syscall21
+int kill(pid_t pid);//syscall21
 void nice(pid_t pid, unsigned int priority);//syscall22
-void block(pid_t pid, unsigned int status);//syscall23
+int block(pid_t pid, unsigned int status);//syscall23
 sem_id s_init(char* name,unsigned int init_size);//syscall24
 sem_id s_open(char* name);
 int s_wait(sem_id s_id);

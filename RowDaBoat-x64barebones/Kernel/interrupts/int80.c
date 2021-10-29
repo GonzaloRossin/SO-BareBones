@@ -71,13 +71,13 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	// 	//loop();
 	// 	break;
 	case 21:
-		process_kill((int)rsi);
+		return process_kill((int)rsi);
 		break;
 	case 22:
 		nice((int)rsi, (unsigned int)rdx);
 		break;
 	case 23:
-		block((int)rsi, (unsigned int) rdx);
+		return block((int)rsi, (unsigned int) rdx);
 		break;
 	case 24:
 		return (uint64_t)sys_sem((int)rsi, rdx,rcx);
@@ -230,16 +230,16 @@ int ps(process_info *rsi, unsigned int rdx, unsigned int* rcx) {
 }
 // //SYS_CALL 20
 // //SYS_CALL 21
-void process_kill(int pid){
-	kill(pid);
+int process_kill(int pid){
+	return kill(pid);
 }
 //SYS_CALL 22
 void nice(int pid, unsigned int priority) {
 	changePriority(pid, priority);
 }
 // //SYS_CALL 23
-void block(int pid, unsigned int new_status){
-	changeStatus(pid, new_status);
+int block(int pid, unsigned int new_status){
+	return changeStatus(pid, new_status);
 }
 //SYS_CALL 24
 uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
