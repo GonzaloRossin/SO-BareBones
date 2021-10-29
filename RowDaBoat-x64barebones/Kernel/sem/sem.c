@@ -122,7 +122,7 @@ uint64_t semWait(uint64_t semIndex)
         }
 
         _xchg(&sem->lock, 0);
-        if (block(pid) == -1)
+        if (changeStatus(pid,BLOCKED) == -1)
         {
             return -1;
         }
@@ -152,7 +152,7 @@ uint64_t semPost(uint64_t semIndex)
         }
     }
     _xchg(&sem->lock, 0);
-    unblock(pid) ?: forceTimer();
+    changeStatus(pid,READY) ?: forceTimer();
     return 0;
 }
 

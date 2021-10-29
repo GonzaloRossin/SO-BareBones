@@ -59,35 +59,47 @@ void test_mm(){
 
 #include <stdint.h>
 
-#define N 2
+#define N 100
 
 uint64_t my_create_process(int (f)(int, char**), char * name){
   uint64_t pid = 0; 
   main_func_t f_ps = {f, 0, NULL};
   int aux = exec( &f_ps, name,1); //CHECKEAR ERROR!!!!!
   if(aux < 0) {
-    printError("ERROR: createProcess!\n");
+    print("ERROR: createProcess!\n");
   }
   return aux;
 }
 
 uint64_t my_sem_open(char *sem_id, uint64_t initialValue){
-  return s_open(sem_id,initialValue);
+  int aux=(int)s_open(sem_id,initialValue);
+  if(aux<0)
+    print("sem_open_error");
+  return aux;
 }
 
 uint64_t my_sem_wait(uint64_t sem_id){
-  return  s_wait(sem_id);
+  int aux;
+  if((aux=(int)s_wait(sem_id))<0)
+    print("sem_wait_error");
+  return aux;
 }
 
 uint64_t my_sem_post(uint64_t sem_id){
+  int aux;
+  if((aux=(int)s_post(sem_id))<0)
+    print("sem_post_error");
   return s_post(sem_id);
 }
 
 uint64_t my_sem_close(uint64_t sem_id){
+  int aux;
+  if((aux=(int)my_sem_close(sem_id))<0)
+    print("sem_close_error");
   return s_close(sem_id);
 }
 
-#define TOTAL_PAIR_PROCESSES 2
+#define TOTAL_PAIR_PROCESSES N
 #define SEM_NAME "sem"
 
 int64_t global;  //shared memory
@@ -104,7 +116,7 @@ static int my_process_inc(int argc, char ** argv){
   sem_id sem;
 
   if ((sem = my_sem_open(SEM_NAME, 1)) < 0){
-    printf("ERROR OPENING SEM\n");
+    print("ERROR OPENING SEM\n");
     return -1;
   }
   
@@ -116,7 +128,9 @@ static int my_process_inc(int argc, char ** argv){
 
   my_sem_close(sem);
   
-  printf("SEM Final value: %u\n", global);
+  print("SEM Final value: ");
+  print_num(global,0);
+  newLine();
 
   return 0;
 }
@@ -126,7 +140,7 @@ static int my_process_dec(int argc, char ** argv){
   sem_id sem; 
 
   if ((sem = my_sem_open(SEM_NAME, 1)) < 0){
-    printf("ERROR OPENING SEM\n");
+    print("ERROR OPENING SEM\n");
     return -1;
   }
   
@@ -134,22 +148,25 @@ static int my_process_dec(int argc, char ** argv){
     my_sem_wait(sem);
     slowInc(&global, -1);
     my_sem_post(sem);
-    //printf("Variable is: %u\n", global);
+    print("Variable is: ");
+    print_num(global,0);
+    newLine();
   }
 
   my_sem_close(sem);
 
-  printf("SEM Final value: %u\n", global);
+  print("SEM Final value: ");
+  print_num( global,0);
 
   return 0;
 }
 
-static void test_sync(){
+void test_sync(){
   uint64_t i;
   
   global = 0;
 
-  printf("CREATING PROCESSES...\n");
+  print("CREATING PROCESSES...\n");
   s_init();
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
@@ -166,7 +183,9 @@ static int my_process_inc_no_sem(int argc, char ** argv){
     slowInc(&global, 1);
   }
 
-  //printf("NO Final value: %u\n", global);
+  print("NO Final value: ");
+  print_num(global,0);
+  newLine();
 
   return 0;
 }
@@ -177,7 +196,9 @@ static int my_process_dec_no_sem(int argc, char ** argv){
     slowInc(&global, -1);
   }
 
-  //printf("NO Final value: %u\n", global);
+  print("NO Final value:");
+  print_num(global,0);
+  newLine();
 
   return 0;
 }
@@ -189,9 +210,9 @@ void test_no_sync(){
 
   print("CREATING PROCESSES...(WITHOUT SEM)\n");
 
-  //for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
+  for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
     my_create_process(my_process_inc_no_sem, "my_process_inc_no_sem");
     my_create_process(my_process_dec_no_sem, "my_process_dec_no_sem");
-  //}
+  }
 }
 

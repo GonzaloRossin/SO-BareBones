@@ -65,7 +65,8 @@ int main()
 	//start shell process, createProcess de process.c con datos hardcodeados
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
-	pCreate(&aux, "SampleCodeModule", 1);
+	int id;
+	pCreate(&aux, "SampleCodeModule", 1,&id);
 
 /*
 	#ifdef BUDDY_H

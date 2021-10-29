@@ -138,7 +138,12 @@ static void clean(){
     clearScreen();
     draw_Main_Screen();
 }
+void sleep(int seg) {
+    int actual_time=get_seconds(),aux;
+    while(aux=get_seconds()-actual_time<seg){
 
+    }
+}
 void get_mem_info(){
     mm_stat aux=Mmem();
     print("total memory: ");
@@ -368,12 +373,6 @@ void initializeOS(){
     draw_Main_Screen();
     put_char('>');
     buffersize=0;
-}
-void sleep(int seg) {
-    int actual_time=get_seconds(),aux;
-    while(aux=get_seconds()-actual_time<seg){
-
-    }
 }
 void shell()
 {

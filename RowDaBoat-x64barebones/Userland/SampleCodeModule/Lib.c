@@ -105,9 +105,9 @@ uint64_t s_close(uint64_t s_id){
    return sys_call(24,4,s_id,0,0);
 }
 
-//int getProcessStatus(int pid, unsigned int * status) {//syscall 25
-//   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
-//}
+int getProcessStatus(int pid, unsigned int * status) {//syscall 25
+   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
+}
 int getPid(void) {
    int pid;
    sys_call(26, (void* )&pid, 0, 0, 0);
