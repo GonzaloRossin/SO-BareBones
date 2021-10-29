@@ -116,6 +116,9 @@ int getPid(void) {
    sys_call(26, (void* )&pid, 0, 0, 0);
    return pid;
 }
+void wait(unsigned int millis) {
+   sys_call(27,(void *)(uint64_t) millis, 0, 0, 0);
+}
 
 
 void argTest(int a1, int a2, int a3){
