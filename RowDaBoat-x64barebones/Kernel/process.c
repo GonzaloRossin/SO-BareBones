@@ -236,7 +236,7 @@ int getProcessesAlive(unsigned int * amount) {
 void yield()
 {
     curr_process->given_time = 0;
-    forceTimer();
+    _int81();
 }
 int changePriority(int pid, unsigned int new_priority) {
     if (new_priority >= MIN_PRIORITY && new_priority <= MAX_PRIORITY) {

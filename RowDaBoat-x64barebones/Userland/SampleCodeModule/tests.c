@@ -94,24 +94,25 @@ static uint64_t my_sem_close(uint64_t sem_id){
  return s_close(sem_id);
 }
 
-#define N 1000
+#define N 5000000
 #define SEM_NAME "sem"
 #define TOTAL_PAIR_PROCESSES 2
 
 uint64_t global;  //shared memory
 
-static void slowInc(uint64_t *p, int inc){
+static void slowInc(uint64_t *p, int inc) {
   uint64_t aux = *p;
   aux += inc;
-  *p = aux;
-  _yield();
+  //wait(10);
+  for(int i = 0; i < 100; i++);
+  *p = aux;  
 }
 
-static int my_process_inc(int argc, char ** argv){
+static int my_process_inc(int argc, char ** argv) {
   uint64_t i;
   uint64_t sem;
 
-  if ((sem = my_sem_open(SEM_NAME,1)) < 0){
+  if ((sem = my_sem_open(SEM_NAME,1)) < 0) {
     print("ERROR OPENING SEM\n");
     return -1;
   }
@@ -171,7 +172,7 @@ static int my_process_inc_no_sem(int argc, char ** argv){
   }
 
   print("SEM Final value: ");
-  print_num(global,0);
+  print_num((long int)global,0);
   newLine();
 
   return 0;
@@ -179,13 +180,13 @@ static int my_process_inc_no_sem(int argc, char ** argv){
 
 static int my_process_dec_no_sem(int argc, char ** argv){
   uint64_t i;
+  //wait(1000);
   for (i = 0; i < N; i++){
-    wait(500);
     slowInc(&global, -1);
   }
 
   print("SEM Final value: ");
-  print_num(global,0);
+  print_num((long int)global,0);
   newLine();
 
   return 0;

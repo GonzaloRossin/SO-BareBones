@@ -151,7 +151,7 @@ uint64_t semPost(uint64_t semIndex)
         }
     }
     _xchg(&sem->lock, 0);
-    changeStatus(pid,READY) ?: forceTimer();
+    changeStatus(pid,READY) ?: _int81();
     return 0;
 }
 
