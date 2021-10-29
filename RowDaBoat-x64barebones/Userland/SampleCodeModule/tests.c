@@ -77,25 +77,22 @@ static uint64_t my_sem_open(char *name, uint64_t initialValue){
 static uint64_t my_sem_wait(uint64_t sem_id){
   int ret = (int)s_wait(sem_id);
   if (ret < 0)
-    print("Se rompio todo el wait amigo\n");
+    print("Se rompio el wait\n");
   return ret;
 }
 
 static uint64_t my_sem_post(uint64_t sem_id){
   int ret =(int) s_post(sem_id);
   if (ret < 0)
-    print("Se rompio todo el post amigo\n");
+    print("Se rompio el post\n");
   return ret;  
 } 
 
-static uint64_t my_sem_close(sem_id sem_id){
-  int ret = (int)s_close(sem_id);
-  if (ret < 0)
-    print("Se rompio todo el close amigo\n");
-  return ret;  
+static uint64_t my_sem_close(uint64_t sem_id){
+ return s_close(sem_id);  
 }
 
-#define N 1000000
+#define N 1000
 #define SEM_NAME "sem"
 #define TOTAL_PAIR_PROCESSES 2
 
@@ -104,26 +101,23 @@ uint64_t global;  //shared memory
 static void slowInc(uint64_t *p, int inc){
   uint64_t aux = *p;
   aux += inc;
-  for(int i = 0; i < 100 ; i++){}
   *p = aux;
+  _yield();
 }
 
 static int my_process_inc(int argc, char ** argv){
   uint64_t i;
   uint64_t sem;
 
-  if ((sem = my_sem_open(SEM_NAME, 1)) < 0){
+  if ((sem = my_sem_open(SEM_NAME,1)) < 0){
     print("ERROR OPENING SEM\n");
     return -1;
   }
-  
   for (i = 0; i < N; i++){
     my_sem_wait(sem);
     slowInc(&global, 1);
     my_sem_post(sem);
   }
-
-  my_sem_close(sem);
   
   print("SEM Final value: ");
   print_num(global,0);
@@ -134,7 +128,7 @@ static int my_process_inc(int argc, char ** argv){
 
 static int my_process_dec(int argc, char ** argv){
   uint64_t i;
-  sem_id sem; 
+  uint64_t sem; 
 
   if ((sem = my_sem_open(SEM_NAME, 1)) < 0){
     print("ERROR OPENING SEM\n");
@@ -146,8 +140,6 @@ static int my_process_dec(int argc, char ** argv){
     slowInc(&global, -1);
     my_sem_post(sem);
   }
-
-  my_sem_close(sem);
 
   print("SEM Final value: ");
   print_num(global,0);
@@ -167,7 +159,6 @@ static void test_sync(){
     my_create_process(my_process_inc, "my_process_inc");
     my_create_process(my_process_dec,"my_process_dec");
   }
-  
   // The last one should print 0
 }
 
@@ -187,6 +178,7 @@ static int my_process_inc_no_sem(int argc, char ** argv){
 static int my_process_dec_no_sem(int argc, char ** argv){
   uint64_t i;
   for (i = 0; i < N; i++){
+    wait(500);
     slowInc(&global, -1);
   }
 
@@ -208,7 +200,6 @@ static void test_no_sync(){
     my_create_process(my_process_inc_no_sem, "my_process_inc_no_sem");
     my_create_process(my_process_dec_no_sem, "my_process_dec_no_sem");
   }
-
   // The last one should not print 0
 }
 

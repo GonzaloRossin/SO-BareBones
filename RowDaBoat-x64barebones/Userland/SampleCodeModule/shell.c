@@ -277,7 +277,7 @@ void fillCommandList()
     fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
-    fillCommand("list_sem","enlista los semaforos abiertos en ese momento",&list_semaphores,0);
+    fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){

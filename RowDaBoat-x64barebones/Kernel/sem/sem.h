@@ -1,5 +1,5 @@
-#ifndef SEMAPHORE_H
-#define SEMAPHORE_H
+#ifndef SEM_H
+#define SEM_H
 #include "../include/lib.h"
 #include "defs.h"
 #include "../memory/sbrk.h"
@@ -8,11 +8,13 @@
 #define MAX_SEM 30
 #define TRUE 1
 #define FALSE 0
+
 typedef struct pNode
 {
     struct pNode *next;
     uint64_t pid;
 } processNode;
+
 typedef struct
 {
     char name[MAX_NAME];
@@ -23,6 +25,7 @@ typedef struct
     uint64_t size;     // cantidad de procesos que usan el sem
     uint64_t sizeList; // cantidad de procesos bloqueados
 } sem_t;
+
 extern uint64_t _xchg(uint64_t *lock, int value);
 extern void forceTimer();
 void initSems();

@@ -60,8 +60,7 @@ static int createSem(char *name, uint64_t initValue)
 // Retorna un puntero al semaforo al igual que en POSIX. En caso de error retorna NULL
 uint64_t semOpen(char *name, uint64_t initValue)
 {
-    while (_xchg(&lockSem, 1) != 0) // esperando a que el lock este disponible
-        ;
+    while (_xchg(&lockSem, 1) != 0); // esperando a que el lock este disponible
     // Primero me fijo si ya existe el sem por nombre
     // Si no existe debo crear el sem por primera vez
     int semIndex = findSem(name);

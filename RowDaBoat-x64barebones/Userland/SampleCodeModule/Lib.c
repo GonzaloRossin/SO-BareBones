@@ -7,7 +7,7 @@ char read_input(){//syscall0
 }
 void print(char *buffer)//syscall1
 {
-   int length=strlen(buffer);
+   int length=strlen(buffer)+1;
    sys_call(1,(uint64_t)buffer,(uint64_t)length,0,0);
 }
 void get_Memory(uint8_t* mem,uint8_t* v){//syscall2
