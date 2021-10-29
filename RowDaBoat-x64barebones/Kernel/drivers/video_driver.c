@@ -159,7 +159,7 @@ void draw_string(char * buffer, int count){
 			newLine();
 		}
 		else if(buffer[i]=='\t'){
-			for(int i=0;i<5;i++){
+			for(int i=0;i<4;i++){
 				draw_char(' ');
 			}
 		}

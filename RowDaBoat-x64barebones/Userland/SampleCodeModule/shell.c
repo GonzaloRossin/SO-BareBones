@@ -232,19 +232,19 @@ void blockProcess(int pid) {
 void printProcesses(void) {
     process_info info[50];
     int amount = ps(info, 50);
-    print("Processes:\n");
+    print("Process number\tProcess Name\tPID\tPPID\tPriority\tRBP\tRSP\tState\tForeground\tTime left\tQuantums\n\n");
     for (unsigned int i = 0; i < amount; i++) {
-        print("Process number "); print_num(i, 0); print("\t");
-        print("Process Name: "); print(info[i].name); print("\t");
-        print("PID: "); print_num(info[i].pid, 0); print(" \t");
-        print("PPID: "); print_num(info[i].ppid, 0); print(" \t");
-        print("Priority: "); print_num(info[i].priority, 0); print("\n");
-        print("RBP: "); print_num(info[i].rbp, 0); print(" \t");
-        print("RSP: "); print_num(info[i].rsp, 0); print(" \t");
-        print("State: "); print_num(info[i].status, 0); print(" \t");
-        print("Foreground: "); print_num(info[i].foreground, 0); print(" \t");
-        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks \t");
-        print("Quantums: "); print_num(info[i].aging, 0); print("\n");
+        print(""); print_num(i, 0); print("\t");
+        print(""); print(info[i].name); print("\t");
+        print(""); print_num(info[i].pid, 0); print(" \t");
+        print(""); print_num(info[i].ppid, 0); print(" \t");
+        print(""); print_num(info[i].priority, 0); print(" \t");
+        print("  "); print_num(info[i].rbp, 0); print("  ");
+        print(""); print_num(info[i].rsp, 0); print(" \t");
+        print(""); print_num(info[i].status, 0); print(" \t");
+        print(""); print_num(info[i].foreground, 0); print(" \t");
+        print(""); print_num(info[i].given_time, 0); print(" ticks \t");
+        print(""); print_num(info[i].aging, 0); print("\n");
    }
 }
 
