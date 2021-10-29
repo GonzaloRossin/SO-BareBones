@@ -117,6 +117,8 @@ static void * getNextProcess(void * rsp) {
 
     if(prior <= MAX_PRIORITY) {
         if ((act_queue[prior].first)->status == KILLED || (act_queue[prior].first)->status == BLOCKED) {
+            if (act_queue[prior].last == act_queue[prior].first)
+                act_queue[prior].last = NULL;
             act_queue[prior].first = (act_queue[prior].first)->next_in_queue;
             return getNextProcess(rsp);
         }
@@ -253,7 +255,7 @@ int changeStatus(int pid, unsigned int new_status) {
         if (processes[i].pid == pid) {
             int last_status = processes[i].status;
 
-            if (last_status == KILLED) 
+            if (last_status == new_status || last_status == KILLED) 
                 return -1;
    
             processes[i].status = new_status;
@@ -279,8 +281,7 @@ int changeStatus(int pid, unsigned int new_status) {
                 }
 
             }
-
-            if (new_status == KILLED) {
+            else if (new_status == KILLED) {
                 if (processes[i].foreground && processes[i].ppid > 0) {
                     changeStatus(processes[i].ppid, READY);
                 }
@@ -293,8 +294,9 @@ int changeStatus(int pid, unsigned int new_status) {
                     MyFree(processes[i].stack);
                     _sti();
                     _int81();
-                }
-                MyFree(processes[i].stack);                    
+                } else {
+                    MyFree(processes[i].stack);  
+                }                                  
             }
             return 0;
         }

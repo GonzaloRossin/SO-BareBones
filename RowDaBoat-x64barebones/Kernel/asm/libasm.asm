@@ -131,10 +131,9 @@ _halt_and_wait:
     ret
 
 _halter:
-_beg:
     sti
     hlt
-    jmp _beg
+    jmp _halter
     ret
 
 _int81:
