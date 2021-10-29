@@ -133,6 +133,9 @@ uint64_t p_read(uint64_t pipeIndex){
 uint64_t p_write(uint64_t pipeIndex, char* string){
    return(uint64_t)sys_call(31,(uint64_t)pipeIndex,(uint64_t)string,0,0);
 }
+uint64_t p_list(){
+   return(uint64_t)sys_call(32,0,0,0,0);
+}
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};

@@ -300,3 +300,8 @@ char read_pipe(uint64_t pipeId){
 uint64_t write_pipe(uint64_t pipeId, char* string){
 	return writePipe((uint64_t) pipeId,(char*)string);
 }
+
+//SYS_CALL 32
+uint64_t write_pipe(uint64_t pipeId, char* string){
+	return writePipe((uint64_t) pipeId,(char*)string);
+}

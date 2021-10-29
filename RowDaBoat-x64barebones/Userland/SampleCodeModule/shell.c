@@ -208,6 +208,10 @@ static void list_semaphores(){
     list_sem();
 }
 
+static void list_pipes(){
+    p_list();
+}
+
 void blockProcess(int pid) {
     if(pid == 1){
          print("Soy la shell hermano");
@@ -278,6 +282,7 @@ void fillCommandList()
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
+    fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
