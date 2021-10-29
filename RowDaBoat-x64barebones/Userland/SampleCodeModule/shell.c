@@ -377,12 +377,6 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
-void sleep(int seg) {
-    int actual_time=get_seconds(),aux;
-    while(aux=get_seconds()-actual_time<seg){
-
-    }
-}
 void shell()
 {
     fillCommandList();
