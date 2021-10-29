@@ -9,6 +9,7 @@
 #include "../include/font.h"
 #include "../memory/sbrk.h"
 #include "../sem/sem.h"
+#include "../pipes/pipe.h"
 
 /*
 #ifdef BUDDY_H
@@ -41,6 +42,7 @@ void MyFree(void* rsi);// sys call 15
 void* memSet(void* rsi,uint32_t rdx,uint64_t rcx);//sys call 16
 void mem(mm_stat*rsi);// sys call 17
 int exec(main_func_t * rsi, char* rdx, int rcx, int * r8); //18
+void pYield();
 int ps(process_info * rsi, unsigned int rdx, unsigned int * rcx);// sys call 19
 int process_kill(int rsi);// sys call 21
 void nice(int rsi, unsigned int rdx);// sys call 22
@@ -49,4 +51,8 @@ uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx);//syscall 24
 int get_process_status(int rsi, unsigned int *rdx);//syscall 25
 void get_pid(int* rsi);//syscall26
 void _wait(unsigned int millis);//syscall27
+uint64_t pipe_open(char* name);//SYS_CALL 28
+uint64_t pipe_close(uint64_t pipeId);//SYS_CALL 29
+char read_pipe(uint64_t pipeId);//SYS_CALL 30
+uint64_t write_pipe(uint64_t pipeId, char* string);//SYS_CALL 31
 #endif

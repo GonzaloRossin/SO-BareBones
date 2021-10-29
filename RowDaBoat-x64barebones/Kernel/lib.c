@@ -173,3 +173,6 @@ void Strncpy(char *source, char *dest, int index, int size)
    }
    dest[j] = 0;
 }
+void printf(char* str){
+	draw_string(str,Strlen(str));
+}

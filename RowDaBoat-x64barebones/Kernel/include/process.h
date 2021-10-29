@@ -6,7 +6,6 @@
 
 
 #define MAX_PROCESSES 50
-#define MAX_NAME_LENGTH 50
 #define MAX_STACK 50000
 #define HALTER_EXTRA_STACK_SPACE 20
 #define STATE_SIZE 5
@@ -15,8 +14,8 @@
 #define MIN_PRIORITY 0
 #define MAX_PRIORITY 6
 #define BASE_PRIORITY ((MAX_PRIORITY - MIN_PRIORITY)/2)
-#define MIN_TICKS 10
-#define MAX_TICKS 30
+#define MIN_TICKS 5
+#define MAX_TICKS 10
 
 #define PRIOR_SLOPE ((MAX_TICKS - MIN_TICKS)/(MIN_PRIORITY - MAX_PRIORITY)) //To calculate the quantum of each queue (quantum(priorirty) = m*p + b)
 #define PRIOR_INDVAR (MAX_TICKS - MIN_PRIORITY * PRIOR_SLOPE)
@@ -94,7 +93,7 @@ void * scheduler(void * rsp);
 int pCreate(main_func_t * f, char *name, int foreground, int * pid);
 int kill(int pid);
 int exit(void);
-int getPid(int *pid);
+void getPid(int *pid);
 int getProcessesAlive(unsigned int * amount);
 int getProcessesInfo(process_info * arr, unsigned int max_size, unsigned int * size);
 int changePriority(int pid, unsigned int new_priority);
@@ -102,7 +101,8 @@ int changeStatus(int pid, unsigned int new_status);
 int getProcessStatus(int pid, unsigned int * status);
 int changeForegroundStatus(int pid, unsigned int status);
 int isCurrentForeground(void);
-
+extern void forceTimer();
+void yield();
 void PS();
 
 #endif

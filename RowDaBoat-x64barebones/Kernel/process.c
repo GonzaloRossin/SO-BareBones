@@ -47,13 +47,13 @@ void * scheduler(void * rsp) {
             (curr_process->given_time--);
 
             if (curr_process->given_time <= 0) {
-                
+
                 curr_process->aging++;
 
                 updateProcess(curr_process);
                 curr_process->rsp = rsp;
 
-                #ifdef _RR_AGING_ 
+                #ifdef _RR_AGING_
                     // set new priority
                     changePriority(curr_process->pid, (prior < MAX_PRIOR)? prior+1 : prior);
                 #endif
@@ -75,12 +75,12 @@ void * scheduler(void * rsp) {
 static void createHalter(void) {
     Strncpy("Halter", halter.name, 0, 6);
     halter.pid = 0;
-    halter.ppid = 0; 
+    halter.ppid = 0;
     halter.foreground = 0;
     halter.priority = MAX_PRIORITY;
     halter.status = READY;
     halter.next_in_queue = NULL;
-    halter.aging = 0; 
+    halter.aging = 0;
     halter.given_time = quantum[BASE_PRIORITY];
     halter.stack = halterStack;
     halter.rbp = (void *)(((uint64_t) halter.stack + sizeof(halterStack)) & -8);
@@ -89,7 +89,7 @@ static void createHalter(void) {
     stackModel.rbp = (uint64_t) halter.rbp;
     stackModel.rsp = (uint64_t) halter.rbp;
     stackModel.rip = (uint64_t) _halter;
-    
+
     memcpy(halter.rsp, (void *) &stackModel, sizeof(stackModel));
 }
 
@@ -126,7 +126,7 @@ static void * getNextProcess(void * rsp) {
         curr_process = act_queue[prior].first;
         curr_process->given_time = quantum[prior];
         return curr_process->rsp;
-    
+
     } else {
         actual_queue = 1 - actual_queue; // change to expired queue
         prior = 0;
@@ -153,7 +153,7 @@ static void enqueueProcess(process_t * process) {
 
 
 int pCreate(main_func_t * main_f, char *name, int foreground, int * pid) { // int (*code)(int, char **) el parametro de _start_process
-    //falta: back or foreground, *funcion con argc y argv, 
+    //falta: back or foreground, *funcion con argc y argv,
     //draw_string("Creando proceso", 16);
     int i = 0;
 
@@ -167,16 +167,16 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid) { // in
         int size = Strlen(name);
         Strncpy(name, processes[i].name, 0, size);
         processes[i].pid = (processes_so_far + 1);
-        processes[i].ppid = (curr_process != NULL)?curr_process->pid:0; 
+        processes[i].ppid = (curr_process != NULL)?curr_process->pid:0;
         processes[i].foreground = (curr_process == NULL)?1:(curr_process->foreground)?foreground:0;
         processes[i].priority = BASE_PRIORITY;
         processes[i].status = READY;
         processes[i].next_in_queue = NULL;
-        processes[i].aging = 0; 
+        processes[i].aging = 0;
         processes[i].given_time = quantum[BASE_PRIORITY];
 
         processes[i].stack = MyMalloc(MAX_STACK);
-        
+
         //draw_hex(0420);
 
         processes[i].rbp = (void *)(((uint64_t) processes[i].stack + MAX_STACK) & -8);
@@ -185,10 +185,10 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid) { // in
 
         if (i >= processes_size)
             processes_size++;
-        
+
         prepareStack(main_f->f, main_f->argc, main_f->argv, processes[i].rbp, processes[i].rsp);
 
-        
+
         enqueueProcess(&(processes[i]));
 
         processes_alive++;
@@ -209,10 +209,10 @@ static void prepareStack(int (*main)(int argc, char ** argv), int argc, char ** 
     stackModel.rbp = (uint64_t) rbp;
     stackModel.rsp = (uint64_t) rbp;
     stackModel.rip = (uint64_t) _start_process; //de lib.h
-    stackModel.rdi = (uint64_t) main; 
+    stackModel.rdi = (uint64_t) main;
     stackModel.rsi = (uint64_t) argc;
-    stackModel.rdx = (uint64_t) argv; 
-    
+    stackModel.rdx = (uint64_t) argv;
+
     memcpy(rsp, (void *) &stackModel, sizeof(stackModel)); //rsp == rbp al comienzo
 }
 
@@ -225,16 +225,19 @@ int kill(int pid) {
     return changeStatus(pid, KILLED);
 }
 
-int getPid(int * pid) {
+void getPid(int * pid) {
     *pid = curr_process->pid;
-    return 0;
 }
 
 int getProcessesAlive(unsigned int * amount) {
     *amount =  processes_alive;
-    return 0; 
+    return 0;
 }
-
+void yield()
+{
+    curr_process->given_time = 0;
+    forceTimer();
+}
 int changePriority(int pid, unsigned int new_priority) {
     if (new_priority >= MIN_PRIORITY && new_priority <= MAX_PRIORITY) {
         for (int i = 0; i < processes_size; i++) {
@@ -242,7 +245,7 @@ int changePriority(int pid, unsigned int new_priority) {
                 if (processes[i].status == KILLED)
                     return -1;
                 processes[i].priority = new_priority;
-                
+
                 return 0;
             }
         }
@@ -255,9 +258,9 @@ int changeStatus(int pid, unsigned int new_status) {
         if (processes[i].pid == pid) {
             int last_status = processes[i].status;
 
-            if (last_status == new_status || last_status == KILLED) 
+            if (last_status == new_status || last_status == KILLED)
                 return -1;
-   
+
             processes[i].status = new_status;
 
             if (last_status == BLOCKED && new_status == READY) {
@@ -286,7 +289,7 @@ int changeStatus(int pid, unsigned int new_status) {
                     changeStatus(processes[i].ppid, READY);
                 }
                 processes_alive--;
-                if (last_status == READY) 
+                if (last_status == READY)
                     processes_ready--;
                 if (curr_process != NULL && curr_process->pid == pid) {
                     updateProcess(&(processes[i]));
@@ -295,8 +298,8 @@ int changeStatus(int pid, unsigned int new_status) {
                     _sti();
                     _int81();
                 } else {
-                    MyFree(processes[i].stack);  
-                }                                  
+                    MyFree(processes[i].stack);
+                }
             }
             return 0;
         }
@@ -319,18 +322,18 @@ int changeForegorundStatus(int pid, unsigned int status) {
 int getProcessStatus(int pid, unsigned int * status) {
     for(int i = 0; i < processes_size; i++) {
         if(processes[i].pid == pid) {
-            *status = processes[i].status; 
+            *status = processes[i].status;
             return 0;
         }
     }
-    return -1; 
+    return -1;
 }
 
 int getProcessesInfo(process_info * arr, unsigned int max_size, unsigned int * size) {
     unsigned int j = 0;
     for (unsigned int i = 0; i < processes_size && j < max_size; i++) {
         if (processes[i].status != KILLED) {
-            Strncpy(processes[i].name, arr[j].name, 0, Strlen(processes[i].name)); 
+            Strncpy(processes[i].name, arr[j].name, 0, Strlen(processes[i].name));
             arr[j].foreground = processes[i].foreground;
             arr[j].priority = processes[i].priority;
             arr[j].status = processes[i].status;
@@ -338,7 +341,7 @@ int getProcessesInfo(process_info * arr, unsigned int max_size, unsigned int * s
             arr[j].ppid = processes[i].ppid;
             arr[j].rbp = processes[i].rbp;
             arr[j].rsp = processes[i].rsp;
-            arr[j].aging = processes[i].aging; 
+            arr[j].aging = processes[i].aging;
             arr[j].given_time = processes[i].given_time;
             j++;
         }
@@ -352,5 +355,3 @@ int isCurrentForeground(void) {
         return -1;
     return curr_process->foreground;
 }
-
-

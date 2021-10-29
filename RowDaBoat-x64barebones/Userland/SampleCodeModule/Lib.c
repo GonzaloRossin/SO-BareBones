@@ -7,7 +7,7 @@ char read_input(){//syscall0
 }
 void print(char *buffer)//syscall1
 {
-   int length=strlen(buffer);
+   int length=strlen(buffer)+1;
    sys_call(1,(uint64_t)buffer,(uint64_t)length,0,0);
 }
 void get_Memory(uint8_t* mem,uint8_t* v){//syscall2
@@ -65,7 +65,7 @@ pid_t exec(main_func_t *func, char* name, int rcx){ //syscall 18
 int pid;
    sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid);
    return pid;
-} 
+}
 
 int ps(process_info* arr, unsigned int max_size) {//syscall 19
    unsigned int size;
@@ -73,7 +73,9 @@ int ps(process_info* arr, unsigned int max_size) {//syscall 19
    return size;
 }
 
-//loop = 20
+void _yield(){//syscall 20
+   sys_call(20,0,0,0,0);
+}
 
 int kill(pid_t pid){//syscall 21
    return sys_call(21,pid,0,0,0);
@@ -87,27 +89,26 @@ int block(pid_t pid, unsigned int new_status){//syscall 23
    return sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
 }
 
-sem_id s_init(char* name,unsigned int init_size){//syscall 24
-   return(sem_id)sys_call(24,0,(void*)name,(uint64_t)init_size,0);
+void s_init(){//syscall 24
+   sys_call(24,0,0,0,0);
 }
 
-sem_id s_open(char* name){// syscall 25
-   return(sem_id)sys_call(24,1,(void*)name,0,0);
+uint64_t s_open(char* name,int value){// syscall 25
+   return sys_call(24,1,(uint64_t)name,(uint64_t)value,0);
 }
 
-int s_wait(sem_id s_id){//syscall 26
-   return(int) sys_call(24,2,(uint64_t)s_id,0,0);
+uint64_t s_wait(uint64_t s_id){//syscall 26
+   return sys_call(24,2,s_id,0,0);
 }
-int s_post(sem_id s_id){
-   return(int) sys_call(24,3,(uint64_t)s_id,0,0);
+uint64_t s_post(uint64_t s_id){
+   return sys_call(24,3,s_id,0,0);
 }
-int s_close(sem_id s_id){
-   return(int) sys_call(24,4,(uint64_t)s_id,0,0);
+uint64_t s_close(uint64_t s_id){
+   return sys_call(24,4,s_id,0,0);
 }
-int s_getValue(sem_id s_id,int* value_pointer){
-   return(int) sys_call(24,5,(uint64_t)s_id,(void*) value_pointer,0);
+void list_sem(){
+   sys_call(24,5,0,0,0);
 }
-
 int getProcessStatus(int pid, unsigned int * status) {//syscall 25
    return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
 }
@@ -120,10 +121,20 @@ void wait(unsigned int millis) {
    sys_call(27,(void *)(uint64_t) millis, 0, 0, 0);
 }
 
-
-void argTest(int a1, int a2, int a3){
-   sys_call(8,420,0,0,0);
-   sys_call(99,a1,a2,a3,0);
+uint64_t p_open(char* name){
+   return(uint64_t)sys_call(28,(uint64_t)name,0,0,0);
+}
+uint64_t p_close(uint64_t pipeIndex){
+   return(uint64_t)sys_call(29,(uint64_t)pipeIndex,0,0,0);
+}
+uint64_t p_read(uint64_t pipeIndex){
+   return(uint64_t)sys_call(30,(uint64_t)pipeIndex,0,0,0);
+}
+uint64_t p_write(uint64_t pipeIndex, char* string){
+   return(uint64_t)sys_call(31,(uint64_t)pipeIndex,(uint64_t)string,0,0);
+}
+uint64_t p_list(){
+   return(uint64_t)sys_call(32,0,0,0,0);
 }
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso
@@ -194,27 +205,27 @@ int strToInt(char* str)
 {
    // Initialize result
     int res = 0;
- 
+
     // Initialize sign as positive
     int sign = 1;
- 
+
     // Initialize index of first digit
     int i = 0;
- 
+
     // If number is negative,
     // then update sign
     if (str[0] == '-') {
         sign = -1;
- 
+
         // Also update index of first digit
         i++;
     }
- 
+
     // Iterate through all digits
     // and update the result
     for (; str[i] != '\0'; ++i)
         res = res * 10 + str[i] - '0';
- 
+
     // Return result with sign
     return sign * res;
 }
