@@ -8,6 +8,7 @@ GLOBAL irq1Handler
 GLOBAL get_key
 EXTERN int80Dispatcher
 GLOBAL int_80
+GLOBAL int_81
 GLOBAL Halt
 GLOBAL exception0
 GLOBAL exception6
@@ -161,7 +162,7 @@ int_80:
 
 	iretq
 
-int81:
+int_81:
 	pushState
 
 	mov rdi, rsp ; rsp

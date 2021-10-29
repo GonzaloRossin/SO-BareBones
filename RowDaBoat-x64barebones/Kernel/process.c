@@ -7,6 +7,10 @@ static void * getNextProcess(void * rsp);
 static void updateProcess(process_t * process);
 static void enqueueProcess(process_t * process);
 static void initQuantums(void);
+static void createHalter(void);
+
+process_t halter;
+uint64_t halterStack[(STATE_SIZE + REGS_SIZE) + HALTER_EXTRA_STACK_SPACE];
 
 static stackProcess stackModel = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0x8, 0x202, 0, 0};
 process_t processes[MAX_PROCESSES];
@@ -15,24 +19,26 @@ int actual_queue = 0;
 QUEUE_HD * act_queue = NULL; //queue with active processes
 QUEUE_HD * exp_queue = NULL; //queue with those processes that have expired their quantum or are new or priority changed
 unsigned quantum[MAX_PRIORITY - MIN_PRIORITY + 1];
-int quantum_started = 0;
+int initialized = 0;
 process_t* curr_process = NULL;
 unsigned int prior = 0;
-unsigned int processes_size = 0; //array size
-unsigned int processes_alive = 0; //without the killed ones
-unsigned int processes_ready = 0; //without the killed ones
-unsigned int processes_so_far = 0; // processes created, for the pid to be unique
+int processes_size = 0; //array size
+int processes_alive = 0; //without the killed ones
+int processes_ready = 0; //without the killed ones
+int processes_so_far = 0; // processes created, for the pid to be unique
+int started = 0;
 
 void printProcess(process_t process);
 
 void * scheduler(void * rsp) {
 
-    if(!quantum_started) {
+    if(!initialized) {
         initQuantums();
-        quantum_started = 1;
+        createHalter();
+        initialized = 1;
     }
 
-    if(processes_ready > 0) {
+    if(curr_process != NULL || processes_ready > 0) {
 
         act_queue = queues[actual_queue];
         exp_queue = queues[1 - actual_queue];
@@ -59,12 +65,32 @@ void * scheduler(void * rsp) {
         }
         return getNextProcess(rsp);
     } else {
-
-        if ( ((uint64_t *) rsp)[16] >= 0x400000 ) // If RIP >= sampleCodeModuleAddress => Kernel is not running
-            _halt_and_wait();
-
-        return rsp;
+         if (started)
+            return halter.rsp;
+        else
+            return rsp;
     }
+}
+
+static void createHalter(void) {
+    Strncpy("Halter", halter.name, 0, 6);
+    halter.pid = 0;
+    halter.ppid = 0; 
+    halter.foreground = 0;
+    halter.priority = MAX_PRIORITY;
+    halter.status = READY;
+    halter.next_in_queue = NULL;
+    halter.aging = 0; 
+    halter.given_time = quantum[BASE_PRIORITY];
+    halter.stack = halterStack;
+    halter.rbp = (void *)(((uint64_t) halter.stack + sizeof(halterStack)) & -8);
+    halter.rsp = (void *) (halter.rbp - (STATE_SIZE + REGS_SIZE) * sizeof(uint64_t));
+
+    stackModel.rbp = (uint64_t) halter.rbp;
+    stackModel.rsp = (uint64_t) halter.rbp;
+    stackModel.rip = (uint64_t) _halter;
+    
+    memcpy(halter.rsp, (void *) &stackModel, sizeof(stackModel));
 }
 
 static void initQuantums() {
@@ -128,6 +154,10 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid) { // in
     //falta: back or foreground, *funcion con argc y argv, 
     //draw_string("Creando proceso", 16);
     int i = 0;
+
+    if (!started)
+        started = 1;
+
     while(i < processes_size && processes[i].status != KILLED)
         i++;
 

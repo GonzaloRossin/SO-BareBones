@@ -11,6 +11,7 @@ GLOBAL spin_lock
 GLOBAL spin_unlock
 EXTERN exit
 GLOBAL _int81
+GLOBAL _halter
 
 
 
@@ -127,6 +128,13 @@ _halt_and_wait:
     sti
 
     hlt
+    ret
+
+_halter:
+_beg:
+    sti
+    hlt
+    jmp _beg
     ret
 
 _int81:
