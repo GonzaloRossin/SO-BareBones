@@ -1,36 +1,42 @@
 #ifndef SEM_H
 #define SEM_H
-
-#define MAX_SEMAPHORES 10
-#define MAX_PROCESSES_PER_SEMAPHORE 10
-
 #include "../include/lib.h"
+#include "defs.h"
+#include "../memory/sbrk.h"
 #include "../include/process.h"
+#define MAX_NAME 15
+#define MAX_SEM 30
+#define TRUE 1
+#define FALSE 0
 
-typedef unsigned int sem_id;
+typedef struct pNode
+{
+    struct pNode *next;
+    uint64_t pid;
+} processNode;
 
-typedef struct sem_queue {
-   int pid;
-   struct sem_queue * next;
-} sem_queue;
-
-typedef struct sem_t {
-    char * name;
-    int lock; 
-    unsigned int value;
-    sem_queue processes[MAX_PROCESSES_PER_SEMAPHORE];
-    unsigned int processes_amount; //processes not closed 
-    unsigned int processes_size; //all processes
-    unsigned int processes_waiting; 
-    sem_queue * first;
-    sem_queue * last;
+typedef struct
+{
+    char name[MAX_NAME];
+    processNode *firstProcess; // primer proceso esperando (waiting) en la fila
+    processNode *lastProcess;  // ultimo proceso esperando en la fila
+    uint64_t lock;
+    int value;
+    uint64_t size;     // cantidad de procesos que usan el sem
+    uint64_t sizeList; // cantidad de procesos bloqueados
 } sem_t;
 
-sem_id sem_open( char * name);
-sem_id sem_init_open( char * name, unsigned int init_val);
-int sem_wait(sem_id sem);
-int sem_post(sem_id sem);
-int sem_close(sem_id sem);
-int sem_getvalue(sem_id sem, int * sval);
+extern uint64_t _xchg(uint64_t *lock, int value);
+extern void forceTimer();
+void initSems();
+uint64_t semOpen(char *name, uint64_t initValue);
+uint64_t semClose(char *name);
+// Locks a semaphore. If successful (the lock was acquired), sem_wait() and sem_trywait() will return 0.  Otherwise, -1 is returned and errno is set, and the state of the semaphore is unchanged.
+uint64_t semWait(uint64_t semIndex);
+// the value of the semaphore is incremented, and all threads which are waiting on the semaphore are awakened. If successful, sem_post() will return 0.  Otherwise, -1 is returned.
+uint64_t semPost(uint64_t semIndex);
+void listSem();
+char *getSemName(uint64_t semIndex);
+void printProcessesSem(uint64_t semIndex);
 
 #endif

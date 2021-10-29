@@ -225,16 +225,19 @@ int kill(int pid) {
     return changeStatus(pid, KILLED);
 }
 
-int getPid(int * pid) {
+void getPid(int * pid) {
     *pid = curr_process->pid;
-    return 0;
 }
 
 int getProcessesAlive(unsigned int * amount) {
     *amount =  processes_alive;
     return 0;
 }
-
+void yield()
+{
+    curr_process->given_time = 0;
+    forceTimer();
+}
 int changePriority(int pid, unsigned int new_priority) {
     if (new_priority >= MIN_PRIORITY && new_priority <= MAX_PRIORITY) {
         for (int i = 0; i < processes_size; i++) {

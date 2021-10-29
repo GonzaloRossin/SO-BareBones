@@ -67,9 +67,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 19:
 		ps((process_info *)rsi, (unsigned int) rdx, (unsigned int*) rcx);
 		break;
-	// case 20:
-	// 	//loop();
-	// 	break;
+	case 20:
+		pYield();
+	 	break;
 	case 21:
 		process_kill((int)rsi);
 		break;
@@ -155,7 +155,7 @@ uint8_t sys_get_clock(int rsi){
 		case 1:
 			return readMinutes();
 		case 2:
-			return readHours();	
+			return readHours();
 	}
 
 	return 0;
@@ -226,6 +226,9 @@ int ps(process_info *rsi, unsigned int rdx, unsigned int* rcx) {
 	return getProcessesInfo((process_info *) rsi, (unsigned int) rdx, (unsigned int *) rcx);
 }
 // //SYS_CALL 20
+void pYield(){
+	yield();
+}
 // //SYS_CALL 21
 void process_kill(int pid){
 	kill(pid);
@@ -243,25 +246,25 @@ uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 	switch (rsi)
 	{
 	case 0:
-		return (uint64_t) sem_init_open((char*) rdx,(unsigned int) rcx);
+		initSems();
 		break;
 	case 1:
-		return (uint64_t) sem_open((char*) rdx);
+		return semOpen((char*) rdx,rcx);
 	break;
 	case 2:
-		return (uint64_t)sem_wait((sem_id)rdx);
+		return semWait(rdx);
 	break;
 	case 3:
-		return (uint64_t)sem_post((sem_id)rdx);
+		return semPost(rdx);
 	break;
 	case 4:
-		return (uint64_t)sem_close((sem_id)rdx);
+		return semClose((char*)rdx);
 	break;
 	case 5:
-		return (uint64_t)sem_getvalue((sem_id)rdx,(int*)rcx);
+		listSem();
 	break;
 	}
-	return -1;
+	return -2;
 }
 //SYS_CALL 25
 int get_process_status(int pid, unsigned int *status) {
