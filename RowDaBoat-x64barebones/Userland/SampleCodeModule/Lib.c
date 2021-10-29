@@ -105,7 +105,7 @@ int s_close(sem_id s_id){
    return(int) sys_call(24,4,(uint64_t)s_id,0,0);
 }
 int s_getValue(sem_id s_id,int* value_pointer){
-   return(int) sys_call(24,5,(uint64_t)s_id,(void*) value_pointer,0);
+   return(int) sys_call(24,5,(uint64_t)s_id,(uint64_t) value_pointer,0);
 }
 
 int getProcessStatus(int pid, unsigned int * status) {//syscall 25
@@ -118,12 +118,6 @@ int getPid(void) {
 }
 void wait(unsigned int millis) {
    sys_call(27,(void *)(uint64_t) millis, 0, 0, 0);
-}
-
-
-void argTest(int a1, int a2, int a3){
-   sys_call(8,420,0,0,0);
-   sys_call(99,a1,a2,a3,0);
 }
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso

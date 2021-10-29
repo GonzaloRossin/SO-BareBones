@@ -10,7 +10,8 @@ static unsigned int sem_amount = 0;
 
 sem_id sem_open( char * name) {
     unsigned int i = 0;
-    int pid = getPid();
+    int pid;
+    getPid(&pid);
     while (i < sem_size && semaphores[i].name[0] != '\0') {
         if (Strcmp(semaphores[i].name, name) == 0) {
             unsigned int j = 0;
@@ -62,7 +63,8 @@ int sem_wait(sem_id sem){
     if (sem < 0 || sem >= sem_size || semaphores[sem].name[0] == '\0')
         return -1; // Semaphore does not exist    
 
-    int pid = getPid();
+    int pid; 
+    getPid(&pid);
     int idx = getIndexOnSem(pid, &(semaphores[sem]));
     if (idx < 0)
         return -1;
@@ -132,7 +134,8 @@ int sem_post(sem_id sem) {
 int sem_close(sem_id sem) { //remove a ps from semaphore
     if (sem < 0 || sem >= sem_size || semaphores[sem].name[0] == '\0')
         return -1; // Semaphore does not exist
-    int pid = getPid();
+    int pid;
+    getPid(&pid);
     unsigned int i = 0;
     while (i < semaphores[sem].processes_size) {
         if (semaphores[sem].processes[i].pid == pid) {
