@@ -91,24 +91,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 27:
 		_wait((unsigned int) rsi);
 	break;
-	// case 99:
-	// 	arg_test(rsi,rdx,rcx);
-	// 	break;
 	}
 	return 0;
 }
-//SYSCALL 99
-// void arg_test(int a1, int a2, int a3){
-// 	char* msg = "Argumentos: ";
-// 	draw_string(msg, 12);
-// 	sys_newline();
-// 	draw_decimal(a1);
-// 	sys_newline();
-// 	draw_decimal(a2);
-// 	sys_newline();
-// 	draw_decimal(a3);
-// 	sys_newline();
-// }
 //SYSCALL 0
 char sys_read (){
 	return getChar();

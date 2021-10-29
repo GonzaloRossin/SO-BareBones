@@ -52,5 +52,5 @@ void argTest(int a1, int a2, int a3);//syscall99 de testing, despues se puede bo
 int getProcessStatus(int pid, unsigned int * status);
 int getPid(void);
 void wait(unsigned int millis);
-
+void sleep(int seg);
 #endif

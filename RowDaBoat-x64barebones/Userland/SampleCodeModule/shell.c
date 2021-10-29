@@ -48,7 +48,7 @@ static void printMem(uint8_t* mem){
         }
         print_num(vec[i],1);
         print("  ");
-    } 
+    }
     newLine();
 }
 
@@ -68,7 +68,7 @@ static void testDivisionBy0Command()
 
 static int readNewInput()
 {
-    
+
     char chartoadd=read_input();
 
     //If there is nothing new or its not a valid character...
@@ -125,7 +125,12 @@ static void testIvalidOpCodeCommand()
 {
     __asm__("ud2");
 }
+void sleep(int seg){
+    int actual_time=get_seconds(),aux;
+    while(aux=get_seconds()-actual_time<seg){
 
+    }
+}
 static void draw_Main_Screen(){
     print("Welcome to arquiOS");
     newLine();
@@ -161,32 +166,39 @@ void get_mem_info(){
     print(aux.sys_name);
     newLine();
 }
- 
-int loopMain(int argc, char ** argv) { 
+
+int loopMain(int argc, char ** argv) {
     int pid = getPid();
-    
-    for (unsigned int i = 0; 1; i++) {  
+
+    for (unsigned int i = 0; 1; i++) {
         //sleep(argc);
         wait(argc * 1000);
         print("hola soy pid: "); print_num(pid, 0); newLine();
-    } 
+    }
     newLine();
     put_char('>');
-    return 0; 
-} 
+    return 0;
+}
 
-void loop(int a1) { 
-    main_func_t proc2 = {loopMain, a1, NULL}; 
-    int aux = exec(&proc2, "test Process", 0); 
-    print("Process created");
+void loop(int a1) {
+    main_func_t proc2 = {loopMain, a1, NULL};
+    int aux = exec(&proc2, "test Process", 0);
+    print("Process created ");
     print_num(aux, 0);
 }
 
 static void pKill(int pid){
     kill(pid);
-    print("process: ");
-    print_num(pid,0);
-    print(" killed");
+}
+static void test_sync1(){
+    test_sync();
+    newLine();
+    put_char('>');
+}
+static void test_sync2(){
+    test_no_sync();
+    newLine();
+    put_char('>');
 }
 
 static void blockProcess(int pid) {
@@ -196,16 +208,16 @@ static void blockProcess(int pid) {
         unsigned int status = 0;
         int ans = getProcessStatus(pid, &status);
 
-        if(ans == -1 || status == KILLED) //it is KILLED or does not exist 
-            print("Process not found\n"); 
-        
+        if(ans == -1 || status == KILLED) //it is KILLED or does not exist
+            print("Process not found\n");
+
         else if ( status == READY ) {
-            block(pid, BLOCKED); 
+            block(pid, BLOCKED);
             print("process "); print_num(pid, 0); print(" blocked\n");
-        }             
+        }
         else if( status == BLOCKED) {
             block(pid, READY);
-            print("process "); print_num(pid, 0); print(" ready\n"); 
+            print("process "); print_num(pid, 0); print(" ready\n");
         }
     }
 }
@@ -236,7 +248,7 @@ void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
     strncpy(desc, aux.desc,0, strlen(desc));
     aux.cmdptr = cmdptr;
     aux.arg_q = arg_q;
-    
+
     commandList[commandsSize++] = aux;
 }
 
@@ -253,10 +265,11 @@ void fillCommandList()
     fillCommand("ps", ": Imprime el estado de los procesos vivos", &printProcesses, 0);
     fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
-    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
-    fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
+    fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &block, 1);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
+    fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
+    fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
+    fillCommand("loop",": testea la creacion de un proceso", &printLoop, 0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -284,18 +297,18 @@ int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX
             args[params_read++][j] = '\0';
 			j=0;
 		}
-		i++;	
+		i++;
     }
 
 	if(potentialCommand[i] == '\0'){ //si corto porque se acabo el string --> me quedo un param mas
 		args[params_read++][j] = '\0';
-    } 
-
-	if(params_read > MAX_ARGS){
-		return -1; 
     }
 
-	return params_read; 
+	if(params_read > MAX_ARGS){
+		return -1;
+    }
+
+	return params_read;
 }
 static void CommandHandler()
 {
@@ -324,7 +337,7 @@ static void CommandHandler()
                 print(", Argumentos esperados: ");
                 print_num(commandList[i].arg_q,0);
                 newLine();
-                return; 
+                return;
             }
             if(commandList[i].arg_q == 0){
                 (commandList[i].cmdptr)(0,0,0);
@@ -376,6 +389,7 @@ void shell()
             CommandHandler();
             put_char('>');
             cleanBuffer();
+            sleep(1);
         }
     }
 }

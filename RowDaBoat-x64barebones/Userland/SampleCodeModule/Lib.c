@@ -65,7 +65,7 @@ pid_t exec(main_func_t *func, char* name, int rcx){ //syscall 18
 int pid;
    sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid);
    return pid;
-} 
+}
 
 int ps(process_info* arr, unsigned int max_size) {//syscall 19
    unsigned int size;
@@ -88,11 +88,11 @@ void block(pid_t pid, unsigned int new_status){//syscall 23
 }
 
 sem_id s_init(char* name,unsigned int init_size){//syscall 24
-   return(sem_id)sys_call(24,0,(void*)name,(uint64_t)init_size,0);
+   return(sem_id)sys_call(24,0,(uint64_t)name,(uint64_t)init_size,0);
 }
 
 sem_id s_open(char* name){// syscall 25
-   return(sem_id)sys_call(24,1,(void*)name,0,0);
+   return(sem_id)sys_call(24,1,(uint64_t)name,0,0);
 }
 
 int s_wait(sem_id s_id){//syscall 26
@@ -194,27 +194,27 @@ int strToInt(char* str)
 {
    // Initialize result
     int res = 0;
- 
+
     // Initialize sign as positive
     int sign = 1;
- 
+
     // Initialize index of first digit
     int i = 0;
- 
+
     // If number is negative,
     // then update sign
     if (str[0] == '-') {
         sign = -1;
- 
+
         // Also update index of first digit
         i++;
     }
- 
+
     // Iterate through all digits
     // and update the result
     for (; str[i] != '\0'; ++i)
         res = res * 10 + str[i] - '0';
- 
+
     // Return result with sign
     return sign * res;
 }
