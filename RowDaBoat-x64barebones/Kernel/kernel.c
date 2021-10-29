@@ -7,6 +7,7 @@
 #include "include/font.h"
 #include <interrupt_routines.h>
 #include "include/process.h"
+#include "sem/sem.h"
 
 #ifdef BUDDY_H
 #include "../memory/buddy.h"
@@ -60,6 +61,7 @@ int main()
 {	
 	loadIDT();
 	//Entering sampleCodeModuleAddress in userland
+	initSems();
 	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
 	
 	//start shell process, createProcess de process.c con datos hardcodeados

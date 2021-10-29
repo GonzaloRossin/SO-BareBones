@@ -59,52 +59,49 @@ void test_mm(){
 
 #include <stdint.h>
 
-#define N 100
 
-uint64_t my_create_process(int (f)(int, char**), char * name){
+static uint64_t my_create_process(int (f)(int, char**), char * name){
   uint64_t pid = 0; 
   main_func_t f_ps = {f, 0, NULL};
-  int aux = exec( &f_ps, name,1); //CHECKEAR ERROR!!!!!
+  int aux = exec( &f_ps, name, 0); //CHECKEAR ERROR!!!!!
   if(aux < 0) {
     print("ERROR: createProcess!\n");
   }
-  return aux;
+  return pid;
 }
 
-uint64_t my_sem_open(char *sem_id, uint64_t initialValue){
-  int aux=(int)s_open(sem_id,initialValue);
-  if(aux<0)
-    print("sem_open_error");
-  return aux;
+static uint64_t my_sem_open(char *name, uint64_t initialValue){
+  return s_open(name, initialValue);
 }
 
-uint64_t my_sem_wait(uint64_t sem_id){
-  int aux;
-  if((aux=(int)s_wait(sem_id))<0)
-    print("sem_wait_error");
-  return aux;
+static uint64_t my_sem_wait(uint64_t sem_id){
+  int ret = (int)s_wait(sem_id);
+  if (ret < 0)
+    print("Se rompio todo el wait amigo\n");
+  return ret;
 }
 
-uint64_t my_sem_post(uint64_t sem_id){
-  int aux;
-  if((aux=(int)s_post(sem_id))<0)
-    print("sem_post_error");
-  return s_post(sem_id);
+static uint64_t my_sem_post(uint64_t sem_id){
+  int ret =(int) s_post(sem_id);
+  if (ret < 0)
+    print("Se rompio todo el post amigo\n");
+  return ret;  
+} 
+
+static uint64_t my_sem_close(sem_id sem_id){
+  int ret = (int)s_close(sem_id);
+  if (ret < 0)
+    print("Se rompio todo el close amigo\n");
+  return ret;  
 }
 
-uint64_t my_sem_close(uint64_t sem_id){
-  int aux;
-  if((aux=(int)my_sem_close(sem_id))<0)
-    print("sem_close_error");
-  return s_close(sem_id);
-}
-
-#define TOTAL_PAIR_PROCESSES N
+#define N 1000000
 #define SEM_NAME "sem"
+#define TOTAL_PAIR_PROCESSES 2
 
-int64_t global;  //shared memory
+uint64_t global;  //shared memory
 
-void slowInc(int64_t *p, int64_t inc){
+static void slowInc(uint64_t *p, int inc){
   uint64_t aux = *p;
   aux += inc;
   for(int i = 0; i < 100 ; i++){}
@@ -113,7 +110,7 @@ void slowInc(int64_t *p, int64_t inc){
 
 static int my_process_inc(int argc, char ** argv){
   uint64_t i;
-  sem_id sem;
+  uint64_t sem;
 
   if ((sem = my_sem_open(SEM_NAME, 1)) < 0){
     print("ERROR OPENING SEM\n");
@@ -148,26 +145,23 @@ static int my_process_dec(int argc, char ** argv){
     my_sem_wait(sem);
     slowInc(&global, -1);
     my_sem_post(sem);
-    print("Variable is: ");
-    print_num(global,0);
-    newLine();
   }
 
   my_sem_close(sem);
 
   print("SEM Final value: ");
-  print_num( global,0);
+  print_num(global,0);
+  newLine();
 
   return 0;
 }
 
-void test_sync(){
+static void test_sync(){
   uint64_t i;
   
   global = 0;
 
   print("CREATING PROCESSES...\n");
-  s_init();
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
     my_create_process(my_process_inc, "my_process_inc");
@@ -183,7 +177,7 @@ static int my_process_inc_no_sem(int argc, char ** argv){
     slowInc(&global, 1);
   }
 
-  print("NO Final value: ");
+  print("SEM Final value: ");
   print_num(global,0);
   newLine();
 
@@ -196,23 +190,34 @@ static int my_process_dec_no_sem(int argc, char ** argv){
     slowInc(&global, -1);
   }
 
-  print("NO Final value:");
+  print("SEM Final value: ");
   print_num(global,0);
   newLine();
 
   return 0;
 }
 
-void test_no_sync(){
+static void test_no_sync(){
   uint64_t i;
 
   global = 0;
 
-  print("CREATING PROCESSES...(WITHOUT SEM)\n");
+  print("CREATING PROCESSES...\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
     my_create_process(my_process_inc_no_sem, "my_process_inc_no_sem");
     my_create_process(my_process_dec_no_sem, "my_process_dec_no_sem");
   }
+
+  // The last one should not print 0
 }
 
+int main_test_sync(int argc, char ** argv){
+  test_sync();
+  return 0;
+}
+
+int main_test_no_sync(int argc, char **argv){
+  test_no_sync();
+  return 0;
+}

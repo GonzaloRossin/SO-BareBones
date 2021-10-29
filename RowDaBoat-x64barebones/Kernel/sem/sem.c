@@ -46,7 +46,7 @@ static int createSem(char *name, uint64_t initValue)
     if ((pos = findAvailableSpace()) != -1)
     {
         // Inicializamos la estructura
-        memcpy(semSpaces[pos].sem.name, name, Strlen(name));
+        memcpy(semSpaces[pos].sem.name, name, Strlen(name)+1);
         semSpaces[pos].sem.value = initValue;
         semSpaces[pos].sem.lock = 0; // Inicialmente no esta lockeado.
         semSpaces[pos].sem.firstProcess = NULL;
@@ -113,7 +113,7 @@ uint64_t semWait(uint64_t semIndex)
     else
     {
         // Si el valor es 0 entonces debo poner al proceso a dormir (encolarlo)
-        uint64_t pid;
+        int pid;
         getPid(&pid);
         if (enqeueProcess(pid, sem) == -1)
         {
@@ -210,7 +210,7 @@ uint64_t dequeueProcess(sem_t *sem)
     return pid;
 }
 
-void sem()
+void listSem()
 {
     printf("SEM'S NAME\t\tSTATE\t\tBLOCKED PROCESSES\n");
     for (int i = 0; i < MAX_SEM; i++)

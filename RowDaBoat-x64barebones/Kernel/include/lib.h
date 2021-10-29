@@ -17,7 +17,6 @@ void saveRegs();
 
 uint64_t _xchg(uint64_t *lock, int value);
 
-void forceTimer();
 
 void getRegs(uint64_t * v);
 
@@ -53,6 +52,5 @@ void _sti(void);
 
 void _cli(void);
 
-void spin_lock(char * lock);
 
 #endif

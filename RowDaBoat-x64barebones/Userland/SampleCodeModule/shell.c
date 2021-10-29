@@ -193,14 +193,19 @@ static void pKill(int pid){
     print(" killed");
 }
 static void test_sync1(){
-    test_sync();
+    main_func_t aux = {main_test_sync, 0, NULL}; 
+    int pid = exec(&aux, "test sync", 0);
     newLine();
     put_char('>');
 }
 static void test_sync2(){
-    test_no_sync();
+    main_func_t aux = {main_test_no_sync, 0, NULL}; 
+    int pid = exec(&aux, "test no sync", 0);
     newLine();
     put_char('>');
+}
+static void list_semaphores(){
+    list_sem();
 }
 
 void blockProcess(int pid) {
@@ -229,16 +234,16 @@ void printProcesses(void) {
     int amount = ps(info, 50);
     print("Processes:\n");
     for (unsigned int i = 0; i < amount; i++) {
-        print("Process number "); print_num(i, 0); print(" ---");
-        print("Process Name: "); print(info[i].name); print(" ---");
-        print("PID: "); print_num(info[i].pid, 0); print(" ---");
-        print("PPID: "); print_num(info[i].ppid, 0); print(" ---");
+        print("Process number "); print_num(i, 0); print("\t");
+        print("Process Name: "); print(info[i].name); print("\t");
+        print("PID: "); print_num(info[i].pid, 0); print(" \t");
+        print("PPID: "); print_num(info[i].ppid, 0); print(" \t");
         print("Priority: "); print_num(info[i].priority, 0); print("\n");
-        print("RBP: "); print_num(info[i].rbp, 0); print(" ---");
-        print("RSP: "); print_num(info[i].rsp, 0); print(" ---");
-        print("State: "); print_num(info[i].status, 0); print(" ---");
-        print("Foreground: "); print_num(info[i].foreground, 0); print(" ---");
-        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks ---");
+        print("RBP: "); print_num(info[i].rbp, 0); print(" \t");
+        print("RSP: "); print_num(info[i].rsp, 0); print(" \t");
+        print("State: "); print_num(info[i].status, 0); print(" \t");
+        print("Foreground: "); print_num(info[i].foreground, 0); print(" \t");
+        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks \t");
         print("Quantums: "); print_num(info[i].aging, 0); print("\n");
    }
 }
@@ -272,6 +277,7 @@ void fillCommandList()
     fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
+    fillCommand("list_sem","enlista los semaforos abiertos en ese momento",&list_semaphores,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){

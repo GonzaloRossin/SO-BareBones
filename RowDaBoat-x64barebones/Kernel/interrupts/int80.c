@@ -67,9 +67,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 19:
 		ps((process_info *)rsi, (unsigned int) rdx, (unsigned int*) rcx);
 		break;
-	// case 20:
-	// 	//loop();
-	// 	break;
+	case 20:
+		pYield();
+	 	break;
 	case 21:
 		process_kill((int)rsi);
 		break;
@@ -214,6 +214,9 @@ int ps(process_info *rsi, unsigned int rdx, unsigned int* rcx) {
 	return getProcessesInfo((process_info *) rsi, (unsigned int) rdx, (unsigned int *) rcx);
 }
 // //SYS_CALL 20
+void pYield(){
+	yield();
+}
 // //SYS_CALL 21
 void process_kill(int pid){
 	kill(pid);
@@ -246,10 +249,10 @@ uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 		return semClose((char*)rdx);
 	break;
 	case 5:
-		//return (uint64_t)sem_getvalue((sem_id)rdx,(int*)rcx);
+		listSem();
 	break;
 	}
-	return -1;
+	return -2;
 }
 //SYS_CALL 25
 int get_process_status(int pid, unsigned int *status) {

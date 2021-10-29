@@ -15,8 +15,8 @@
 #define MIN_PRIORITY 0
 #define MAX_PRIORITY 6
 #define BASE_PRIORITY ((MAX_PRIORITY - MIN_PRIORITY)/2)
-#define MIN_TICKS 10
-#define MAX_TICKS 30
+#define MIN_TICKS 5
+#define MAX_TICKS 10
 
 #define PRIOR_SLOPE ((MAX_TICKS - MIN_TICKS)/(MIN_PRIORITY - MAX_PRIORITY)) //To calculate the quantum of each queue (quantum(priorirty) = m*p + b)
 #define PRIOR_INDVAR (MAX_TICKS - MIN_PRIORITY * PRIOR_SLOPE)
@@ -102,7 +102,8 @@ int changeStatus(int pid, unsigned int new_status);
 int getProcessStatus(int pid, unsigned int * status);
 int changeForegroundStatus(int pid, unsigned int status);
 int isCurrentForeground(void);
-
+extern void forceTimer();
+void yield();
 void PS();
 
 #endif

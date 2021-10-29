@@ -73,7 +73,9 @@ int ps(process_info* arr, unsigned int max_size) {//syscall 19
    return size;
 }
 
-//loop = 20
+void _yield(){//syscall 20
+   sys_call(20,0,0,0,0);
+}
 
 void kill(pid_t pid){//syscall 21
    sys_call(21,pid,0,0,0);
@@ -104,7 +106,9 @@ uint64_t s_post(uint64_t s_id){
 uint64_t s_close(uint64_t s_id){
    return sys_call(24,4,s_id,0,0);
 }
-
+void list_sem(){
+   sys_call(24,5,0,0,0);
+}
 int getProcessStatus(int pid, unsigned int * status) {//syscall 25
    return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
 }
