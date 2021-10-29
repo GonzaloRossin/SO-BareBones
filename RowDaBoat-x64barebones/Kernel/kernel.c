@@ -8,7 +8,7 @@
 #include <interrupt_routines.h>
 #include "include/process.h"
 #include "sem/sem.h"
-#include "pipes/pipe.h"
+//#include "pipes/pipe.h"
 
 #ifdef BUDDY_H
 #include "../memory/buddy.h"
