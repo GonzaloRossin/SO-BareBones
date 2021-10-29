@@ -49,5 +49,6 @@ uint64_t s_post(uint64_t s_id);
 uint64_t s_close(uint64_t s_id);
 int getProcessStatus(int pid, unsigned int * status);
 int getPid(void);
+void wait(unsigned int millis);
 
 #endif

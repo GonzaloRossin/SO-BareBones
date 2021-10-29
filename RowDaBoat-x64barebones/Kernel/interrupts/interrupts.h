@@ -13,6 +13,7 @@ void irq1Handler();
 uint8_t get_key();
 
 void int_80();
+int int_81(void);
 
 
 

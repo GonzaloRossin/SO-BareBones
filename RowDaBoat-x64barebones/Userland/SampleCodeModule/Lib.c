@@ -113,6 +113,9 @@ int getPid(void) {
    sys_call(26, (void* )&pid, 0, 0, 0);
    return pid;
 }
+void wait(unsigned int millis) {
+   sys_call(27,(void *)(uint64_t) millis, 0, 0, 0);
+}
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso
    int aux[2]={0};

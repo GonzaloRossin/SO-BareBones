@@ -88,6 +88,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 26:
 		get_pid((int*) rsi);
 		break;
+	case 27:
+		_wait((unsigned int) rsi);
+	break;
 	}
 	return 0;
 }
@@ -257,3 +260,7 @@ void get_pid(int* pid){
 	getPid((int *) pid);
 }
 
+//SYS_CALL 27
+void _wait(unsigned int millis) {
+	wait(millis);
+}
