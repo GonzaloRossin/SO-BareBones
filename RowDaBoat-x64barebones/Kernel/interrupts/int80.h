@@ -55,4 +55,5 @@ uint64_t pipe_open(char* name);//SYS_CALL 28
 uint64_t pipe_close(uint64_t pipeId);//SYS_CALL 29
 char read_pipe(uint64_t pipeId);//SYS_CALL 30
 uint64_t write_pipe(uint64_t pipeId, char* string);//SYS_CALL 31
+void list_pipes();//syscall 32
 #endif

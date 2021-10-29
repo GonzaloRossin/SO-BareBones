@@ -11,6 +11,7 @@
         "sbrk.h": "c",
         "buddy.h": "c",
         "mem_man.h": "c",
-        "pipe.h": "c"
+        "pipe.h": "c",
+        "shell.h": "c"
     }
 }

@@ -22,6 +22,12 @@ typedef struct
     int available;
 } space;
 
+typedef struct
+{
+    
+} pipes_info;
+
+
 
 uint64_t initPipes();
 uint64_t pipeOpen(char *name);

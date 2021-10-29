@@ -71,7 +71,7 @@ int main()
 	int pid;
 	pCreate(&aux, "SampleCodeModule", 1, &pid);
 
-	//initPipes();
+	initPipes();
 
 
 /*

@@ -103,6 +103,9 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 	case 31:
 		return write_pipe((uint64_t) rsi,(char*)rdx);
 		break;
+	case 32:
+		list_pipes();
+		break;
 	}
 	return 0;
 }
@@ -302,6 +305,6 @@ uint64_t write_pipe(uint64_t pipeId, char* string){
 }
 
 //SYS_CALL 32
-uint64_t write_pipe(uint64_t pipeId, char* string){
-	return writePipe((uint64_t) pipeId,(char*)string);
+void list_pipes(){
+	pipe();
 }

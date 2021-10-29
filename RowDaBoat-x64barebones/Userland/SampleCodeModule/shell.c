@@ -4,7 +4,7 @@
 
 #define BUFFER_SIZE 100
 #define MAX_COMDESC 100
-#define MAX_COMMANDS 20
+#define MAX_COMMANDS 30
 #define MAX_ARGS 3
 
 int SCREEN_FLAG=0;
@@ -14,7 +14,7 @@ typedef struct command
 {
     char command_name[MAX_COMDESC];
     char desc[MAX_COMDESC];
-    void (*cmdptr)(int, int, int);
+    void (*cmdptr)(char*,char*,char*);
     int arg_q;//argument qty for this command
 } command;
 
@@ -39,7 +39,9 @@ static void inforeg(){
     }
 }
 
-static void printMem(uint8_t* mem){
+static void printMem(char* mem_char){
+    int mem_int = strToInt(mem_char);
+    uint8_t* mem = (uint8_t*)mem_int;
     uint8_t vec[32] = {0};
     get_Memory(mem, vec);
     for(int i=0;i<32;i++){
@@ -179,19 +181,28 @@ int loopMain(int argc, char ** argv) {
     return 0;
 }
 
-void loop(int a1) {
+void loop(char* a1_char) {
+    int a1 = strToInt(a1_char);
     main_func_t proc2 = {loopMain, a1, NULL};
     int aux = exec(&proc2, "test Process", 0);
     print("Process created ");
     print_num(aux, 0);
 }
 
-static void pKill(int pid){
+static void pKill(char* pid_char){
+    int pid = strToInt(pid_char);
     kill(pid);
     print("process: ");
     print_num(pid,0);
     print(" killed");
 }
+static void pNice(char* pid_char, char* priority_char){
+    int pid = strToInt(pid_char);
+    int priority = strToInt(priority_char);
+    nice((pid_t)pid,(unsigned int)priority);
+}
+
+
 static void test_sync1(){
     main_func_t aux = {main_test_sync, 0, NULL};
     int pid = exec(&aux, "test sync", 0);
@@ -212,7 +223,49 @@ static void list_pipes(){
     p_list();
 }
 
-void blockProcess(int pid) {
+void cat(char* string)
+{
+    int i = 0;
+    while(string[i] != 0){
+        put_char(string[i++]);
+    }
+}
+
+void wc(char* input)
+{
+    int lines = 0;
+    int i=0;
+    while(input[i] != 0){
+        if (input[i] == '\n')
+            lines++;
+        i++;
+    }
+    print("Amount of lines: ");
+    print_num(lines,0);
+    print("\n");
+}
+
+int isVowel(char c){
+    return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' ||
+            c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U')
+               ? 1 : 0;
+}
+
+void filter(char* string)
+{
+
+    int i = 0;
+    while(string[i] != 0){
+        if(!isVowel(string[i])){
+            put_char(string[i]);
+        }
+        i++;
+    }
+    return;
+}
+
+void blockProcess(char* pid_char) {
+    int pid = strToInt(pid_char);
     if(pid == 1){
          print("Soy la shell hermano");
     } else {
@@ -275,7 +328,7 @@ void fillCommandList()
     fillCommand("test_mem", ": Testeo de memoria", &test_mm, 0);
     fillCommand("ps", ": Imprime el estado de los procesos vivos", &printProcesses, 0);
     fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
-    fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
+    fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &pNice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
     fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
@@ -283,6 +336,9 @@ void fillCommandList()
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
+    fillCommand("cat",": Imprime el input",&cat,1);
+    fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,1);
+    fillCommand("filter",": Filtra las vocales del input",&filter,1);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -357,15 +413,15 @@ static void CommandHandler()
                 newLine();
                 return;
             } else if(commandList[i].arg_q == 1){
-                (commandList[i].cmdptr)(strToInt(args[0]),0,0);
+                (commandList[i].cmdptr)(args[0],0,0);
                 newLine();
                 return;
             } else if(commandList[i].arg_q == 2){
-                (commandList[i].cmdptr)(strToInt(args[0]),strToInt(args[1]),0);
+                (commandList[i].cmdptr)(args[0],args[1],0);
                 newLine();
                 return;
             } else if(commandList[i].arg_q == 3){
-               (commandList[i].cmdptr)(strToInt(args[0]),strToInt(args[1]), strToInt(args[2]));
+               (commandList[i].cmdptr)(args[0],args[1], args[2]);
                 newLine();
                 print("done");
                 newLine();

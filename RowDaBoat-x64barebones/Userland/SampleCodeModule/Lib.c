@@ -82,7 +82,7 @@ void kill(pid_t pid){//syscall 21
 }
 
 void nice(pid_t pid, unsigned int priority){//syscall 22
-   sys_call(22,pid,priority,0,0);
+   sys_call(22, pid, priority, 0, 0);
 }
 
 void block(pid_t pid, unsigned int new_status){//syscall 23
@@ -229,6 +229,8 @@ int strToInt(char* str)
     // Return result with sign
     return sign * res;
 }
+
+
 int abs(int i){
     return i >= 0 ? i : -i;
 }
