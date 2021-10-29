@@ -125,7 +125,6 @@ static void testIvalidOpCodeCommand()
 {
     __asm__("ud2");
 }
-
 static void draw_Main_Screen(){
     print("Welcome to arquiOS");
     newLine();
@@ -139,7 +138,12 @@ static void clean(){
     clearScreen();
     draw_Main_Screen();
 }
+void sleep(int seg) {
+    int actual_time=get_seconds(),aux;
+    while(aux=get_seconds()-actual_time<seg){
 
+    }
+}
 void get_mem_info(){
     mm_stat aux=Mmem();
     print("total memory: ");
@@ -178,7 +182,7 @@ int loopMain(int argc, char ** argv) {
 void loop(int a1) { 
     main_func_t proc2 = {loopMain, a1, NULL}; 
     int aux = exec(&proc2, "test Process", 0); 
-    print("Process created");
+    print("Process created ");
     print_num(aux, 0);
 }
 
@@ -188,8 +192,23 @@ static void pKill(int pid){
     print_num(pid,0);
     print(" killed");
 }
+static void test_sync1(){
+    main_func_t aux = {main_test_sync, 0, NULL}; 
+    int pid = exec(&aux, "test sync", 0);
+    newLine();
+    put_char('>');
+}
+static void test_sync2(){
+    main_func_t aux = {main_test_no_sync, 0, NULL}; 
+    int pid = exec(&aux, "test no sync", 0);
+    newLine();
+    put_char('>');
+}
+static void list_semaphores(){
+    list_sem();
+}
 
-static void blockProcess(int pid) {
+void blockProcess(int pid) {
     if(pid == 1){
          print("Soy la shell hermano");
     } else {
@@ -215,16 +234,16 @@ void printProcesses(void) {
     int amount = ps(info, 50);
     print("Processes:\n");
     for (unsigned int i = 0; i < amount; i++) {
-        print("Process number "); print_num(i, 0); print(" ---");
-        print("Process Name: "); print(info[i].name); print(" ---");
-        print("PID: "); print_num(info[i].pid, 0); print(" ---");
-        print("PPID: "); print_num(info[i].ppid, 0); print(" ---");
+        print("Process number "); print_num(i, 0); print("\t");
+        print("Process Name: "); print(info[i].name); print("\t");
+        print("PID: "); print_num(info[i].pid, 0); print(" \t");
+        print("PPID: "); print_num(info[i].ppid, 0); print(" \t");
         print("Priority: "); print_num(info[i].priority, 0); print("\n");
-        print("RBP: "); print_num(info[i].rbp, 0); print(" ---");
-        print("RSP: "); print_num(info[i].rsp, 0); print(" ---");
-        print("State: "); print_num(info[i].status, 0); print(" ---");
-        print("Foreground: "); print_num(info[i].foreground, 0); print(" ---");
-        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks ---");
+        print("RBP: "); print_num(info[i].rbp, 0); print(" \t");
+        print("RSP: "); print_num(info[i].rsp, 0); print(" \t");
+        print("State: "); print_num(info[i].status, 0); print(" \t");
+        print("Foreground: "); print_num(info[i].foreground, 0); print(" \t");
+        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks \t");
         print("Quantums: "); print_num(info[i].aging, 0); print("\n");
    }
 }
@@ -254,9 +273,11 @@ void fillCommandList()
     fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &nice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
-    fillCommand("argTest", ": imprime hasta 3 argumentos recibidos", &argTest, 3);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
     fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
+    fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
+    fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
+    fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -361,12 +382,6 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
-void sleep(int seg) {
-    int actual_time=get_seconds(),aux;
-    while(aux=get_seconds()-actual_time<seg){
-
-    }
-}
 void shell()
 {
     fillCommandList();
@@ -376,6 +391,7 @@ void shell()
             CommandHandler();
             put_char('>');
             cleanBuffer();
+            sleep(1);
         }
     }
 }

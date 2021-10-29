@@ -7,6 +7,7 @@
 #include "include/font.h"
 #include <interrupt_routines.h>
 #include "include/process.h"
+#include "sem/sem.h"
 
 #ifdef BUDDY_H
 #include "../memory/buddy.h"
@@ -60,12 +61,14 @@ int main()
 {	
 	loadIDT();
 	//Entering sampleCodeModuleAddress in userland
+	initSems();
 	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
 	
 	//start shell process, createProcess de process.c con datos hardcodeados
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
-	pCreate(&aux, "SampleCodeModule", 1);
+	int id;
+	pCreate(&aux, "SampleCodeModule", 1,&id);
 
 /*
 	#ifdef BUDDY_H

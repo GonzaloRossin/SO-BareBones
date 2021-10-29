@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 void test_mm();
-void test_sync();
-void test_no_sync();
+int main_test_sync(int argc, char ** argv);
+int main_test_no_sync(int argc, char **argv);
 
 #endif
