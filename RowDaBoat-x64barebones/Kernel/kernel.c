@@ -7,7 +7,7 @@
 #include "include/font.h"
 #include <interrupt_routines.h>
 #include "include/process.h"
-#include "pipes/pipe.h"
+//#include "pipes/pipe.h"
 
 #ifdef BUDDY_H
 #include "../memory/buddy.h"
@@ -69,7 +69,7 @@ int main()
 	int pid;
 	pCreate(&aux, "SampleCodeModule", 1, &pid);
 
-	initPipes();
+	//initPipes();
 
 
 /*

@@ -92,16 +92,16 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		_wait((unsigned int) rsi);
 		break;
 	case 28:
-		return pipeOpen((char*) rsi);
+		return pipe_open((char*) rsi);
 		break;
 	case 29:
-		return pipeClose((uint64_t) rsi);
+		return pipe_close((uint64_t) rsi);
 		break;
 	case 30:
-		return readPipe((uint64_t) rsi);
+		return read_pipe((uint64_t) rsi);
 		break;
 	case 31:
-		return writePipe((uint64_t) rsi,(char*)rdx);
+		return write_pipe((uint64_t) rsi,(char*)rdx);
 		break;
 	}
 	return 0;
@@ -277,17 +277,23 @@ void _wait(unsigned int millis) {
 	wait(millis);
 }
 
-/*
+
 //SYS_CALL 28
-pipeOpen((char*) rsi);
+uint64_t pipe_open(char* name){
+	return pipeOpen((char*) name);
+}
 
 //SYS_CALL 29
-pipeClose((uint64_t) rsi);
+uint64_t pipe_close(uint64_t pipeId){
+	return pipeClose((uint64_t) pipeId);
+}
 
 //SYS_CALL 30
-readPipe((uint64_t) rsi);
+uint64_t read_pipe(uint64_t pipeId){
+	return readPipe((uint64_t) pipeId);
+}
 
 //SYS_CALL 31
-writePipe((uint64_t) rsi,(char*)rdx);
-
-*/
+uint64_t write_pipe(uint64_t pipeId, char* string){
+	return writePipe((uint64_t) pipeId,(char*)string);
+}

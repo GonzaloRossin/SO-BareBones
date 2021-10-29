@@ -120,16 +120,16 @@ void wait(unsigned int millis) {
    sys_call(27,(void *)(uint64_t) millis, 0, 0, 0);
 }
 
-uint64_t pipeOpen(char* name){
+uint64_t p_open(char* name){
    return(uint64_t)sys_call(28,(uint64_t)name,0,0,0);
 }
-uint64_t pipeClose(uint64_t pipeIndex){
+uint64_t p_close(uint64_t pipeIndex){
    return(uint64_t)sys_call(29,(uint64_t)pipeIndex,0,0,0);
 }
-uint64_t readPipe(uint64_t pipeIndex){
+uint64_t p_read(uint64_t pipeIndex){
    return(uint64_t)sys_call(30,(uint64_t)pipeIndex,0,0,0);
 }
-uint64_t writePipe(uint64_t pipeIndex, char* string){
+uint64_t p_write(uint64_t pipeIndex, char* string){
    return(uint64_t)sys_call(31,(uint64_t)pipeIndex,(uint64_t)string,0,0);
 }
 //----------------------------------------------------------------------------------------------

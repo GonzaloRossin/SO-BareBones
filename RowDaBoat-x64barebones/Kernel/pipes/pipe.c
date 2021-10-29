@@ -3,10 +3,14 @@
 static space pipes[MAX_PIPES];
 sem_id semPipeManager;
 
+static uint64_t validIndex(uint64_t pipeIndex);
+static uint64_t createPipe(char *name);
+static uint64_t findPipe(char *name);
+static uint64_t findAvailable();
+
 
 //Retorna -1 en caso de error.
-uint64_t initPipes()
-{
+uint64_t initPipes(){
     if ((semPipeManager = sem_open("Pipe Manager")) == -1)
     {
         print("Error en initPipe");
@@ -20,8 +24,7 @@ uint64_t initPipes()
     return 0;
 }
 
-static uint64_t findAvailable()
-{
+static uint64_t findAvailable(){
     for (int i = 0; i < MAX_PIPES; i++)
     {
         if (pipes[i].available == TRUE)
@@ -34,8 +37,7 @@ static uint64_t findAvailable()
 }
 
 //Retorna el id del pipe en caso de exito, -1 si se encontro algun tipo de error
-static uint64_t createPipe(char *name)
-{
+static uint64_t createPipe(char *name){
     print("Creando el pipe: ");
 
     int len = strlen(name);
@@ -46,8 +48,7 @@ static uint64_t createPipe(char *name)
     }
 
     uint64_t pos;
-    if ((pos = findAvailable()) != -1)
-    {
+    if ((pos = findAvailable()) != -1)    {
         pipe_t *newPipe = &pipes[pos].pipe;
         // Inicializamos la estructura
         memcpy(newPipe->name, name, len);
@@ -56,8 +57,7 @@ static uint64_t createPipe(char *name)
 
         sem_id semRead = sem_open("semRead");
         sem_id semWrite = sem_open("semWrite");
-        if (semRead == -1 || semWrite == -1)
-        {
+        if (semRead == -1 || semWrite == -1)        {
             print("Error en los sem del pipe");
             return -1;
         }
@@ -68,12 +68,9 @@ static uint64_t createPipe(char *name)
 }
 
 //si no existe retorna -1, si existe retorna la posición
-static uint64_t findPipe(char *name)
-{
-    for (int i = 0; i < MAX_SEMAPHORES; i++)
-    {
-        if (pipes[i].available == FALSE && Strcmp(name, pipes[i].pipe.name))
-        {
+static uint64_t findPipe(char *name){
+    for (int i = 0; i < MAX_SEMAPHORES; i++){
+        if (pipes[i].available == FALSE && Strcmp(name, pipes[i].pipe.name)){
             return i;
         }
     }
@@ -81,29 +78,24 @@ static uint64_t findPipe(char *name)
 }
 
 //retorna -1 en caso de error
-uint64_t pipeOpen(char *name)
-{
-    if (sem_wait(semPipeManager))
-    {
+uint64_t pipeOpen(char *name){
+    if (sem_wait(semPipeManager)){
         print("error semWait abriendo el pipe\n");
         return -1;
     }
 
     int id = findPipe(name);
-    if (id == -1)
-    {
+    if (id == -1){
         //Si no existe un pipe con ese nombre
         id = createPipe(name);
     }
     //si el create dió error, id sigue en -1
-    if (id == -1)
-    {
+    if (id == -1){
         print("error en pipeOpen, id=-1\n");
         sem_post(semPipeManager);
         return -1;
     }
-    if (sem_post(semPipeManager))
-    {
+    if (sem_post(semPipeManager)){
         print("error semPost abriendo el pipe\n");
         return -1;
     }
@@ -111,13 +103,11 @@ uint64_t pipeOpen(char *name)
 }
 
 //returns TRUE if pipe exists and is being used by someone
-static uint64_t validIndex(uint64_t pipeIndex)
-{
+static uint64_t validIndex(uint64_t pipeIndex){
     if(pipeIndex < 0 || pipeIndex > MAX_PIPES){
         print("invalid pipe index\n");
         return FALSE;
-    } else if (pipes[pipeIndex - 1].available)
-    {
+    } else if (pipes[pipeIndex - 1].available){
         print("pipe not being used\n");
         return FALSE;
     } else {
@@ -126,14 +116,12 @@ static uint64_t validIndex(uint64_t pipeIndex)
     }
 }
 
-uint64_t pipeClose(uint64_t pipeIndex)
-{
+uint64_t pipeClose(uint64_t pipeIndex){
     if (!validIndex(pipeIndex)){
         print("invalid pipe to close\n");
         return -1;
     }
-    if (sem_wait(semPipeManager) == -1)
-    {
+    if (sem_wait(semPipeManager) == -1){
         print("error semWait en pipeClose\n");
         return -1;
     }
@@ -142,91 +130,77 @@ uint64_t pipeClose(uint64_t pipeIndex)
     int closeRead = sem_close("semRead");
     int closeWrite = sem_close("semWrite");
 
-    if (closeRead == -1 || closeWrite == -1)
-    {
+    if (closeRead == -1 || closeWrite == -1){
         print("error en los sem close del pipe\n");
         return -1;
     }
 
-    if (sem_post(semPipeManager) == -1)
-    {
+    if (sem_post(semPipeManager) == -1){
         print("error semPost en pipeClose\n");
         return -1;
     }
     return 1;
 }
 
-uint64_t writeChar(uint64_t pipeIndex, char c)
-{
+uint64_t writeChar(uint64_t pipeIndex, char c){
     if (!validIndex(pipeIndex))
         return -1;
 
     pipe_t pipe = pipes[pipeIndex].pipe;
 
-    if (sem_wait(pipe.semWrite) == -1)
-    {
+    if (sem_wait(pipe.semWrite) == -1){
         print("Error semWait en writeChar\n");
         return -1;
     }
-    pipe.buffer[pipe.wIndex % BUFFER_SIZE] = c;
+    pipe.buffer[pipe.wIndex % PIPE_BUFFER_SIZE] = c;
     pipe.wIndex++;
-    if (sem_post(pipe.semWrite) == -1)
-    {
+    if (sem_post(pipe.semWrite) == -1){
         print("Error semPost en writeChar\n");
         return -1;
     }
     return 1;
 }
 
-uint64_t writePipe(uint64_t pipeIndex, char *string)
-{
+uint64_t writePipe(uint64_t pipeIndex, char *string){
     if (!validIndex(pipeIndex))
         return -1;
 
-    while (*string != 0)
-    {
+    while (*string != 0){
         if ((writeChar(pipeIndex, *string++)) == -1)
             return -1;
     }
     return 0;
 }
 
-char readPipe(uint64_t pipeIndex)
-{
+char readPipe(uint64_t pipeIndex){
     if (!validIndex(pipeIndex))
         return -1;
 
     pipe_t pipe = pipes[pipeIndex].pipe;
-    if (sem_wait(pipe.semRead) == -1)
-    {
+    if (sem_wait(pipe.semRead) == -1){
         print("Error semWait en readPipe\n");
         return -1;
     }
-    char c = pipe.buffer[pipe.rIndex % BUFFER_SIZE];
+    char c = pipe.buffer[pipe.rIndex % PIPE_BUFFER_SIZE];
     pipe.rIndex--;
-    if (sem_post(pipe.semRead) == -1)
-    {
+    if (sem_post(pipe.semRead) == -1){
         print("Error semPost en readPipe\n");
         return -1;
     }
     return c;
 }
 
-void pipe()
-{
+void pipe(){
     print("NOMBRE\t\tESTADO\t\tSEM USADO\t\t\t\tPROCESOS BLOQUEADOS\n");
     int i;
-    for(i = 0; i < MAX_PIPES; i++)
-    {
-        if(!(pipes[i].available))
-        {
+    for(i = 0; i < MAX_PIPES; i++){
+        if(!(pipes[i].available)){
             printPipe(pipes[i].pipe);
         }
     }
     print("\n");
 }
-void printPipe(pipe_t pipe)
-{
+void printPipe(pipe_t pipe){
     print(pipe.name);
     print("\t\t\t");
     print("Activo\t\t");
@@ -236,19 +210,17 @@ void printPipe(pipe_t pipe)
     print("\n");
 }
 
-void printSemsInvovled(pipe_t pipe)
-{
-    print(getSemName(pipe.semRead));
+void printSemsInvovled(pipe_t pipe){
+   // print(getSemName(pipe.semRead));
     print(", ");
-    print(getSemName(pipe.semWrite));
+    //print(getSemName(pipe.semWrite));
     print(", ");
-    print(getSemName(semPipeManager));
+   // print(getSemName(semPipeManager));
 }
-void printProcesses(pipe_t pipe)
-{
-    printProcessesSem(pipe.semRead);
+void printProcesses(pipe_t pipe){
+  //  printProcessesSem(pipe.semRead);
     print(" ");
-    printProcessesSem(pipe.semWrite);
+  //  printProcessesSem(pipe.semWrite);
     print(" ");
-    printProcessesSem(semPipeManager);
+  //  printProcessesSem(semPipeManager);
 }

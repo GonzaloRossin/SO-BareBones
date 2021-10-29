@@ -53,8 +53,8 @@ int getProcessStatus(int pid, unsigned int * status);
 int getPid(void);
 void wait(unsigned int millis);
 void sleep(int seg);
-uint64_t pipeOpen(char* name);
-uint64_t pipeClose(uint64_t pipeIndex);
-uint64_t readPipe(uint64_t pipeIndex);
-uint64_t writePipe(uint64_t pipeIndex, char* string);
+uint64_t p_open(char* name);
+uint64_t p_close(uint64_t pipeIndex);
+uint64_t p_read(uint64_t pipeIndex);
+uint64_t p_write(uint64_t pipeIndex, char* string);
 #endif

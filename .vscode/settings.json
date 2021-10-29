@@ -10,6 +10,7 @@
         "int80.h": "c",
         "sbrk.h": "c",
         "buddy.h": "c",
-        "mem_man.h": "c"
+        "mem_man.h": "c",
+        "pipe.h": "c"
     }
 }
