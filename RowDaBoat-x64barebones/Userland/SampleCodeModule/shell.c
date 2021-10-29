@@ -125,12 +125,6 @@ static void testIvalidOpCodeCommand()
 {
     __asm__("ud2");
 }
-void sleep(int seg){
-    int actual_time=get_seconds(),aux;
-    while(aux=get_seconds()-actual_time<seg){
-
-    }
-}
 static void draw_Main_Screen(){
     print("Welcome to arquiOS");
     newLine();
@@ -202,7 +196,7 @@ static void test_sync2(){
     put_char('>');
 }
 
-static void blockProcess(int pid) {
+void blockProcess(int pid) {
     if(pid == 1){
          print("Soy la shell hermano");
     } else {

@@ -1,6 +1,7 @@
 #ifndef LIB_H
 #define LIB_H
 #include <stdint.h>
+#include "../drivers/video_driver.h"
 #define NULL ((void *)0)
 
 
@@ -13,6 +14,10 @@ char *cpuVendor(char *result);
 void cpuVersion(uint32_t * result);
 
 void saveRegs();
+
+uint64_t _xchg(uint64_t *lock, int value);
+
+void forceTimer();
 
 void getRegs(uint64_t * v);
 
@@ -34,12 +39,11 @@ int Strcmp(const char *str1, const char *str2);
 
 void Strncpy(char *source, char *dest,int index, int size);
 
+void printf(char* str);
+
 int _start_process(int (*main)(int argc, char * argv), int argc, char * argv);
 
 void _halt_and_wait(void);
 
-void spin_lock(char * lock);
-
-void spin_unlock(char * lock);
 
 #endif

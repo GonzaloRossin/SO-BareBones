@@ -228,22 +228,22 @@ uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
 	switch (rsi)
 	{
 	case 0:
-		return (uint64_t) sem_init_open((char*) rdx,(unsigned int) rcx);
+		initSems();
 		break;
 	case 1:
-		return (uint64_t) sem_open((char*) rdx);
+		return semOpen((char*) rdx,rcx);
 	break;
 	case 2:
-		return (uint64_t)sem_wait((sem_id)rdx);
+		return semWait(rdx);
 	break;
 	case 3:
-		return (uint64_t)sem_post((sem_id)rdx);
+		return semPost(rdx);
 	break;
 	case 4:
-		return (uint64_t)sem_close((sem_id)rdx);
+		return semClose((char*)rdx);
 	break;
 	case 5:
-		return (uint64_t)sem_getvalue((sem_id)rdx,(int*)rcx);
+		//return (uint64_t)sem_getvalue((sem_id)rdx,(int*)rcx);
 	break;
 	}
 	return -1;

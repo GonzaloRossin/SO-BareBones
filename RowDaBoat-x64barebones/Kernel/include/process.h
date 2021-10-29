@@ -93,7 +93,7 @@ void * scheduler(void * rsp);
 int pCreate(main_func_t * f, char *name, int foreground, int * pid);
 int kill(int pid);
 int exit(void);
-int getPid(int *pid);
+void getPid(int *pid);
 int getProcessesAlive(unsigned int * amount);
 int getProcessesInfo(process_info * arr, unsigned int max_size, unsigned int * size);
 int changePriority(int pid, unsigned int new_priority);

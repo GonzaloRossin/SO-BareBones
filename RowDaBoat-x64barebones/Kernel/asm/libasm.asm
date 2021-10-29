@@ -7,8 +7,8 @@ GLOBAL getMemory
 GLOBAL readCMOS
 GLOBAL _start_process
 GLOBAL _halt_and_wait
-GLOBAL spin_lock
-GLOBAL spin_unlock
+GLOBAL _xchg
+GLOBAL forceTimer
 EXTERN exit
 
 
@@ -157,66 +157,15 @@ readCMOS:
 	in al,71h
 	sti
 	ret
-%macro recover 0
-	pop r15
-	pop r13
-	pop r12
-	pop rbx
-%endmacro
-%macro preserve 0
-	push rbx
-    push r12
-    push r13
-    push r15
-%endmacro
 
-%macro BuildSF 0
-    push rbp
-    mov rbp, rsp
-%endmacro
 
-%macro breakSF 0
-    mov rsp, rbp
-    pop rbp
-%endmacro
-spin_lock:
-    BuildSF
-    preserve
-
-    mov     al, 1          ; Set the EAX register to 1.
-
-    xchg    al, [rdi]       ; Atomically swap the EAX register with
-                            ;  the lock variable.
-                            ; This will always store 1 to the lock, leaving
-                            ;  the previous value in the EAX register.
-
-    test    al, al          ; Test EAX with itself. Among other things, this will
-                            ;  set the processor's Zero Flag if EAX is 0.
-                            ; If EAX is 0, then the lock was unlocked and
-                            ;  we just locked it.
-                            ; Otherwise, EAX is 1 and we didn't acquire the lock.
-
-    jnz     spin_lock       ; Jump back to the MOV instruction if the Zero Flag is
-                            ;  not set; the lock was previously locked, and so
-                            ; we need to spin until it becomes unlocked.
-
-    recover
-    breakSF
-    ret                     ; The lock has been acquired, return to the calling
-                            ;  function.
-
-spin_unlock:
-    BuildSF
-    preserve    
-
-    mov     al, 0          ; Set the EAX register to 0.
-
-    xchg    al, [rdi]   ; Atomically swap the EAX register with
-                            ;  the lock variable.
-
-    recover
-    breakSF
-    ret                     ; The lock has been released.
+_xchg:
+	mov rax, rsi
+	xchg [rdi], eax
+	ret
+forceTimer:
+	int 20h
+	ret
 section .bss
 regs resq 16
 v resb 32

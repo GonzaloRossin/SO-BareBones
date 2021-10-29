@@ -87,30 +87,27 @@ void block(pid_t pid, unsigned int new_status){//syscall 23
    sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
 }
 
-sem_id s_init(char* name,unsigned int init_size){//syscall 24
-   return(sem_id)sys_call(24,0,(uint64_t)name,(uint64_t)init_size,0);
+void s_init(){//syscall 24
+   sys_call(24,0,0,0,0);
 }
 
-sem_id s_open(char* name){// syscall 25
-   return(sem_id)sys_call(24,1,(uint64_t)name,0,0);
+uint64_t s_open(char* name,int value){// syscall 25
+   return sys_call(24,1,(uint64_t)name,(uint64_t)value,0);
 }
 
-int s_wait(sem_id s_id){//syscall 26
-   return(int) sys_call(24,2,(uint64_t)s_id,0,0);
+uint64_t s_wait(uint64_t s_id){//syscall 26
+   return sys_call(24,2,s_id,0,0);
 }
-int s_post(sem_id s_id){
-   return(int) sys_call(24,3,(uint64_t)s_id,0,0);
+uint64_t s_post(uint64_t s_id){
+   return sys_call(24,3,s_id,0,0);
 }
-int s_close(sem_id s_id){
-   return(int) sys_call(24,4,(uint64_t)s_id,0,0);
-}
-int s_getValue(sem_id s_id,int* value_pointer){
-   return(int) sys_call(24,5,(uint64_t)s_id,(uint64_t) value_pointer,0);
+uint64_t s_close(uint64_t s_id){
+   return sys_call(24,4,s_id,0,0);
 }
 
-int getProcessStatus(int pid, unsigned int * status) {//syscall 25
-   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
-}
+//int getProcessStatus(int pid, unsigned int * status) {//syscall 25
+//   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0);
+//}
 int getPid(void) {
    int pid;
    sys_call(26, (void* )&pid, 0, 0, 0);

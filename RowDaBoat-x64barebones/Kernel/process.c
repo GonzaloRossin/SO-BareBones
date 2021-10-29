@@ -193,9 +193,8 @@ int kill(int pid) {
     return changeStatus(pid, KILLED);
 }
 
-int getPid(int * pid) {
+void getPid(int * pid) {
     *pid = curr_process->pid;
-    return 0;
 }
 
 int getProcessesAlive(unsigned int * amount) {

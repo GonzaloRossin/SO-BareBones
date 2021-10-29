@@ -3,7 +3,7 @@
     
     #include "../include/lib.h"
     #define MIN_ADDRESS 0x600000
-    #define MAX_ADDRESS 0xF00000
+    #define MAX_ADDRESS 0x900000
 
     typedef struct mm_stat {
         char * sys_name;  
