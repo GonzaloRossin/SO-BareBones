@@ -14,6 +14,7 @@ typedef struct
     char buffer[PIPE_BUFFER_SIZE];
     char name[MAX_LEN];
     int amountProcesses; // cantidad de procesos que estan usando el pipe
+    uint64_t id;
 } pipe_t;
 
 typedef struct

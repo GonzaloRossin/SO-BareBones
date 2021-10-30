@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <keyboard_driver.h>
 #include <int80.h>
-#include <lib.h>
 
 static int waiting_pid;
 static int processWaiting = 0;
@@ -154,7 +153,7 @@ void addToBuffer(char charToAdd)
 //Function to return a uint8 from the buffer and delete it. Return 0 if empty
 uint8_t getChar()
 {	
-	int fd = getFdIn();
+	uint64_t fd = getFdIn();
 	if(fd > 0){
 		printf("trying to get char from pipe");
 		return (uint8_t)readPipe(fd);	

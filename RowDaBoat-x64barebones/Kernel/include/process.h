@@ -93,7 +93,7 @@ typedef struct process_info {
 
 void * scheduler(void * rsp);
 
-int pCreate(main_func_t * f, char *name, int foreground, int * pid, int fd[2]);
+int pCreate(main_func_t * f, char *name, int foreground, int * pid, uint64_t fd[2]);
 int kill(int pid);
 int exit(void);
 void getPid(int *pid);
@@ -107,5 +107,8 @@ int isCurrentForeground(void);
 extern void forceTimer();
 void yield();
 void PS();
+
+uint64_t getFdIn();
+uint64_t getFdOut();
 
 #endif

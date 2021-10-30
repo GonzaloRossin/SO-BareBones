@@ -69,7 +69,10 @@ int main()
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
 	int pid;
-	pCreate(&aux, "SampleCodeModule", 1, &pid, NULL);
+	uint64_t fd[2] = {0,0};
+	draw_decimal(fd[0]);
+	draw_decimal(fd[1]);
+	pCreate(&aux, "SampleCodeModule", 1, &pid, fd);
 
 	initPipes();
 

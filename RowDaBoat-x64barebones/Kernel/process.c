@@ -152,7 +152,7 @@ static void enqueueProcess(process_t * process) {
 }
 
 
-int pCreate(main_func_t * main_f, char *name, int foreground, int * pid, int fd[2]) { // int (*code)(int, char **) el parametro de _start_process
+int pCreate(main_func_t * main_f, char *name, int foreground, int * pid, uint64_t fd[2]) { // int (*code)(int, char **) el parametro de _start_process
     //falta: back or foreground, *funcion con argc y argv,
     //draw_string("Creando proceso", 16);
     int i = 0;
@@ -177,7 +177,23 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid, int fd[
 
         processes[i].stack = MyMalloc(MAX_STACK);
 
-        //draw_hex(0420);
+        //file descriptors
+        if(fd == NULL){
+            processes[i].fdIn = 0;
+            processes[i].fdOut = 0;
+        } else {
+            processes[i].fdIn = fd[0];
+            processes[i].fdOut = fd[1];
+        }
+        printf("\nfds of process: ");
+        printf(processes[i].name);
+        printf("\nfd in: ");
+        draw_decimal(processes[i].fdIn);
+        printf("\nfd out: ");
+        draw_decimal(processes[i].fdOut);
+        printf("\n");
+
+
 
         processes[i].rbp = (void *)(((uint64_t) processes[i].stack + MAX_STACK) & -8);
         processes[i].rsp = (void *) (processes[i].rbp - (STATE_SIZE + REGS_SIZE) * sizeof(uint64_t));
@@ -198,14 +214,6 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid, int fd[
 
         if (curr_process != NULL && processes[i].foreground) { // PROBLEM
             changeStatus(curr_process->pid, BLOCKED);
-        }
-
-        if(fd == NULL){
-            processes[i].fdIn = 0;
-            processes[i].fdOut = 0;
-        } else {
-            processes[i].fdIn = fd[0];
-            processes[i].fdOut = fd[1];
         }
 
         return 0;

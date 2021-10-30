@@ -61,9 +61,9 @@ mm_stat Mmem(){//syscall17
    return aux;
 }
 
-pid_t exec(main_func_t *func, char* name, int rcx, int fd[2]){ //syscall 18
+pid_t exec(main_func_t *func, char* name, int rcx, uint64_t fd[2]){ //syscall 18
 int pid;
-   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid, (uint16_t)(void *)fd);
+   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid, fd);
    return pid;
 }
 

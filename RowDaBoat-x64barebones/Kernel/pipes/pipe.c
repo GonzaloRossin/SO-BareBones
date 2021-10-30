@@ -4,7 +4,7 @@ static space pipes[MAX_PIPES];
 uint64_t semPipeManager;
 
 static uint64_t validIndex(uint64_t pipeIndex);
-static uint64_t createPipe(char *name);
+//static uint64_t createPipe(char *name);
 static uint64_t findPipe(char *name);
 static uint64_t findAvailable();
 
@@ -17,7 +17,7 @@ uint64_t initPipes(){
         return -1;
     }
     
-    for (int i = 0; i < MAX_SEM; i++)
+    for (int i = 0; i < MAX_PIPES; i++)
     {
         pipes[i].available = TRUE;
     }
@@ -25,7 +25,7 @@ uint64_t initPipes(){
 }
 
 static uint64_t findAvailable(){
-    for (int i = 0; i < MAX_PIPES; i++)
+    for (int i = 1; i < MAX_PIPES; i++)
     {
         if (pipes[i].available == TRUE)
         {
@@ -64,13 +64,14 @@ static uint64_t createPipe(char *name){
         }
         newPipe->semRead = semRead;
         newPipe->semWrite = semWrite;
+        newPipe->id = pos;
     }
-    return pos + 1;
+    return pos;
 }
 
 //si no existe retorna -1, si existe retorna la posición
 static uint64_t findPipe(char *name){
-    for (int i = 0; i < MAX_SEM; i++){
+    for (int i = 1; i < MAX_SEM; i++){
         if (pipes[i].available == FALSE && Strcmp(name, pipes[i].pipe.name)){
             return i;
         }
@@ -89,6 +90,13 @@ uint64_t pipeOpen(char *name){
     if (id == -1){
         //Si no existe un pipe con ese nombre
         id = createPipe(name);
+        printf("\ncreated pipe ");
+        draw_decimal(id);
+        newLine();
+    } else {
+        printf("\nopened pipe ");
+        draw_decimal(id);
+        newLine();
     }
     //si el create dió error, id sigue en -1
     if (id == -1){
@@ -109,7 +117,7 @@ static uint64_t validIndex(uint64_t pipeIndex){
         printf("invalid pipe index\n");
         return FALSE;
     } else if (pipes[pipeIndex - 1].available){
-        printf("pipe not being used\n");
+        //printf("pipe not being used\n");
         return FALSE;
     } else {
         //available and occupied pipe
@@ -163,6 +171,9 @@ uint64_t writeChar(uint64_t pipeIndex, char c){
 }
 
 uint64_t writePipe(uint64_t pipeIndex, char *string){
+    //printf(" writing on pipe");
+    draw_decimal(pipeIndex);
+    
     if (!validIndex(pipeIndex))
         return -1;
 
@@ -192,7 +203,7 @@ char readPipe(uint64_t pipeIndex){
 }
 
 void pipe(){
-    printf("NOMBRE\t\tESTADO\t\tSEM USADO\t\t\t\tPROCESOS BLOQUEADOS\n");
+    printf("NOMBRE\tID\tESTADO\t\tSEM USADO\t\t\t\tPROCESOS BLOQUEADOS\n");
     int i;
     for(i = 0; i < MAX_PIPES; i++){
         if(!(pipes[i].available)){
@@ -203,6 +214,8 @@ void pipe(){
 }
 void printPipe(pipe_t pipe){
     printf(pipe.name);
+    printf("\t");
+    draw_decimal(pipe.id);
     printf("\t\t\t");
     printf("Activo\t\t");
     printSemsInvovled(pipe);

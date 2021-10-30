@@ -14,7 +14,7 @@ typedef struct command
 {
     char command_name[MAX_COMDESC];
     char desc[MAX_COMDESC];
-    void (*cmdptr)(char*,char*, int[2]); //2 args y FD al final
+    void (*cmdptr)(char*,char*, uint64_t[2]); //2 args y FD al final
 
     int arg_q;//argument qty for this command
 } command;
@@ -182,7 +182,7 @@ int loopMain(int argc, char ** argv) {
     return 0;
 }
 
-void loop(char* a1_char, int nada, int fd[2]) {
+void loop(char* a1_char, int nada, uint64_t fd[2]) {
     int a1 = strToInt(a1_char);
     main_func_t proc2 = {loopMain, a1, NULL};
     int aux = exec(&proc2, "test Process", 0, fd);
@@ -224,61 +224,49 @@ static void list_pipes(){
     p_list();
 }
 
-
-void cat(char* string)
-{
+void cat_main(){
     int i = 0; //NO BORRAR ESTA LINEA HACE QUE DEJE DE FUNCIONAR LO DE ABAJO POR ALGUNA RAZÓN DESCONOCIDA POR EL UNIVERSO
     char c = read_input();
     while(!strcmp(&c, "\t")){
-        print(&c);
+        //print(&c);
+        put_char(c);
         c = '\0';
         c = read_input();
     }
+}
+
+void cat(int nada, int nada2, uint64_t fd[2])
+{
+    main_func_t proc2 = {cat_main, NULL, NULL}; //argc, argv
+    int aux = exec(&proc2, "CAT", 1, fd);
     newLine(); //esto es para corregir el señalador porque puede quedar falopa por los espacios en blanco
 }
 
-/*
-void cat(char* string)
-{
-    int i = 0;
-    while(string[i] != 0){
-        put_char(string[i++]);
-    }
-}*/
 
-/* MISSION FAILED TO MAKING CAT A FUNCTION WITH EXEC NOT BUILT IN THE SHELL
-void cat_main(int argc, char ** argv)
-{
-    print(argv);
-    print(argv[0]);
-    print(argv[0][0]);
-    char* string = argv[0];
-    int i = 0;
-    while(string[i] != 0){
-        put_char(string[i++]);
-    }
-}
-
-void cat(char* string){
-    char ** argv = {string};
-    main_func_t proc2 = {cat_main, 1, argv};
-    int aux = exec(&proc2, "cat", 0, NULL); //falta fd[2]
-}*/
-
-
-
-void wc(char* input)
-{
+void wc_main(){
+    int i = 0; //LA PUTA MADRE PORQUE NECESITO HACER ESTO PARA QUE FUNCIONEEEE
     int lines = 0;
-    int i=0;
-    while(input[i] != 0){
-        if (input[i] == '\n')
+    char c = read_input();
+    while(!strcmp(&c, "\t")){
+        if (strcmp(&c, "\n")){
             lines++;
-        i++;
+            print("Amount of lines: ");
+            print_num(lines,0);
+            print("\n");
+        }
+        c = NULL;
+        c = read_input();
     }
-    print("Amount of lines: ");
+    print("Final amount of lines: ");
     print_num(lines,0);
     print("\n");
+}
+
+void wc(int nada, int nada2, uint64_t fd[2])
+{
+    main_func_t proc2 = {wc_main, NULL, NULL}; //argc, argv
+    int aux = exec(&proc2, "WC", 1, fd);
+    newLine();
 }
 
 int isVowel(char c){
@@ -287,17 +275,23 @@ int isVowel(char c){
                ? 1 : 0;
 }
 
-void filter(char* string)
-{
-
-    int i = 0;
-    while(string[i] != 0){
-        if(!isVowel(string[i])){
-            put_char(string[i]);
+void filter_main(){
+    int i = 0; //ya tiro esto de una total lo necesita aparentemente
+    char c = read_input();
+    while(!strcmp(&c, "\t")){
+        if(!isVowel(c)){
+            print(&c);
         }
-        i++;
+        c = '\0';
+        c = read_input();
     }
-    return;
+}
+
+void filter(int nada, int nada2, uint64_t fd[2])
+{
+    main_func_t proc2 = {filter_main, NULL, NULL}; //argc, argv
+    int aux = exec(&proc2, "filter", 1, fd);
+    newLine();
 }
 
 void blockProcess(char* pid_char) {
@@ -373,8 +367,8 @@ void fillCommandList()
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
     fillCommand("cat",": Imprime el input",&cat,0);
-    fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,1);
-    fillCommand("filter",": Filtra las vocales del input",&filter,1);
+    fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,0);
+    fillCommand("filter",": Filtra las vocales del input",&filter,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -432,20 +426,22 @@ static void CommandHandler()
     {
         if (strcmp(command, commandList[i].command_name))
         {
-            if(strcmp(args[0], ".")){//ej.. ps | cat
-                int pipeId = p_open("|");
+            if(strcmp(args[0], ".")){//ej.. ps | cat    cat | loop
+                uint64_t pipeId = (int)p_open("|");
+                print(" id: ");
+                print_num(pipeId,0);
                 if(pipeId < 0){
                     print("error abriendo pipe |\n");
                 }
                 //en args[1] está el segundo comando
-                int fd[2] = {0, pipeId};
+                uint64_t fd[2] = {0, pipeId};
                 (commandList[i].cmdptr)(0,0,fd);
 
                 //ahora voy a buscar el segundo command
                 int found = 0;
                 for (int j = 0; j < commandsSize; j++){
                     if (strcmp(args[1], commandList[j].command_name)){
-                        int fd2[2] = {pipeId,0};
+                        uint64_t fd2[2] = {pipeId,0};
 
                         (commandList[j].cmdptr)(0,0,fd2);   
                         found = 1;
@@ -458,7 +454,34 @@ static void CommandHandler()
                 } else { return; }
 
                 newLine();
-            //} else if (args[1] == "|"){//ej  kill 2 | filter
+
+
+            } else if (strcmp(args[1], ".")){//ej  loop 2 | filter
+                uint64_t pipeId = p_open("|2");
+                if(pipeId < 0){
+                    print("error abriendo pipe |2 \n");
+                }
+                //en args[2] está el segundo comando
+                uint64_t fd[2] = {0, pipeId};
+                (commandList[i].cmdptr)(args[0],0,fd);
+
+                //ahora voy a buscar el segundo command
+                int found = 0;
+                for (int j = 0; j < commandsSize; j++){
+                    if (strcmp(args[2], commandList[j].command_name)){
+                        uint64_t fd2[2] = {pipeId,0};
+
+                        (commandList[j].cmdptr)(0,0,fd2);   
+                        found = 1;
+                    }
+                }
+                if(!found){
+                    print("comando ");
+                    print(args[1]);
+                    print(" no encontrado\n");
+                } else { return; }
+
+                newLine();
 
             } else {
                 if(args_q_read != commandList[i].arg_q){
@@ -474,7 +497,15 @@ static void CommandHandler()
                     return;
                 }
                 if(commandList[i].arg_q == 0){
-                    (commandList[i].cmdptr)(0,0,NULL);
+                    uint64_t pipeId = p_open("test");
+                    if(pipeId < 0){
+                        print("error abriendo pipe test \n");
+                    } else {
+                        print("\nusing pipe ");
+                        print_num(pipeId, 0);
+                    }
+                    uint64_t fd[2] = {0,pipeId};
+                    (commandList[i].cmdptr)(0,0,fd);
                     newLine();
                     return;
                 } else if(commandList[i].arg_q == 1){
