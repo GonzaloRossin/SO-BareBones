@@ -54,7 +54,7 @@ void phylo(int argc, char **argv)
     seated = 0;
     for (int i = 0; i < INIT_PHYL; i++)
     {
-        if (addPhylo(i) == -1)
+        if (addPhylo(seated) == -1)
         {
             print("Error adding initial philosophers.\n");
         }
@@ -81,7 +81,7 @@ void phylo(int argc, char **argv)
         }
     }
     endTable();
-    if (s_close(sem) == -1)
+    if (s_close(MUTEX_PHYL) == -1)
         print("Error closing main semaphore in Phylo.\n");
 }
 
@@ -95,26 +95,26 @@ int addPhylo(int pIndex){
         return -1;
     }
     s_wait(sem);
-    seated++;
-    char semName[LEN] = "phyl ";
     char philNumber[LEN]={0};
     itoa(pIndex, philNumber,10);
-    strcat(phylos[pIndex].semName, semName);
+    strncpy(philNumber,phylos[pIndex].semName,0,strlen(philNumber)+1);
     if ((phylos[pIndex].semIndex = s_open(phylos[pIndex].semName, 1)) == -1)
     {
         print("Error opening sem in addPhylo.\n");
         return -1;
     }
-    char currSeated[LEN];
+    /*char currSeated[LEN];
     itoa(seated,currSeated,10);
-    char *argv[] = {"phi", currSeated};
+    char *argv[] = {"phi", currSeated};*/
     phylos[pIndex].state = THINKING;
-    main_func_t aux = {phyloProcess, 1, argv}; 
+    int currseated=seated;
+    main_func_t aux = {phyloProcess, currseated, NULL}; 
     if ((phylos[pIndex].pid = exec(&aux,phylos[pIndex].semName , BACKGROUND)) < 0) //TODO Cambiar al implementar pipes
     {
         print("Error creating philosopher process");
         return -1;
     }
+    seated++;
     s_post(sem);
     return 0;
 }
@@ -126,7 +126,7 @@ int addPhylo(int pIndex){
  */
 void phyloProcess(int argc, char **argv)
 {
-    int index = strToInt(argv[1]);
+    int index = argc;
     while (1)
     {
         wait(QUANTUM);
@@ -215,7 +215,7 @@ void endTable()
 {
     while (seated > 0)
     {
-        if (s_close(phylos[seated - 1].semIndex) == -1)
+        if (s_close(phylos[seated - 1].semName) == -1)
         {
             print("Error in closing phylo's sem while ending.\n");
             return;

@@ -216,15 +216,21 @@ int strToInt(char* str)
 int abs(int i){
     return i >= 0 ? i : -i;
 }
-char* strcat(char *dest, const char *src)
+char* strcat(char *destination, const char *source)
 {
-    size_t i,j;
-    for (i = 0; dest[i] != '\0'; i++)
-        ;
-    for (j = 0; src[j] != '\0'; j++)
-        dest[i+j] = src[j];
-    dest[i+j] = '\0';
-    return dest;
+    char *ptr = destination + strlen(destination);
+
+	// appends characters of the source to the destination string
+	while (*source != '\0')
+	{
+		*ptr++ = *source++;
+	}
+
+	// null terminate destination string
+	*ptr = '\0';
+
+	// the destination is returned by standard `strcat()`
+	return destination;
 }
 // Function to swap two numbers
 void swap(char *x, char *y) {
