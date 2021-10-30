@@ -5,6 +5,7 @@
 #define INIT_PHYL 5
 #define FOREGROUND 1
 #define BACKGROUND 0
+#define MUTEX_PHYL "mutexPhylos"
 #define SEM_PHYL "semPhylos"
 #define LEN 20
 #define QUANTUM 1000//en milis
@@ -45,7 +46,7 @@ int right(int pIndex);
 void phylo(int argc, char **argv)
 {
     print("WELCOME TO PHYLO!\n");
-    if ((sem = s_open(SEM_PHYL, 1)) == -1)
+    if ((sem = s_open(MUTEX_PHYL, 1)) == -1)
     {
         print("Error opening main semaphore in phylo.\n");
         return;
@@ -95,8 +96,9 @@ int addPhylo(int pIndex){
     }
     s_wait(sem);
     seated++;
-    char semName[LEN] = " phyl";
-    itoa(pIndex, phylos[pIndex].semName,10);
+    char semName[LEN] = "phyl ";
+    char philNumber[LEN]={0};
+    itoa(pIndex, philNumber,10);
     strcat(phylos[pIndex].semName, semName);
     if ((phylos[pIndex].semIndex = s_open(phylos[pIndex].semName, 1)) == -1)
     {
@@ -105,7 +107,6 @@ int addPhylo(int pIndex){
     }
     char currSeated[LEN];
     itoa(seated,currSeated,10);
-    //uintToBase(seated, currSeated, 10);
     char *argv[] = {"phi", currSeated};
     phylos[pIndex].state = THINKING;
     main_func_t aux = {phyloProcess, 1, argv}; 
@@ -195,7 +196,7 @@ static int removePhylo(int pIndex)
     s_wait(sem);
     seated--;
     int eats = (phylos[pIndex].state == EATING);
-    if (s_close(phylos[pIndex].semIndex) == -1)
+    if (s_close(phylos[pIndex].semName) == -1)
         print("Error in closing phylo's sem.\n");
     kill(phylos[pIndex].pid);
     if (eats && pIndex)

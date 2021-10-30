@@ -103,8 +103,8 @@ uint64_t s_wait(uint64_t s_id){//syscall 26
 uint64_t s_post(uint64_t s_id){
    return sys_call(24,3,s_id,0,0);
 }
-uint64_t s_close(uint64_t s_id){
-   return sys_call(24,4,s_id,0,0);
+uint64_t s_close(char* semName){
+   return sys_call(24,4,(uint64_t)(void *)semName,0,0);
 }
 void list_sem(){
    sys_call(24,5,0,0,0);

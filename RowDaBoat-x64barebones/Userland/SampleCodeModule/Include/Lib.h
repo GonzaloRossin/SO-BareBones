@@ -51,7 +51,7 @@ void s_init();//syscall24
 uint64_t s_open(char* name,int value);
 uint64_t s_wait(uint64_t s_id);
 uint64_t s_post(uint64_t s_id);
-uint64_t s_close(uint64_t s_id);
+uint64_t s_close(char* semName);
 void list_sem();
 int getProcessStatus(int pid, unsigned int * status);
 int getPid(void);
