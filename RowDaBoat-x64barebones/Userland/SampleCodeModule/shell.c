@@ -14,7 +14,8 @@ typedef struct command
 {
     char command_name[MAX_COMDESC];
     char desc[MAX_COMDESC];
-    void (*cmdptr)(char*,char*,char*);
+    void (*cmdptr)(char*,char*, int[2]); //2 args y FD al final
+
     int arg_q;//argument qty for this command
 } command;
 
@@ -181,10 +182,10 @@ int loopMain(int argc, char ** argv) {
     return 0;
 }
 
-void loop(char* a1_char) {
+void loop(char* a1_char, int nada, int fd[2]) {
     int a1 = strToInt(a1_char);
     main_func_t proc2 = {loopMain, a1, NULL};
-    int aux = exec(&proc2, "test Process", 0, NULL);
+    int aux = exec(&proc2, "test Process", 0, fd);
     print("Process created ");
     print_num(aux, 0);
 }
@@ -223,13 +224,48 @@ static void list_pipes(){
     p_list();
 }
 
+
+void cat(char* string)
+{
+    int i = 0; //NO BORRAR ESTA LINEA HACE QUE DEJE DE FUNCIONAR LO DE ABAJO POR ALGUNA RAZÓN DESCONOCIDA POR EL UNIVERSO
+    char c = read_input();
+    while(!strcmp(&c, "\t")){
+        print(&c);
+        c = '\0';
+        c = read_input();
+    }
+    newLine(); //esto es para corregir el señalador porque puede quedar falopa por los espacios en blanco
+}
+
+/*
 void cat(char* string)
 {
     int i = 0;
     while(string[i] != 0){
         put_char(string[i++]);
     }
+}*/
+
+/* MISSION FAILED TO MAKING CAT A FUNCTION WITH EXEC NOT BUILT IN THE SHELL
+void cat_main(int argc, char ** argv)
+{
+    print(argv);
+    print(argv[0]);
+    print(argv[0][0]);
+    char* string = argv[0];
+    int i = 0;
+    while(string[i] != 0){
+        put_char(string[i++]);
+    }
 }
+
+void cat(char* string){
+    char ** argv = {string};
+    main_func_t proc2 = {cat_main, 1, argv};
+    int aux = exec(&proc2, "cat", 0, NULL); //falta fd[2]
+}*/
+
+
 
 void wc(char* input)
 {
@@ -336,7 +372,7 @@ void fillCommandList()
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
-    fillCommand("cat",": Imprime el input",&cat,1);
+    fillCommand("cat",": Imprime el input",&cat,0);
     fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,1);
     fillCommand("filter",": Filtra las vocales del input",&filter,1);
 }
@@ -396,38 +432,68 @@ static void CommandHandler()
     {
         if (strcmp(command, commandList[i].command_name))
         {
-            if(args_q_read != commandList[i].arg_q){
+            if(strcmp(args[0], ".")){//ej.. ps | cat
+                int pipeId = p_open("|");
+                if(pipeId < 0){
+                    print("error abriendo pipe |\n");
+                }
+                //en args[1] está el segundo comando
+                int fd[2] = {0, pipeId};
+                (commandList[i].cmdptr)(0,0,fd);
+
+                //ahora voy a buscar el segundo command
+                int found = 0;
+                for (int j = 0; j < commandsSize; j++){
+                    if (strcmp(args[1], commandList[j].command_name)){
+                        int fd2[2] = {pipeId,0};
+
+                        (commandList[j].cmdptr)(0,0,fd2);   
+                        found = 1;
+                    }
+                }
+                if(!found){
+                    print("comando ");
+                    print(args[1]);
+                    print(" no encontrado\n");
+                } else { return; }
+
                 newLine();
-                print("Cantidad invalida de argumentos para el comando: ");
-                print(command);
-                newLine();
-                print("Argumentos recibidos: ");
-                print_num(args_q_read,0);
-                print(", Argumentos esperados: ");
-                print_num(commandList[i].arg_q,0);
-                newLine();
-                return;
-            }
-            if(commandList[i].arg_q == 0){
-                (commandList[i].cmdptr)(0,0,0);
-                newLine();
-                return;
-            } else if(commandList[i].arg_q == 1){
-                (commandList[i].cmdptr)(args[0],0,0);
-                newLine();
-                return;
-            } else if(commandList[i].arg_q == 2){
-                (commandList[i].cmdptr)(args[0],args[1],0);
-                newLine();
-                return;
-            } else if(commandList[i].arg_q == 3){
-               (commandList[i].cmdptr)(args[0],args[1], args[2]);
-                newLine();
-                print("done");
-                newLine();
-                return;
+            //} else if (args[1] == "|"){//ej  kill 2 | filter
+
             } else {
-                print("failatron");
+                if(args_q_read != commandList[i].arg_q){
+                    newLine();
+                    print("Cantidad invalida de argumentos para el comando: ");
+                    print(command);
+                    newLine();
+                    print("Argumentos recibidos: ");
+                    print_num(args_q_read,0);
+                    print(", Argumentos esperados: ");
+                    print_num(commandList[i].arg_q,0);
+                    newLine();
+                    return;
+                }
+                if(commandList[i].arg_q == 0){
+                    (commandList[i].cmdptr)(0,0,NULL);
+                    newLine();
+                    return;
+                } else if(commandList[i].arg_q == 1){
+                    (commandList[i].cmdptr)(args[0],0,NULL);
+                    newLine();
+                    return;
+                } else if(commandList[i].arg_q == 2){
+                    (commandList[i].cmdptr)(args[0],args[1],NULL);
+                    newLine();
+                    return;
+                } else if(commandList[i].arg_q == 3){
+                (commandList[i].cmdptr)(args[0],args[1], NULL);
+                    newLine();
+                    print("done");
+                    newLine();
+                    return;
+                } else {
+                    print("failatron");
+                }
             }
         }
     }

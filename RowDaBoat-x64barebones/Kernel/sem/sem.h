@@ -3,7 +3,6 @@
 #include "../include/lib.h"
 #include "defs.h"
 #include "../memory/sbrk.h"
-#include "../include/process.h"
 #define MAX_NAME 15
 #define MAX_SEM 30
 #define TRUE 1

@@ -3,6 +3,8 @@
 #include <int80.h>
 #include <lib.h>
 
+static int waiting_pid;
+static int processWaiting = 0;
 
 
 //Chose 100 as maximum size
@@ -143,21 +145,38 @@ void addToBuffer(char charToAdd)
 	buffer[endPosition] = charToAdd;
 	endPosition = (endPosition + 1) % BUFFER_SIZE; //As its cyclic iterator
 	size++;
+	if (processWaiting) {
+        processWaiting = 0;
+        changeStatus(waiting_pid, READY);
+    }
 }
 
 //Function to return a uint8 from the buffer and delete it. Return 0 if empty
 uint8_t getChar()
 {	
-	if (size <= 0)
-	{ //EMPTY BUFFER
-		return 0;
-	}
-	else
-	{
-		uint8_t to_return = buffer[startPosition];
-		startPosition = (startPosition + 1) % BUFFER_SIZE;
-		size--;
-		return to_return;
+	int fd = getFdIn();
+	if(fd > 0){
+		printf("trying to get char from pipe");
+		return (uint8_t)readPipe(fd);	
+	} else {
+		if (size <= 0)
+		{ //Nada en el buffer
+			int pid;
+			getPid(&pid);
+			if (isCurrentForeground()) {
+				processWaiting = 1;
+				waiting_pid = pid;
+			}
+			changeStatus(pid, BLOCKED);
+			return 0;
+		}
+		else
+		{
+			uint8_t to_return = buffer[startPosition];
+			startPosition = (startPosition + 1) % BUFFER_SIZE;
+			size--;
+			return to_return;
+		}
 	}
 }
 

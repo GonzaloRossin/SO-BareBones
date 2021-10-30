@@ -2,6 +2,10 @@
 #define LIB_H
 #include <stdint.h>
 #include "../drivers/video_driver.h"
+#include "../include/process.h"
+//#include "../pipes/pipe.h" //includear esto acá tira error falopa, debe haber include loop en algun lado
+
+
 #define NULL ((void *)0)
 
 #define MAX_NAME_LENGTH 50

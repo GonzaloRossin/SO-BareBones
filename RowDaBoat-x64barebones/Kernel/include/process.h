@@ -4,6 +4,7 @@
 #include "lib.h"
 #include "../drivers/video_driver.h"
 
+#define MAX_NAME_LENGTH 50
 
 #define MAX_PROCESSES 50
 #define MAX_STACK 50000

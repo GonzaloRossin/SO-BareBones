@@ -54,6 +54,6 @@ void wait(unsigned int millis);
 void sleep(int seg);
 uint64_t p_open(char* name);
 uint64_t p_close(uint64_t pipeIndex);
-uint64_t p_read(uint64_t pipeIndex);
+char p_read(uint64_t pipeIndex);
 uint64_t p_write(uint64_t pipeIndex, char* string);
 #endif

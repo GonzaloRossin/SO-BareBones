@@ -4,8 +4,8 @@ typedef struct
 {
     sem_t sem;
     uint64_t available;
-} space;
-static space semSpaces[MAX_SEM];
+} sem_space;
+static sem_space semSpaces[MAX_SEM];
 
 // Funciones internas
 static int createSem(char *name, uint64_t initValue);

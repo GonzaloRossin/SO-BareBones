@@ -127,8 +127,8 @@ uint64_t p_open(char* name){
 uint64_t p_close(uint64_t pipeIndex){
    return(uint64_t)sys_call(29,(uint64_t)pipeIndex,0,0,0,0);
 }
-uint64_t p_read(uint64_t pipeIndex){
-   return(uint64_t)sys_call(30,(uint64_t)pipeIndex,0,0,0,0);
+char p_read(uint64_t pipeIndex){
+   return(char)sys_call(30,(uint64_t)pipeIndex,0,0,0,0);
 }
 uint64_t p_write(uint64_t pipeIndex, char* string){
    return(uint64_t)sys_call(31,(uint64_t)pipeIndex,(uint64_t)string,0,0,0);

@@ -12,6 +12,7 @@
         "buddy.h": "c",
         "mem_man.h": "c",
         "pipe.h": "c",
-        "shell.h": "c"
+        "shell.h": "c",
+        "sem.h": "c"
     }
 }

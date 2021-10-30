@@ -111,7 +111,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 }
 //SYSCALL 0
 char sys_read (){
-	return getChar();
+	return (char) getChar();
 }
 //SYSCALL 1
 void sys_write( char * rsi, int rdx)

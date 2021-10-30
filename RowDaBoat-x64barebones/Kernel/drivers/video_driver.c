@@ -3,6 +3,7 @@
 #include <video_driver.h>
 #include "../include/lib.h"
 
+
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
 	uint8_t window_a;			// deprecated
@@ -86,16 +87,21 @@ void draw_square(unsigned int x, unsigned int y, int l, int color){
 }
 
 void draw_char(char caracter){
-	if (cursor_x + CHAR_WIDTH*FONT_SIZE > marginRight)
-	{
-		cursor_x = marginLeft;
-		cursor_y += CHAR_HEIGHT*FONT_SIZE;
-		if (cursor_y >= SCREEN_HEIGHT){
-			scroll(FONT_SIZE);
+	int fd = getFdOut();
+	if(fd > 0){
+		writePipe(fd, &caracter);	
+	} else {
+		if (cursor_x + CHAR_WIDTH*FONT_SIZE > marginRight)
+		{
+			cursor_x = marginLeft;
+			cursor_y += CHAR_HEIGHT*FONT_SIZE;
+			if (cursor_y >= SCREEN_HEIGHT){
+				scroll(FONT_SIZE);
+			}
 		}
+		draw_char_personalized(cursor_x, cursor_y, caracter, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
+		cursor_x += CHAR_WIDTH*FONT_SIZE;
 	}
-	draw_char_personalized(cursor_x, cursor_y, caracter, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
-	cursor_x += CHAR_WIDTH*FONT_SIZE;
 }
 
 void draw_char_personalized(int x, int y, char character, int fontsize, int fontcolor, int backgroundcolor){

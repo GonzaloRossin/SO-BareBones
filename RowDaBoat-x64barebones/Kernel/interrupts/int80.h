@@ -5,11 +5,9 @@
 #include "interrupt_routines.h"
 #include "../include/lib.h"
 #include "../drivers/keyboard_driver.h"
-#include "../include/process.h"
 #include "../include/font.h"
 #include "../memory/sbrk.h"
 #include "../sem/sem.h"
-#include "../pipes/pipe.h"
 
 /*
 #ifdef BUDDY_H
