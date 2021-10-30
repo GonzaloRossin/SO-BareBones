@@ -237,7 +237,7 @@ void test_processes(){
     // Create MAX_PROCESSES processes
     for(rq = 0; rq < MAX_PROCESSES; rq++){
       main_func_t endfun = {endless_loop, 0, NULL};
-      p_rqs[rq].pid = exec(&endfun, "Endless Loop", 0); // TODO: Port this call as required
+      p_rqs[rq].pid = exec(&endfun, "Endless Loop", 0, NULL); // TODO: Port this call as required
 
       if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
         print("Error creating process\n");               // TODO: Port this as required

@@ -286,6 +286,7 @@ void filter_main(){
         c = '\0';
         c = read_input();
     }
+    newLine();
 }
 
 void filter(int nada, int nada2, uint64_t fd[2])
@@ -316,9 +317,9 @@ void blockProcess(char* pid_char) {
         }
     }
 }
-void execute_phylo(){
+void execute_phylo(int nada, int nada2, uint64_t fd[2]){
     main_func_t aux = {phylo, 0, NULL}; 
-    int pid = exec(&aux, "phylo", 1);
+    int pid = exec(&aux, "phylo", 1, fd);
     newLine();
     put_char('>');
 }
@@ -448,6 +449,8 @@ static void CommandHandler()
 
                 //en args[1] está el segundo comando
                 //ahora voy a buscar el segundo command
+                char* str = "\t";
+                p_write(pipeId, str);
                 int found = 0;
                 for (int j = 0; j < commandsSize; j++){
                     if (strcmp(args[1], commandList[j].command_name)){

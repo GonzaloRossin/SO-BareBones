@@ -7,9 +7,6 @@
 static int waiting_pid;
 static int processWaiting = 0;
 
-static int waiting_pid;
-static int processWaiting = 0;
-
 
 //Chose 100 as maximum size
 #define BUFFER_SIZE 100

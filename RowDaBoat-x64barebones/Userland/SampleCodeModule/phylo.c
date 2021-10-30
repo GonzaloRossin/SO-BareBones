@@ -109,7 +109,7 @@ int addPhylo(int pIndex){
     phylos[pIndex].state = THINKING;
     int currseated=seated;
     main_func_t aux = {phyloProcess, currseated, NULL}; 
-    if ((phylos[pIndex].pid = exec(&aux,phylos[pIndex].semName , BACKGROUND)) < 0) //TODO Cambiar al implementar pipes
+    if ((phylos[pIndex].pid = exec(&aux,phylos[pIndex].semName , BACKGROUND, NULL)) < 0) //TODO Cambiar al implementar pipes
     {
         print("Error creating philosopher process");
         return -1;

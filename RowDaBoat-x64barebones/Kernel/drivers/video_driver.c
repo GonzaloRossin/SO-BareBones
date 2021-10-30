@@ -92,7 +92,7 @@ void draw_char(char caracter){
 	if(fd > 0){
 		//scroll(FONT_SIZE);
 		//writePipe(fd, &caracter);
-		if (cursor_x + CHAR_WIDTH*FONT_SIZE > marginRight)
+		/*if (cursor_x + CHAR_WIDTH*FONT_SIZE > marginRight)
 		{
 			cursor_x = marginLeft;
 			cursor_y += CHAR_HEIGHT*FONT_SIZE;
@@ -101,7 +101,7 @@ void draw_char(char caracter){
 			}
 		}
 		draw_char_personalized(cursor_x, cursor_y, caracter, FONT_SIZE, FONT_COLOR, BACKGROUND_COLOR);
-		cursor_x += CHAR_WIDTH*FONT_SIZE;
+		cursor_x += CHAR_WIDTH*FONT_SIZE;*/
 		writePipe(fd, &caracter);	
 	} else {
 		if (cursor_x + CHAR_WIDTH*FONT_SIZE > marginRight)
