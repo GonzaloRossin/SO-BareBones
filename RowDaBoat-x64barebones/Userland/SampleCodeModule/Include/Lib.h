@@ -3,6 +3,9 @@
 
 #include "structs.h"
 #include "libasm.h"
+#ifndef NULL
+    #define NULL ((void*)0)
+#endif
 
 
 
@@ -16,6 +19,8 @@ uint8_t * strToNumHex(char * str);
 int abs(int i);
 int strToInt(char* str);
 void save_screenCords(screenShell* shell);
+char* strcat(char *dest, const char *src);
+char* itoa(int num, char* buffer, int base);
 //-------------------------------------------------------------
 //syscall
 char read_input();//syscall0
