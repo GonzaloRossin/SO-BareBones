@@ -7,7 +7,7 @@
 #define BACKGROUND 0
 #define SEM_PHYL "semPhylos"
 #define LEN 20
-#define QUANTUM 3000//en milis
+#define QUANTUM 1000//en milis
 
 typedef struct
 {
@@ -78,7 +78,6 @@ void phylo(int argc, char **argv)
             }
             break;
         }
-        printState();
     }
     endTable();
     if (s_close(sem) == -1)
@@ -231,5 +230,5 @@ static void printState()
     {
         (phylos[i].state == EATING) ? print(" E ") : print(" . ");
     }
-    put_char('\n');
+    print("\n");
 }
