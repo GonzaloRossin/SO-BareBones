@@ -65,7 +65,7 @@ pid_t exec(main_func_t *func, char* name, int rcx){ //syscall 18
 int pid;
    sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid);
    return pid;
-} 
+}
 
 int ps(process_info* arr, unsigned int max_size) {//syscall 19
    unsigned int size;
@@ -77,16 +77,16 @@ void _yield(){//syscall 20
    sys_call(20,0,0,0,0);
 }
 
-void kill(pid_t pid){//syscall 21
-   sys_call(21,pid,0,0,0);
+int kill(pid_t pid){//syscall 21
+   return sys_call(21,pid,0,0,0);
 }
 
 void nice(pid_t pid, unsigned int priority){//syscall 22
    sys_call(22,pid,priority,0,0);
 }
 
-void block(pid_t pid, unsigned int new_status){//syscall 23
-   sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
+int block(pid_t pid, unsigned int new_status){//syscall 23
+   return sys_call(23, (uint64_t)pid, (uint64_t)new_status, 0, 0);
 }
 
 void s_init(){//syscall 24
@@ -119,6 +119,22 @@ int getPid(void) {
 }
 void wait(unsigned int millis) {
    sys_call(27,(void *)(uint64_t) millis, 0, 0, 0);
+}
+
+uint64_t p_open(char* name){
+   return(uint64_t)sys_call(28,(uint64_t)name,0,0,0);
+}
+uint64_t p_close(uint64_t pipeIndex){
+   return(uint64_t)sys_call(29,(uint64_t)pipeIndex,0,0,0);
+}
+uint64_t p_read(uint64_t pipeIndex){
+   return(uint64_t)sys_call(30,(uint64_t)pipeIndex,0,0,0);
+}
+uint64_t p_write(uint64_t pipeIndex, char* string){
+   return(uint64_t)sys_call(31,(uint64_t)pipeIndex,(uint64_t)string,0,0);
+}
+uint64_t p_list(){
+   return(uint64_t)sys_call(32,0,0,0,0);
 }
 //----------------------------------------------------------------------------------------------
 void save_screenCords(screenShell* shell){//desuso
@@ -189,27 +205,27 @@ int strToInt(char* str)
 {
    // Initialize result
     int res = 0;
- 
+
     // Initialize sign as positive
     int sign = 1;
- 
+
     // Initialize index of first digit
     int i = 0;
- 
+
     // If number is negative,
     // then update sign
     if (str[0] == '-') {
         sign = -1;
- 
+
         // Also update index of first digit
         i++;
     }
- 
+
     // Iterate through all digits
     // and update the result
     for (; str[i] != '\0'; ++i)
         res = res * 10 + str[i] - '0';
- 
+
     // Return result with sign
     return sign * res;
 }

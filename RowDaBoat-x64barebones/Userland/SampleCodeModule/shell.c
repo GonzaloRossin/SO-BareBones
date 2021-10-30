@@ -48,7 +48,7 @@ static void printMem(uint8_t* mem){
         }
         print_num(vec[i],1);
         print("  ");
-    } 
+    }
     newLine();
 }
 
@@ -68,7 +68,7 @@ static void testDivisionBy0Command()
 
 static int readNewInput()
 {
-    
+
     char chartoadd=read_input();
 
     //If there is nothing new or its not a valid character...
@@ -165,23 +165,23 @@ void get_mem_info(){
     print(aux.sys_name);
     newLine();
 }
- 
-int loopMain(int argc, char ** argv) { 
+
+int loopMain(int argc, char ** argv) {
     int pid = getPid();
-    
-    for (unsigned int i = 0; 1; i++) {  
+
+    for (unsigned int i = 0; 1; i++) {
         //sleep(argc);
         wait(argc * 1000);
         print("hola soy pid: "); print_num(pid, 0); newLine();
-    } 
+    }
     newLine();
     put_char('>');
-    return 0; 
-} 
+    return 0;
+}
 
-void loop(int a1) { 
-    main_func_t proc2 = {loopMain, a1, NULL}; 
-    int aux = exec(&proc2, "test Process", 0); 
+void loop(int a1) {
+    main_func_t proc2 = {loopMain, a1, NULL};
+    int aux = exec(&proc2, "test Process", 0);
     print("Process created ");
     print_num(aux, 0);
 }
@@ -193,19 +193,23 @@ static void pKill(int pid){
     print(" killed");
 }
 static void test_sync1(){
-    main_func_t aux = {main_test_sync, 0, NULL}; 
+    main_func_t aux = {main_test_sync, 0, NULL};
     int pid = exec(&aux, "test sync", 0);
     newLine();
     put_char('>');
 }
 static void test_sync2(){
-    main_func_t aux = {main_test_no_sync, 0, NULL}; 
+    main_func_t aux = {main_test_no_sync, 0, NULL};
     int pid = exec(&aux, "test no sync", 0);
     newLine();
     put_char('>');
 }
 static void list_semaphores(){
     list_sem();
+}
+
+static void list_pipes(){
+    p_list();
 }
 
 void blockProcess(int pid) {
@@ -215,16 +219,16 @@ void blockProcess(int pid) {
         unsigned int status = 0;
         int ans = getProcessStatus(pid, &status);
 
-        if(ans == -1 || status == KILLED) //it is KILLED or does not exist 
-            print("Process not found\n"); 
-        
+        if(ans == -1 || status == KILLED) //it is KILLED or does not exist
+            print("Process not found\n");
+
         else if ( status == READY ) {
-            block(pid, BLOCKED); 
+            block(pid, BLOCKED);
             print("process "); print_num(pid, 0); print(" blocked\n");
-        }             
+        }
         else if( status == BLOCKED) {
             block(pid, READY);
-            print("process "); print_num(pid, 0); print(" ready\n"); 
+            print("process "); print_num(pid, 0); print(" ready\n");
         }
     }
 }
@@ -232,19 +236,19 @@ void blockProcess(int pid) {
 void printProcesses(void) {
     process_info info[50];
     int amount = ps(info, 50);
-    print("Processes:\n");
+    print("Process number\tProcess Name\tPID\tPPID\tPriority\tRBP\tRSP\tState\tForeground\tTime left\tQuantums\n\n");
     for (unsigned int i = 0; i < amount; i++) {
-        print("Process number "); print_num(i, 0); print("\t");
-        print("Process Name: "); print(info[i].name); print("\t");
-        print("PID: "); print_num(info[i].pid, 0); print(" \t");
-        print("PPID: "); print_num(info[i].ppid, 0); print(" \t");
-        print("Priority: "); print_num(info[i].priority, 0); print("\n");
-        print("RBP: "); print_num(info[i].rbp, 0); print(" \t");
-        print("RSP: "); print_num(info[i].rsp, 0); print(" \t");
-        print("State: "); print_num(info[i].status, 0); print(" \t");
-        print("Foreground: "); print_num(info[i].foreground, 0); print(" \t");
-        print("Time left: "); print_num(info[i].given_time, 0); print(" ticks \t");
-        print("Quantums: "); print_num(info[i].aging, 0); print("\n");
+        print(""); print_num(i, 0); print("\t");
+        print(""); print(info[i].name); print("\t");
+        print(""); print_num(info[i].pid, 0); print(" \t");
+        print(""); print_num(info[i].ppid, 0); print(" \t");
+        print(""); print_num(info[i].priority, 0); print(" \t");
+        print("  "); print_num(info[i].rbp, 0); print("  ");
+        print(""); print_num(info[i].rsp, 0); print(" \t");
+        print(""); print_num(info[i].status, 0); print(" \t");
+        print(""); print_num(info[i].foreground, 0); print(" \t");
+        print(""); print_num(info[i].given_time, 0); print(" ticks \t");
+        print(""); print_num(info[i].aging, 0); print("\n");
    }
 }
 
@@ -255,7 +259,7 @@ void fillCommand(char* name,char *desc, void (*cmdptr)(), int arg_q)
     strncpy(desc, aux.desc,0, strlen(desc));
     aux.cmdptr = cmdptr;
     aux.arg_q = arg_q;
-    
+
     commandList[commandsSize++] = aux;
 }
 
@@ -278,6 +282,7 @@ void fillCommandList()
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
+    fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
 }
 
 int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX_COMDESC]){
@@ -305,18 +310,18 @@ int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX
             args[params_read++][j] = '\0';
 			j=0;
 		}
-		i++;	
+		i++;
     }
 
 	if(potentialCommand[i] == '\0'){ //si corto porque se acabo el string --> me quedo un param mas
 		args[params_read++][j] = '\0';
-    } 
-
-	if(params_read > MAX_ARGS){
-		return -1; 
     }
 
-	return params_read; 
+	if(params_read > MAX_ARGS){
+		return -1;
+    }
+
+	return params_read;
 }
 static void CommandHandler()
 {
@@ -345,7 +350,7 @@ static void CommandHandler()
                 print(", Argumentos esperados: ");
                 print_num(commandList[i].arg_q,0);
                 newLine();
-                return; 
+                return;
             }
             if(commandList[i].arg_q == 0){
                 (commandList[i].cmdptr)(0,0,0);
@@ -382,6 +387,7 @@ void initializeOS(){
     put_char('>');
     buffersize=0;
 }
+
 void shell()
 {
     fillCommandList();

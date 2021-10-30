@@ -71,13 +71,13 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		pYield();
 	 	break;
 	case 21:
-		process_kill((int)rsi);
+		return process_kill((int)rsi);
 		break;
 	case 22:
 		nice((int)rsi, (unsigned int)rdx);
 		break;
 	case 23:
-		block((int)rsi, (unsigned int) rdx);
+		return block((int)rsi, (unsigned int) rdx);
 		break;
 	case 24:
 		return (uint64_t)sys_sem((int)rsi, rdx,rcx);
@@ -90,7 +90,19 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		break;
 	case 27:
 		_wait((unsigned int) rsi);
-	break;
+		break;
+	case 28:
+		return pipe_open((char*) rsi);
+		break;
+	case 29:
+		return pipe_close((uint64_t) rsi);
+		break;
+	case 30:
+		return read_pipe((uint64_t) rsi);
+		break;
+	case 31:
+		return write_pipe((uint64_t) rsi,(char*)rdx);
+		break;
 	}
 	return 0;
 }
@@ -143,7 +155,7 @@ uint8_t sys_get_clock(int rsi){
 		case 1:
 			return readMinutes();
 		case 2:
-			return readHours();	
+			return readHours();
 	}
 
 	return 0;
@@ -218,16 +230,16 @@ void pYield(){
 	yield();
 }
 // //SYS_CALL 21
-void process_kill(int pid){
-	kill(pid);
+int process_kill(int pid){
+	return kill(pid);
 }
 //SYS_CALL 22
 void nice(int pid, unsigned int priority) {
 	changePriority(pid, priority);
 }
 // //SYS_CALL 23
-void block(int pid, unsigned int new_status){
-	changeStatus(pid, new_status);
+int block(int pid, unsigned int new_status){
+	return changeStatus(pid, new_status);
 }
 //SYS_CALL 24
 uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx){
@@ -267,3 +279,30 @@ void get_pid(int* pid){
 void _wait(unsigned int millis) {
 	wait(millis);
 }
+
+
+//SYS_CALL 28
+uint64_t pipe_open(char* name){
+	return pipeOpen((char*) name);
+}
+
+//SYS_CALL 29
+uint64_t pipe_close(uint64_t pipeId){
+	return pipeClose((uint64_t) pipeId);
+}
+
+//SYS_CALL 30
+char read_pipe(uint64_t pipeId){
+	return (char)readPipe((uint64_t) pipeId);
+}
+
+//SYS_CALL 31
+uint64_t write_pipe(uint64_t pipeId, char* string){
+	return writePipe((uint64_t) pipeId,(char*)string);
+}
+
+/*
+//SYS_CALL 32
+uint64_t write_pipe(uint64_t pipeId, char* string){
+	return writePipe((uint64_t) pipeId,(char*)string);
+}*/

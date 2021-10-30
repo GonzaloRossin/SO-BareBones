@@ -1,5 +1,7 @@
-#include <tests.h>
+#include "Include/tests.h"
 #include "Include/shell.h"
+#include "Include/lib.h"
+#include "Include/test_util.h"
 
 #define MAX_BLOCKS 128
 #define MAX_MEMORY 8192 //Should be around 80% of memory managed by the MM
@@ -61,7 +63,7 @@ void test_mm(){
 
 
 static uint64_t my_create_process(int (f)(int, char**), char * name){
-  uint64_t pid = 0; 
+  uint64_t pid = 0;
   main_func_t f_ps = {f, 0, NULL};
   int aux = exec( &f_ps, name, 0); //CHECKEAR ERROR!!!!!
   if(aux < 0) {
@@ -85,31 +87,32 @@ static uint64_t my_sem_post(uint64_t sem_id){
   int ret =(int) s_post(sem_id);
   if (ret < 0)
     print("Se rompio el post\n");
-  return ret;  
-} 
-
-static uint64_t my_sem_close(uint64_t sem_id){
- return s_close(sem_id);  
+  return ret;
 }
 
-#define N 1000
+static uint64_t my_sem_close(uint64_t sem_id){
+ return s_close(sem_id);
+}
+
+#define N 5000000
 #define SEM_NAME "sem"
 #define TOTAL_PAIR_PROCESSES 2
 
 uint64_t global;  //shared memory
 
-static void slowInc(uint64_t *p, int inc){
+static void slowInc(uint64_t *p, int inc) {
   uint64_t aux = *p;
   aux += inc;
-  *p = aux;
-  _yield();
+  //wait(10);
+  for(int i = 0; i < 100; i++);
+  *p = aux;  
 }
 
-static int my_process_inc(int argc, char ** argv){
+static int my_process_inc(int argc, char ** argv) {
   uint64_t i;
   uint64_t sem;
 
-  if ((sem = my_sem_open(SEM_NAME,1)) < 0){
+  if ((sem = my_sem_open(SEM_NAME,1)) < 0) {
     print("ERROR OPENING SEM\n");
     return -1;
   }
@@ -118,7 +121,7 @@ static int my_process_inc(int argc, char ** argv){
     slowInc(&global, 1);
     my_sem_post(sem);
   }
-  
+
   print("SEM Final value: ");
   print_num(global,0);
   newLine();
@@ -128,13 +131,13 @@ static int my_process_inc(int argc, char ** argv){
 
 static int my_process_dec(int argc, char ** argv){
   uint64_t i;
-  uint64_t sem; 
+  uint64_t sem;
 
   if ((sem = my_sem_open(SEM_NAME, 1)) < 0){
     print("ERROR OPENING SEM\n");
     return -1;
   }
-  
+
   for (i = 0; i < N; i++){
     my_sem_wait(sem);
     slowInc(&global, -1);
@@ -150,7 +153,7 @@ static int my_process_dec(int argc, char ** argv){
 
 static void test_sync(){
   uint64_t i;
-  
+
   global = 0;
 
   print("CREATING PROCESSES...\n");
@@ -169,7 +172,7 @@ static int my_process_inc_no_sem(int argc, char ** argv){
   }
 
   print("SEM Final value: ");
-  print_num(global,0);
+  print_num((long int)global,0);
   newLine();
 
   return 0;
@@ -177,13 +180,13 @@ static int my_process_inc_no_sem(int argc, char ** argv){
 
 static int my_process_dec_no_sem(int argc, char ** argv){
   uint64_t i;
+  //wait(1000);
   for (i = 0; i < N; i++){
-    wait(500);
     slowInc(&global, -1);
   }
 
   print("SEM Final value: ");
-  print_num(global,0);
+  print_num((long int)global,0);
   newLine();
 
   return 0;
@@ -201,6 +204,91 @@ static void test_no_sync(){
     my_create_process(my_process_dec_no_sem, "my_process_dec_no_sem");
   }
   // The last one should not print 0
+}
+
+
+
+
+//////////////////////////
+// Test process  /////////
+//////////////////////////
+
+
+//TO BE INCLUDED
+void endless_loop(){
+  while(1);
+}
+
+#define MAX_PROCESSES 5 //Should be around 80% of the the processes handled by the kernel
+
+typedef struct P_rq{
+  uint32_t pid;
+  unsigned int state;
+} p_rq;
+
+void test_processes(){
+  p_rq p_rqs[MAX_PROCESSES];
+  uint8_t rq;
+  uint8_t alive = 0;
+  uint8_t action;
+
+  //while (1) {
+
+    // Create MAX_PROCESSES processes
+    for(rq = 0; rq < MAX_PROCESSES; rq++){
+      main_func_t endfun = {endless_loop, 0, NULL};
+      p_rqs[rq].pid = exec(&endfun, "Endless Loop", 0); // TODO: Port this call as required
+
+      if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
+        print("Error creating process\n");               // TODO: Port this as required
+        return;
+      } else {
+        p_rqs[rq].state = READY;
+        alive++;
+      }
+    }
+    // Randomly kills, blocks or unblocks processes until every one has been killed
+    while (alive > 0){
+
+      for(rq = 0; rq < MAX_PROCESSES; rq++){
+        action = GetUniform(2) % 2;
+
+        switch(action){
+          case 0:
+            if (p_rqs[rq].state == READY || p_rqs[rq].state == BLOCKED) {
+              if (kill(p_rqs[rq].pid) == -1){          // TODO: Port this as required
+                print("Error killing process\n");        // TODO: Port this as required
+                return;
+              }
+              p_rqs[rq].state = KILLED;
+              alive--;
+            }
+            break;
+
+          case 1:
+            if (p_rqs[rq].state == READY){
+              if(block(p_rqs[rq].pid, BLOCKED) == -1){          // TODO: Port this as required
+                print("Error blocking process\n");       // TODO: Port this as required
+                return;
+              }
+              p_rqs[rq].state = BLOCKED;
+            }
+            break;
+        }
+      }
+
+      // Randomly unblocks processes
+      for(rq = 0; rq < MAX_PROCESSES; rq++)
+        if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2) {
+          if(block(p_rqs[rq].pid, READY) == -1) {            // TODO: Port this as required
+            print("Error unblocking process\n");         // TODO: Port this as required
+            return;
+          }
+          p_rqs[rq].state = READY;
+        }
+    }
+    print("Finished");
+  //}
 }
 
 int main_test_sync(int argc, char ** argv){

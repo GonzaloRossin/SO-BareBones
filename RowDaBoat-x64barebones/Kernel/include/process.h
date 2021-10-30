@@ -6,7 +6,6 @@
 
 
 #define MAX_PROCESSES 50
-#define MAX_NAME_LENGTH 50
 #define MAX_STACK 50000
 #define HALTER_EXTRA_STACK_SPACE 20
 #define STATE_SIZE 5

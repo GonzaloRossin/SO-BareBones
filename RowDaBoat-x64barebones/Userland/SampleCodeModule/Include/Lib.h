@@ -39,10 +39,9 @@ pid_t exec(main_func_t *func, char* name, int rcx);//exec syscall18
 mm_stat Mmem();//syscall17
 int ps(process_info* arr, unsigned int max_size);//syscall19
 void _yield();//syscall20
-void kill(pid_t pid);//syscall21
+int kill(pid_t pid);//syscall21
 void nice(pid_t pid, unsigned int priority);//syscall22
-void block(pid_t pid, unsigned int status);//syscall23
-void s_init();//syscall24
+int block(pid_t pid, unsigned int status);//syscall23void s_init();//syscall24
 uint64_t s_open(char* name,int value);
 uint64_t s_wait(uint64_t s_id);
 uint64_t s_post(uint64_t s_id);
@@ -51,5 +50,9 @@ void list_sem();
 int getProcessStatus(int pid, unsigned int * status);
 int getPid(void);
 void wait(unsigned int millis);
-
+void sleep(int seg);
+uint64_t p_open(char* name);
+uint64_t p_close(uint64_t pipeIndex);
+uint64_t p_read(uint64_t pipeIndex);
+uint64_t p_write(uint64_t pipeIndex, char* string);
 #endif

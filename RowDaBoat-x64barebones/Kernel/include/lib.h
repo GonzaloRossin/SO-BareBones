@@ -4,7 +4,9 @@
 #include "../drivers/video_driver.h"
 #define NULL ((void *)0)
 
-
+#define MAX_NAME_LENGTH 50
+#define TRUE 1
+#define FALSE 0
 
 void * memset(void * destination, int32_t character, uint64_t length);
 void * memcpy(void * destination, const void * source, uint64_t length);

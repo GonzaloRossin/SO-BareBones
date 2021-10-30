@@ -8,6 +8,7 @@
 #include <interrupt_routines.h>
 #include "include/process.h"
 #include "sem/sem.h"
+//#include "pipes/pipe.h"
 
 #ifdef BUDDY_H
 #include "../memory/buddy.h"
@@ -58,17 +59,20 @@ void * initializeKernelBinary()
 }
 
 int main()
-{	
+{
 	loadIDT();
 	//Entering sampleCodeModuleAddress in userland
 	initSems();
 	initialStateSnapshot((uint64_t)sampleCodeModuleAddress, getSP());
-	
+
 	//start shell process, createProcess de process.c con datos hardcodeados
 	//(char *name, int (*code)(int, char **), char **argv, size_t stack, size_t heap)
 	main_func_t aux = {(int (*)(int, char **)) sampleCodeModuleAddress, 0, NULL};
-	int id;
-	pCreate(&aux, "SampleCodeModule", 1,&id);
+	int pid;
+	pCreate(&aux, "SampleCodeModule", 1, &pid);
+	_int81();
+	//initPipes();
+
 
 /*
 	#ifdef BUDDY_H
@@ -79,8 +83,6 @@ int main()
 		#endif
 	#endif
 	*/
-
-	_halt_and_wait();
 
 	// ((EntryPoint)sampleCodeModuleAddress)();
 	return 0;

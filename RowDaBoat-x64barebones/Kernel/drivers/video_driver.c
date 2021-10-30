@@ -76,9 +76,9 @@ void draw_rectangle(unsigned int x, unsigned int y, int b, int h, int color){
 		{
 			draw_pixel(x+i, y+j, color);
 		}
-		
+
 	}
-	
+
 }
 
 void draw_square(unsigned int x, unsigned int y, int l, int color){
@@ -159,7 +159,7 @@ void draw_string(char * buffer, int count){
 			newLine();
 		}
 		else if(buffer[i]=='\t'){
-			for(int i=0;i<5;i++){
+			for(int i=0;i<4;i++){
 				draw_char(' ');
 			}
 		}
@@ -195,7 +195,7 @@ void delete_line(){
 }
 
 void scroll(int size){
-  
+
   for(int j=0 ; j<SCREEN_HEIGHT-CHAR_HEIGHT*size ; j++){
    		for(int i=marginLeft ; i<marginRight ; i++){
             char * current = get_pixel( i, j);
