@@ -155,7 +155,7 @@ uint8_t getChar()
 {	
 	uint64_t fd = getFdIn();
 	if(fd > 0){
-		printf("trying to get char from pipe");
+		//printf("trying to get char from pipe");
 		return (uint8_t)readPipe(fd);	
 	} else {
 		if (size <= 0)

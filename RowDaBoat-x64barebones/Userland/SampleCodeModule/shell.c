@@ -432,11 +432,14 @@ static void CommandHandler()
                 print_num(pipeId,0);
                 if(pipeId < 0){
                     print("error abriendo pipe |\n");
+                } else {
+                    print("\nusing pipe ");
+                    print_num(pipeId, 0);
                 }
-                //en args[1] está el segundo comando
                 uint64_t fd[2] = {0, pipeId};
                 (commandList[i].cmdptr)(0,0,fd);
 
+                //en args[1] está el segundo comando
                 //ahora voy a buscar el segundo command
                 int found = 0;
                 for (int j = 0; j < commandsSize; j++){
@@ -497,15 +500,7 @@ static void CommandHandler()
                     return;
                 }
                 if(commandList[i].arg_q == 0){
-                    uint64_t pipeId = p_open("test");
-                    if(pipeId < 0){
-                        print("error abriendo pipe test \n");
-                    } else {
-                        print("\nusing pipe ");
-                        print_num(pipeId, 0);
-                    }
-                    uint64_t fd[2] = {0,pipeId};
-                    (commandList[i].cmdptr)(0,0,fd);
+                    (commandList[i].cmdptr)(0,0,NULL);
                     newLine();
                     return;
                 } else if(commandList[i].arg_q == 1){
