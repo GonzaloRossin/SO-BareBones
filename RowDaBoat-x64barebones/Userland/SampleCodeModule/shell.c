@@ -1,5 +1,6 @@
 #include "Include/shell.h"
 #include "Include/Lib.h"
+#include "phylo.h"
 #include "Include/tests.h"
 
 #define BUFFER_SIZE 100
@@ -315,7 +316,12 @@ void blockProcess(char* pid_char) {
         }
     }
 }
-
+void execute_phylo(){
+    main_func_t aux = {phylo, 0, NULL}; 
+    int pid = exec(&aux, "phylo", 1);
+    newLine();
+    put_char('>');
+}
 void printProcesses(void) {
     process_info info[50];
     int amount = ps(info, 50);
@@ -365,6 +371,7 @@ void fillCommandList()
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
+    fillCommand("phylo",": ejecuta el problema de los filosofos",&execute_phylo,0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
     fillCommand("cat",": Imprime el input",&cat,0);
     fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,0);

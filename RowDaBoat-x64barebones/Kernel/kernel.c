@@ -75,6 +75,8 @@ int main()
 	pCreate(&aux, "SampleCodeModule", 1, &pid, fd);
 
 	initPipes();
+	
+	_int81();
 
 
 /*
@@ -86,8 +88,6 @@ int main()
 		#endif
 	#endif
 	*/
-
-	_halt_and_wait();
 
 	// ((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
