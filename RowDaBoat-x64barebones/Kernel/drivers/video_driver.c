@@ -82,7 +82,14 @@ void draw_rectangle(unsigned int x, unsigned int y, int b, int h, int color){
 	}
 
 }
-
+int show_cursor(int is_shown){
+	if(is_shown){
+		draw_rectangle(cursor_x,cursor_y,CHAR_WIDTH,CHAR_HEIGHT,BACKGROUND_COLOR);
+		return 0;
+	}else
+		draw_rectangle(cursor_x,cursor_y,CHAR_WIDTH,CHAR_HEIGHT,FONT_COLOR);
+	return 1;
+}
 void draw_square(unsigned int x, unsigned int y, int l, int color){
 	draw_rectangle(x, y, l, l, color);
 }

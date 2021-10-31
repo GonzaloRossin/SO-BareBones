@@ -16,6 +16,7 @@ void draw_char_personalized(int x, int y, char character, int fontsize, int font
 void draw_string(char* buffer,int count);
 void draw_string_personalized(int x, int y, char * buffer, int count, int fontsize, int fontcolor, int backgroundcolor);
 void newLine();
+int show_cursor(int is_shown);
 void delete_char();
 void delete_line();
 void scroll(int size);
