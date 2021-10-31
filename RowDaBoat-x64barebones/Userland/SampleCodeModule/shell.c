@@ -484,35 +484,6 @@ static void CommandHandler()
 
                 newLine();
 
-
-            } else if (strcmp(args[1], ".")){//ej  loop 2 | filter
-                uint64_t pipeId = p_open("|2");
-                if(pipeId < 0){
-                    print("error abriendo pipe |2 \n");
-                }
-                //en args[2] está el segundo comando
-                uint64_t fd[2] = {0, pipeId};
-                (commandList[i].cmdptr)(args[0],0,fd);
-                //ahora voy a buscar el segundo command
-                char* str = "\t";
-                p_write(pipeId, str);
-                int found = 0;
-                for (int j = 0; j < commandsSize; j++){
-                    if (strcmp(args[2], commandList[j].command_name)){
-                        uint64_t fd2[2] = {pipeId,0};
-
-                        (commandList[j].cmdptr)(0,0,fd2);   
-                        found = 1;
-                    }
-                }
-                if(!found){
-                    print("comando ");
-                    print(args[1]);
-                    print(" no encontrado\n");
-                } else { return; }
-
-                newLine();
-
             } else if(strcmp(args[0], "&")) {
                 foreground = 0;
                 (commandList[i].cmdptr)(0,0,NULL);
