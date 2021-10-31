@@ -72,9 +72,11 @@ int main()
 	uint64_t fd[2] = {0,0};
 	draw_decimal(fd[0]);
 	draw_decimal(fd[1]);
-	pCreate(&aux, "SampleCodeModule", 1, &pid, fd);
+	pCreate(&aux, "SampleCodeModule", 1, &pid, NULL);
 
 	initPipes();
+	
+	_int81();
 
 
 /*
@@ -86,8 +88,6 @@ int main()
 		#endif
 	#endif
 	*/
-
-	_halt_and_wait();
 
 	// ((EntryPoint)sampleCodeModuleAddress)();
 	return 0;

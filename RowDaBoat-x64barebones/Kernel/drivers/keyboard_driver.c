@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <keyboard_driver.h>
 #include <int80.h>
+#include <lib.h>
+#include "../include/process.h"
 
 static int waiting_pid;
 static int processWaiting = 0;
@@ -12,7 +14,7 @@ static int processWaiting = 0;
 #define END_OF_PRESSING_KEYS 0x80
 
 #define toLowerCase(c) (c >= 'A' && c<= 'Z'? c +'a' - 'A' : c)
-#define toUpperCase(c) (c >= 'a' && c<= 'z'? c -'a' + 'A' : c) 
+#define toUpperCase(c) (c >= 'a' && c<= 'z'? c -'a' + 'A' : c)
 
 //Buffer for all the codes
 static uint8_t buffer[BUFFER_SIZE] = {0};
@@ -42,13 +44,13 @@ static const unsigned char asciiMap[KEYS][2] =
     {{0, 0}, {0x1B, 0}, {'1', '!'}, {'2', '@'}, {'3', '#'}, {'4', '$'},//0X1B is esc
     {'5', '%'}, {'6','~'}, {'7', '&'}, {'8', '*'}, {'9', '('},
     {'0', ')'}, {'-', '_'}, {'=', '+'}, {0x08, 0}, {0x09, 0}, {'q', 'Q'}, //0x08 is backspace, 0x09 is tab key
-    {'w', 'W'}, {'e', 'E'}, {'r', 'R'}, {'t', 'T'}, {'y', 'Y'}, 
-    {'u', 'U'}, {'i', 'I'}, {'o', 'O'}, {'p', 'P'}, {'[', '{'}, 
-    {']', '}'}, {0x0A, 0}, {0, 0}, {'a', 'A'}, {'s', 'S'}, // 0x0A is enter 
+    {'w', 'W'}, {'e', 'E'}, {'r', 'R'}, {'t', 'T'}, {'y', 'Y'},
+    {'u', 'U'}, {'i', 'I'}, {'o', 'O'}, {'p', 'P'}, {'[', '{'},
+    {']', '}'}, {0x0A, 0}, {0, 0}, {'a', 'A'}, {'s', 'S'}, // 0x0A is enter
     {'d', 'D'}, {'f', 'F'}, {'g', 'G'}, {'h', 'H'}, {'j', 'J'},
     {'k', 'K'}, {'l', 'L'}, {';', ':'}, {'\'', '"'}, {'`', '~'},
-    {0, 0}, {'\\', '|'}, {'z', 'Z'}, {'x', 'X'}, {'c', 'C'}, 
-    {'v', 'V'}, {'b', 'B'}, {'n', 'N'}, {'m', 'M'}, {',', '<'}, 
+    {0, 0}, {'\\', '|'}, {'z', 'Z'}, {'x', 'X'}, {'c', 'C'},
+    {'v', 'V'}, {'b', 'B'}, {'n', 'N'}, {'m', 'M'}, {',', '<'},
     {'.', '>'}, {'/', '?'}, {0, 0}, {0, 0}, {0, 0}, {' ', 0}, {0, 0}};
 
 //Add an element to the buffer.
@@ -145,18 +147,18 @@ void addToBuffer(char charToAdd)
 	endPosition = (endPosition + 1) % BUFFER_SIZE; //As its cyclic iterator
 	size++;
 	if (processWaiting) {
-        processWaiting = 0;
-        changeStatus(waiting_pid, READY);
+		processWaiting = 0;
+		changeStatus(waiting_pid, READY);
     }
 }
 
 //Function to return a uint8 from the buffer and delete it. Return 0 if empty
 uint8_t getChar()
-{	
+{
 	uint64_t fd = getFdIn();
 	if(fd > 0){
 		//printf("trying to get char from pipe");
-		return (uint8_t)readPipe(fd);	
+		return (uint8_t)readPipe(fd);
 	} else {
 		if (size <= 0)
 		{ //Nada en el buffer

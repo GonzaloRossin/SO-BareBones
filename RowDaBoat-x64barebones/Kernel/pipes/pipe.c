@@ -203,12 +203,12 @@ char readPipe(uint64_t pipeIndex){
 
     pipe_t *pipe = &pipes[pipeIndex].pipe;
     if (semWait(pipe->semRead) == -1){
-        printf("Error semWait en readPipe\n");
+        //printf("Error semWait en readPipe\n");
         return -1;
     }
     char c = pipe->buffer[pipe->rIndex % PIPE_BUFFER_SIZE];
     pipe->rIndex++;
-    if (semPost(pipe->semRead) == -1){
+    if (semPost(pipe->semWrite) == -1){
         printf("Error semPost en readPipe\n");
         return -1;
     }

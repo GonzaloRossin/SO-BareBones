@@ -3,6 +3,9 @@
 
 #include "structs.h"
 #include "libasm.h"
+#ifndef NULL
+    #define NULL ((void*)0)
+#endif
 
 
 
@@ -16,6 +19,8 @@ uint8_t * strToNumHex(char * str);
 int abs(int i);
 int strToInt(char* str);
 void save_screenCords(screenShell* shell);
+char* strcat(char *dest, const char *src);
+char* itoa(int num, char* buffer, int base);
 //-------------------------------------------------------------
 //syscall
 char read_input();//syscall0
@@ -39,14 +44,13 @@ pid_t exec(main_func_t *func, char* name, int rcx, uint64_t fd[2]);//exec syscal
 mm_stat Mmem();//syscall17
 int ps(process_info* arr, unsigned int max_size);//syscall19
 void _yield();//syscall20
-void kill(pid_t pid);//syscall21
+int kill(pid_t pid);//syscall21
 void nice(pid_t pid, unsigned int priority);//syscall22
-void block(pid_t pid, unsigned int status);//syscall23
-void s_init();//syscall24
+int block(pid_t pid, unsigned int status);//syscall23void s_init();//syscall24
 uint64_t s_open(char* name,int value);
 uint64_t s_wait(uint64_t s_id);
 uint64_t s_post(uint64_t s_id);
-uint64_t s_close(uint64_t s_id);
+uint64_t s_close(char* semName);
 void list_sem();
 int getProcessStatus(int pid, unsigned int * status);
 int getPid(void);
