@@ -198,6 +198,7 @@ void draw_string(char * buffer, int count){
 }
 
 void newLine(){
+	show_cursor(1);
 	cursor_x = marginLeft;
 	cursor_y += CHAR_HEIGHT*FONT_SIZE;
 	if (cursor_y >= SCREEN_HEIGHT){
@@ -206,6 +207,7 @@ void newLine(){
 }
 
 void delete_char(){
+	show_cursor(1);
 	if (cursor_x == marginLeft)
 	{
 		cursor_x = marginRight;
