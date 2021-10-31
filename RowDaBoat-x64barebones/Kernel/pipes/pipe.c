@@ -38,8 +38,8 @@ static uint64_t findAvailable(){
 
 //Retorna el id del pipe en caso de exito, -1 si se encontro algun tipo de error
 static uint64_t createPipe(char *name){
-    printf("Creando el pipe: ");
-    printf(name);
+    //printf("Creando el pipe: ");
+    //printf(name);
 
     int len = Strlen(name);
     if (len <= 0 || len >= MAX_NAME_LENGTH)
@@ -101,12 +101,12 @@ uint64_t pipeOpen(char *name){
     if (id == -1){
         //Si no existe un pipe con ese nombre
         id = createPipe(name);
-        printf("\ncreated pipe ");
-        draw_decimal(id);
+        //printf("\ncreated pipe ");
+        //draw_decimal(id);
         newLine();
     } else {
-        printf("\nopened pipe ");
-        draw_decimal(id);
+        //printf("\nopened pipe ");
+        //draw_decimal(id);
         newLine();
     }
     

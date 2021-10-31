@@ -226,13 +226,15 @@ static void list_pipes(){
 }
 
 void cat_main(){
-    int i = 0; //NO BORRAR ESTA LINEA HACE QUE DEJE DE FUNCIONAR LO DE ABAJO POR ALGUNA RAZÓN DESCONOCIDA POR EL UNIVERSO
-    char c = read_input();
-    while(!strcmp(&c, "\t")){
-        //print(&c);
-        put_char(c);
-        c = '\0';
-        c = read_input();
+    int i = 0; //NO BORRAR ESTA LINEAAAAA
+    char c;
+    while((c = read_input()) != '\t'){//while(!strcmp(&c, "\t")){
+        if(c == 8){
+            actionCall(1);
+        }else if(c != 0){
+            put_char(c);
+            //print(&c);
+        }
     }
 }
 
@@ -240,25 +242,22 @@ void cat(int nada, int nada2, uint64_t fd[2])
 {
     main_func_t proc2 = {cat_main, NULL, NULL}; //argc, argv
     int aux = exec(&proc2, "CAT", 1, fd);
-    newLine(); //esto es para corregir el señalador porque puede quedar falopa por los espacios en blanco
+    newLine();
 }
 
 
 void wc_main(){
-    int i = 0; //LA PUTA MADRE PORQUE NECESITO HACER ESTO PARA QUE FUNCIONEEEE
+    int i = 0; //NO BORRAR
     int lines = 0;
-    char c = read_input();
-    while(!strcmp(&c, "\t")){
-        if (strcmp(&c, "\n")){
+    char c;
+    while((c = read_input()) != '\t'){
+        if (c == '\n'){
             lines++;
-            print("Amount of lines: ");
-            print_num(lines,0);
-            print("\n");
+            print("new line\n");
+            //newLine();
         }
-        c = NULL;
-        c = read_input();
     }
-    print("Final amount of lines: ");
+    print("Total amount of lines: ");
     print_num(lines,0);
     print("\n");
 }
@@ -277,16 +276,17 @@ int isVowel(char c){
 }
 
 void filter_main(){
-    int i = 0; //ya tiro esto de una total lo necesita aparentemente
-    char c = read_input();
-    while(!strcmp(&c, "\t")){
-        if(!isVowel(c)){
-            print(&c);
+    int i = 0; //NO BORRAR
+    char c;
+     while((c = read_input()) != '\t'){
+        if(c == 8){
+            actionCall(1);
+        }else if(c != 0){
+            if(!isVowel(c)){
+                put_char(c);
+            }
         }
-        c = '\0';
-        c = read_input();
     }
-    newLine();
 }
 
 void filter(int nada, int nada2, uint64_t fd[2])
@@ -436,32 +436,39 @@ static void CommandHandler()
         {
             if(strcmp(args[0], ".")){//ej.. ps | cat    cat | loop
                 uint64_t pipeId = (int)p_open("|");
-                print(" id: ");
-                print_num(pipeId,0);
+                //print(" id: ");
+                //print_num(pipeId,0);
                 if(pipeId < 0){
                     print("error abriendo pipe |\n");
                 } else {
-                    print("\nusing pipe ");
-                    print_num(pipeId, 0);
+                   // print("\nusing pipe ");
+                   // print_num(pipeId, 0);
                 }
-                uint64_t fd[2] = {0, pipeId};
-                (commandList[i].cmdptr)(0,0,fd);
 
-                //en args[1] está el segundo comando
+                //en args[1] está el segundo comando                                
                 //ahora voy a buscar el segundo command
-                char* str = "\t";
-                p_write(pipeId, str);
                 int found = 0;
                 for (int j = 0; j < commandsSize; j++){
                     if (strcmp(args[1], commandList[j].command_name)){
-                        uint64_t fd2[2] = {pipeId,0};
+                        uint64_t fd[2] = {0, pipeId};
+                        (commandList[i].cmdptr)(0,0,fd);
 
+                        char* str = "\t";
+                        p_write(pipeId, str); //le agrego al final del pipe así el segundo comando corta cuando termina de leer el pipe buffer
+
+
+                        uint64_t fd2[2] = {pipeId,0};
                         (commandList[j].cmdptr)(0,0,fd2);   
                         found = 1;
+
+                        
                     }
                 }
+
+                //p_close(pipeId);
+
                 if(!found){
-                    print("comando ");
+                    print(" comando ");
                     print(args[1]);
                     print(" no encontrado\n");
                 } else { return; }
@@ -477,8 +484,9 @@ static void CommandHandler()
                 //en args[2] está el segundo comando
                 uint64_t fd[2] = {0, pipeId};
                 (commandList[i].cmdptr)(args[0],0,fd);
-
                 //ahora voy a buscar el segundo command
+                char* str = "\t";
+                p_write(pipeId, str);
                 int found = 0;
                 for (int j = 0; j < commandsSize; j++){
                     if (strcmp(args[2], commandList[j].command_name)){

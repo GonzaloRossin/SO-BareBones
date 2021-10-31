@@ -111,6 +111,8 @@ void draw_char(char caracter){
 		cursor_x += CHAR_WIDTH*FONT_SIZE;*/
 		writePipe(fd, &caracter);	
 	} else {
+		if(caracter == '\n')
+			newLine();
 		if (cursor_x + CHAR_WIDTH*FONT_SIZE > marginRight)
 		{
 			cursor_x = marginLeft;
@@ -182,6 +184,7 @@ void draw_string_personalized(int x, int y, char * buffer, int count, int fontsi
 void draw_string(char * buffer, int count){
 	for (int i = 0; i < count; i++){
 		if(buffer[i]=='\n'){
+			draw_char('\n');
 			newLine();
 		}
 		else if(buffer[i]=='\t'){

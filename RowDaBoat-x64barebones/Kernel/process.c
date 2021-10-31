@@ -185,13 +185,14 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid, uint64_
             processes[i].fdIn = fd[0];
             processes[i].fdOut = fd[1];
         }
+        /*
         printf("\nfds of process: ");
         printf(processes[i].name);
         printf("\nfd in: ");
         draw_decimal(processes[i].fdIn);
         printf("\nfd out: ");
         draw_decimal(processes[i].fdOut);
-        printf("\n");
+        printf("\n");*/
 
 
 
