@@ -9,6 +9,7 @@
 
 static unsigned long ticks = 0;
 static unsigned long seconds=0;
+static int is_shown=0;
 
 uint64_t snapshotIP, snapshotSP;
 
@@ -29,6 +30,7 @@ void * timerTickHandler(void * rsp)
 {
 	ticks++;	
 	if(ticks % 18 == 0) {
+		is_shown=show_cursor(is_shown);
 		seconds++;
 	}
 	pTimersHandler();
