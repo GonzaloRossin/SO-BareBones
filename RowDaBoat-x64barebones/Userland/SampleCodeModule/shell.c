@@ -28,6 +28,8 @@ static int commandsSize = 0;
 static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
 int buffersize;
 
+static int foreground = 1;
+
 
 static void inforeg(){
     char regs[16][7] = {"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rdi: ", "rsi: ", "r8: ", "r9: ", "r10: ", "r11: ", "r12: ", "r13: ", "r14: ", "r15: ", "rsp: "};
@@ -170,12 +172,10 @@ void get_mem_info(){
     newLine();
 }
 
-int loopMain(int argc, char ** argv) {
+int loopMain() {
     int pid = getPid();
-
     for (unsigned int i = 0; 1; i++) {
-        //sleep(argc);
-        wait(argc * 1000);
+        wait(1000);
         print("hola soy pid: "); print_num(pid, 0); newLine();
     }
     newLine();
@@ -183,9 +183,8 @@ int loopMain(int argc, char ** argv) {
     return 0;
 }
 
-void loop(char* a1_char, int nada, uint64_t fd[2]) {
-    int a1 = strToInt(a1_char);
-    main_func_t proc2 = {loopMain, a1, NULL};
+void loop(int nada, int nada2, uint64_t fd[2]) {
+    main_func_t proc2 = {loopMain, NULL, NULL};
     int aux = exec(&proc2, "test Process", 0, fd);
     print("Process created ");
     print_num(aux, 0);
@@ -319,7 +318,7 @@ void blockProcess(char* pid_char) {
 }
 void execute_phylo(int nada, int nada2, uint64_t fd[2]){
     main_func_t aux = {phylo, 0, NULL}; 
-    int pid = exec(&aux, "phylo", 1, fd);
+    int pid = exec(&aux, "phylo", foreground, fd);
     newLine();
     put_char('>');
 }
@@ -368,11 +367,11 @@ void fillCommandList()
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &pNice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
+    fillCommand("loop",": testea la creacion de un proceso", &loop, 0);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
-    fillCommand("phylo",": ejecuta el problema de los filosofos",&execute_phylo,0);
+    fillCommand("phylo",": ejecuta el problema de los filosofos",&execute_phylo, 0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
     fillCommand("cat",": Imprime el input",&cat,0);
     fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,0);
@@ -419,6 +418,7 @@ int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX
 }
 static void CommandHandler()
 {
+    foreground = 1;
     char potentialCommand[MAX_COMDESC] = {0};
     strncpy(terminalBuffer, potentialCommand,0, buffersize);
     char command[MAX_COMDESC];
@@ -504,7 +504,11 @@ static void CommandHandler()
 
                 newLine();
 
-            } else {
+            } else if(strcmp(args[0], "&")) {
+                foreground = 0;
+                (commandList[i].cmdptr)(0,0,NULL);
+                return;
+            } else {                
                 if(args_q_read != commandList[i].arg_q){
                     newLine();
                     print("Cantidad invalida de argumentos para el comando: ");
