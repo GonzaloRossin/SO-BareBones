@@ -15,6 +15,7 @@
         "shell.h": "c",
         "sem.h": "c",
         "interrupt_routines.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "structs.h": "c"
     }
 }
