@@ -34,18 +34,22 @@ Es entéprete de comandos del usuario, es el primer proceso lanzado por el sisye
 - ***nice:*** Cambia la prioridad de un proceso dado su ID y la nueva prioridad.
 - ***block:*** Cambia el estado de un proceso entre bloqueado y listo dado su ID.
 - ***mem:*** muestra el estado de la memoria heap (bytes libres respecto del total).
-- ***FALTA loop:*** Crea un proceso el cual itera sobre si mismo.
------------------
-faltan estos:
+- ***loop:*** Crea un proceso el cual itera sobre si mismo.
+
+IPC:
 - ***sem:*** Imprime la lista de todos los semáforos con sus propiedades.
-- ***cat:*** Imprime el stdin tal como lo recibe.
-- ***wc:*** Cuenta la cantidad de líneas del input
-- ***filter:*** Filtra las vocales recibidas como argumento de entrada.
 - ***pipe:*** Imprime la lista de todos los pipes con sus propiedades.
+- ***cat:*** Imprime el stdin tal como lo recibe. (con TAB se termina su ejecución)
+- ***wc:*** Cuenta la cantidad de líneas del input. (con TAB se termina su ejecución)
+- ***filter:*** Filtra las vocales recibidas como argumento de entrada. (con TAB se termina su ejecución)
 
 - ***phylo:*** Dilema de los filosofos comiendo, inicia con 5 filosofos, más indiaciones son dadas al ejecutarlo.
 
-y estos testeos de la catedra:
+- Para ```pipear``` la salida de un comando hacia la entrada de otro se utiliza el ***.***, por ejemplo ***wc . filter***, al finalizar la ejecución del comando ***wc*** se mostrará su salida sin las vocales.
+
+
+----------------------------------
+## Testeos de la cátedra
 - ***test_processes:*** Prueba la creacion de procesos con el scheduler (archivo dado por la cátedra).
 - ***test_prio:*** Prueba la prioridad del scheduler (archivo dado por la cátedra).
 - ***test_sync:*** Prueba la sincronizacion de semaforos (archivo dado por la cátedra).
@@ -53,13 +57,9 @@ y estos testeos de la catedra:
 - ***test_mm:*** Prueba el manejo de memoria del memory manager (archivo dado por la cátedra).
 
 
---------------------
+---------------------------------
 
-
---------------------------
-también faltarían estos testeos PVS y CPP
-
-## Testeo
+## Testeos PVS y CPP
 
 Para el testeo con tanto **PVS-Studio** y **Cppcheck** se debe primero instalar **PVS-Studio** de no tenerlo, de la siguiente manera en su contenedor de *docker*.
 ```bash
