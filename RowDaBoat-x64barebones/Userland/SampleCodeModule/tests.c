@@ -2,6 +2,7 @@
 #include "Include/shell.h"
 #include "Include/lib.h"
 #include "Include/test_util.h"
+#include "Include/shell.h"
 
 #define MAX_BLOCKS 128
 #define MAX_MEMORY 8192 //Should be around 80% of memory managed by the MM
@@ -219,7 +220,7 @@ void endless_loop(){
   while(1);
 }
 
-#define MAX_PROCESSES 5 //Should be around 80% of the the processes handled by the kernel
+#define MAX_PROCESSES 10 //Should be around 80% of the the processes handled by the kernel
 
 typedef struct P_rq{
   uint32_t pid;
@@ -232,7 +233,7 @@ void test_processes(){
   uint8_t alive = 0;
   uint8_t action;
 
-  //while (1) {
+  while (1) {
 
     // Create MAX_PROCESSES processes
     for(rq = 0; rq < MAX_PROCESSES; rq++){
@@ -287,8 +288,7 @@ void test_processes(){
           p_rqs[rq].state = READY;
         }
     }
-    print("Finished");
-  //}
+  }
 }
 
 int main_test_sync(int argc, char ** argv){

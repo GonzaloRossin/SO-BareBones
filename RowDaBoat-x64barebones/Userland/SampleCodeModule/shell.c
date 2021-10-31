@@ -322,6 +322,14 @@ void execute_phylo(int nada, int nada2, uint64_t fd[2]){
     newLine();
     put_char('>');
 }
+
+static void test_process(int nada, int nada2, uint64_t fd[2]){ 
+    main_func_t aux = {test_processes, 0, NULL}; 
+    int pid = exec(&aux, "test processes", 0, fd); 
+    newLine(); 
+    put_char('>'); 
+} 
+
 void printProcesses(void) {
     process_info info[50];
     int amount = ps(info, 50);
@@ -370,8 +378,9 @@ void fillCommandList()
     fillCommand("loop",": testea la creacion de un proceso", &loop, 0);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
+    fillCommand("test_process",": realiza el test de procesos de la catedra", &test_process, 0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
-    fillCommand("phylo",": ejecuta el problema de los filosofos",&execute_phylo, 0);
+    fillCommand("phylo",": ejecuta el problema de los filosofos", &execute_phylo, 0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
     fillCommand("cat",": Imprime el input",&cat,0);
     fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,0);
@@ -560,6 +569,7 @@ void initializeOS(){
 
 void shell()
 {
+    nice(getPid(), 0);
     fillCommandList();
     initializeOS();
     while(1){
