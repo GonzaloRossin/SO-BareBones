@@ -479,6 +479,8 @@ static void CommandHandler()
                 (commandList[i].cmdptr)(args[0],0,fd);
 
                 //ahora voy a buscar el segundo command
+                char* str = "\t";
+                p_write(pipeId, str);
                 int found = 0;
                 for (int j = 0; j < commandsSize; j++){
                     if (strcmp(args[2], commandList[j].command_name)){
