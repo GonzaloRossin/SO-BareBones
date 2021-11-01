@@ -59,7 +59,7 @@ void phylo(int argc, char **argv)
             print("Error adding initial philosophers.\n");
         }
     }
-    print("Press 'a' to add or 'r' to remove a philosopher. Press 'q' to exit.\n");
+    print("Press 'a' to add or 'r' to remove a philosopher. Press 'enter' to exit.\n");
     char c;
     while ((c = read_input()) != '\n')
     {

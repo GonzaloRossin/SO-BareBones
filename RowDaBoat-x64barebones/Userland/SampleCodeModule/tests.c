@@ -15,7 +15,9 @@ void test_mm(){
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;
   uint32_t total;
-
+  print("initial state of memory\n");
+    get_mem_info();
+    newLine();
     rq = 0;
     total = 0;
     // Request as many blocks as we can
@@ -59,6 +61,11 @@ void test_mm(){
     get_mem_info();
 }
 
+int main_test_memory(int argc, char ** argv){
+    test_mm();
+    return 0;
+}
+
 #include <stdint.h>
 
 
@@ -90,8 +97,8 @@ static uint64_t my_sem_post(uint64_t sem_id){
   return ret;
 }
 
-static uint64_t my_sem_close(uint64_t sem_id){
- return s_close(sem_id);
+static uint64_t my_sem_close(char* semName){
+ return s_close(semName);
 }
 
 #define N 5000000
@@ -121,7 +128,7 @@ static int my_process_inc(int argc, char ** argv) {
     slowInc(&global, 1);
     my_sem_post(sem);
   }
-
+  my_sem_close(SEM_NAME);
   print("SEM Final value: ");
   print_num(global,0);
   newLine();
@@ -143,7 +150,7 @@ static int my_process_dec(int argc, char ** argv){
     slowInc(&global, -1);
     my_sem_post(sem);
   }
-
+  my_sem_close(SEM_NAME);
   print("SEM Final value: ");
   print_num(global,0);
   newLine();

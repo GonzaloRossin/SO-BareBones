@@ -179,7 +179,6 @@ int loopMain(int argc, char ** argv) {
         print("hola soy pid: "); print_num(pid, 0); newLine();
     }
     newLine();
-    put_char('>');
     return 0;
 }
 
@@ -203,19 +202,19 @@ static void pNice(char* pid_char, char* priority_char){
     int priority = strToInt(priority_char);
     nice((pid_t)pid,(unsigned int)priority);
 }
-
-
+static void test_mem(){
+    main_func_t aux = {main_test_memory, 0, NULL};
+    exec(&aux, "test memory", 0, NULL);
+}
 static void test_sync1(){
     main_func_t aux = {main_test_sync, 0, NULL};
-    int pid = exec(&aux, "test sync", 0, NULL);
+    exec(&aux, "test sync", 0, NULL);
     newLine();
-    put_char('>');
 }
 static void test_sync2(){
     main_func_t aux = {main_test_no_sync, 0, NULL};
-    int pid = exec(&aux, "test no sync", 0, NULL);
+    exec(&aux, "test no sync", 0, NULL);
     newLine();
-    put_char('>');
 }
 static void list_semaphores(){
     list_sem();
@@ -321,7 +320,6 @@ void execute_phylo(int nada, int nada2, uint64_t fd[2]){
     main_func_t aux = {phylo, 0, NULL}; 
     int pid = exec(&aux, "phylo", 1, fd);
     newLine();
-    put_char('>');
 }
 void printProcesses(void) {
     process_info info[50];
@@ -362,7 +360,7 @@ void fillCommandList()
     fillCommand("test_invalidop",": Ejemplo de excepcion por operacion invalida", &testIvalidOpCodeCommand, 0);
     fillCommand("printMem",": realiza en memoria un volcado de memoria de 32 bytes a partir de la direccion recibida", &printMem, 1);
     fillCommand("clean", ": Limpia la pantalla", &clean, 0);
-    fillCommand("test_mem", ": Testeo de memoria", &test_mm, 0);
+    fillCommand("test_mem", ": Testeo de memoria", &test_mem, 0);
     fillCommand("ps", ": Imprime el estado de los procesos vivos", &printProcesses, 0);
     fillCommand("kill", ": Mata a un proceso dado su ID", &pKill, 1);
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &pNice, 2);
@@ -550,7 +548,6 @@ static void CommandHandler()
 
 void initializeOS(){
     draw_Main_Screen();
-    put_char('>');
     buffersize=0;
 }
 
@@ -561,7 +558,6 @@ void shell()
     while(1){
         if(readNewInput()){
             CommandHandler();
-            put_char('>');
             cleanBuffer();
             sleep(1);
         }

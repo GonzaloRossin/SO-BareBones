@@ -6,7 +6,7 @@
 #include "test_util.h"
 #include <stdio.h>
 
-void test_mm();
+int main_test_memory();
 int main_test_sync(int argc, char ** argv);
 int main_test_no_sync(int argc, char **argv);
 
