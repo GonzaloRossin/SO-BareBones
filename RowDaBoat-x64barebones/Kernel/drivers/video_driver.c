@@ -319,7 +319,7 @@ static void _64Hexfill(int n, char * buffer) {
 
 void draw_hex(uint64_t value)
 {
-	int digits = uintToBase(value, buffer, 16);
+	int digits = valueToBase(value, buffer, 16);
 	_64Hexfill(16 - digits, buffer);
 	draw_string(buffer, Strlen(buffer));
 }

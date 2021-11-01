@@ -148,7 +148,7 @@ static void clean(){
 }
 void sleep(int seg) {
     int actual_time=get_seconds(),aux;
-    while(aux=get_seconds()-actual_time<seg){
+    while((aux=get_seconds())-actual_time<seg){
 
     }
 }
@@ -259,7 +259,7 @@ void cat_main(){
 void cat(int nada, int nada2, uint64_t fd[2])
 {
     main_func_t proc2 = {cat_main, NULL, NULL}; //argc, argv
-    int aux = exec(&proc2, "CAT", 1, fd);
+    exec(&proc2, "CAT", 1, fd);
     newLine();
 }
 
@@ -283,7 +283,7 @@ void wc_main(){
 void wc(int nada, int nada2, uint64_t fd[2])
 {
     main_func_t proc2 = {wc_main, NULL, NULL}; //argc, argv
-    int aux = exec(&proc2, "WC", 1, fd);
+    exec(&proc2, "WC", 1, fd);
     newLine();
 }
 
@@ -310,7 +310,7 @@ void filter_main(){
 void filter(int nada, int nada2, uint64_t fd[2])
 {
     main_func_t proc2 = {filter_main, NULL, NULL}; //argc, argv
-    int aux = exec(&proc2, "filter", 1, fd);
+    exec(&proc2, "filter", 1, fd);
     newLine();
 }
 
@@ -337,22 +337,20 @@ void blockProcess(char* pid_char) {
 }
 void execute_phylo(int nada, int nada2, uint64_t fd[2]){
     main_func_t aux = {phylo, 0, NULL}; 
-    int pid = exec(&aux, "phylo", foreground, fd);
+    exec(&aux, "phylo", foreground, fd);
     newLine();
 }
 
 static void test_process(int nada, int nada2, uint64_t fd[2]){ 
     main_func_t aux = {test_processes, 0, NULL}; 
-    int pid = exec(&aux, "test processes", 0, fd); 
+    exec(&aux, "test processes", 0, fd); 
     newLine(); 
-    put_char('>'); 
 } 
 
 static void test_priority(int nada, int nada2, uint64_t fd[2]){ 
     main_func_t aux = {main_test_prior, 0, NULL}; 
-    int pid = exec(&aux, "test prior", 0, fd); 
+    exec(&aux, "test prior", 0, fd); 
     newLine(); 
-    put_char('>'); 
 } 
 
 void printProcesses(void) {
