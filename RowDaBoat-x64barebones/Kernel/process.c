@@ -149,6 +149,7 @@ static void enqueueProcess(process_t * process) {
         exp_queue[process->priority].last->next_in_queue = process;
     }
     exp_queue[process->priority].last = process;
+    process->next_in_queue = NULL;
 }
 
 
@@ -295,18 +296,14 @@ int changeStatus(int pid, unsigned int new_status) {
                 processes_ready++;
             }
             else if (last_status == READY && new_status == BLOCKED) {
-                processes_ready--;
-
+                
                 if (curr_process != NULL && curr_process->pid == pid) {
-                    if (act_queue == NULL || exp_queue == NULL) {
-                        act_queue = queues[actual_queue];
-                        exp_queue = queues[1 - actual_queue];
-                    }
-                    curr_process->status = BLOCKED;
-                    curr_process->given_time = 1;
 
-                    _halt_and_wait();//wait next process
+                    curr_process->given_time = 1;
+                    _int81(); //wait next process
+
                 } else {
+                    processes_ready--;
                     updateProcess(&(processes[i]));
                 }
 

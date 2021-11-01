@@ -45,7 +45,7 @@ mm_stat Mmem();//syscall17
 int ps(process_info* arr, unsigned int max_size);//syscall19
 void _yield();//syscall20
 int kill(pid_t pid);//syscall21
-void nice(pid_t pid, unsigned int priority);//syscall22
+int nice(pid_t pid, unsigned int priority);//syscall22
 int block(pid_t pid, unsigned int status);//syscall23void s_init();//syscall24
 uint64_t s_open(char* name,int value);
 uint64_t s_wait(uint64_t s_id);

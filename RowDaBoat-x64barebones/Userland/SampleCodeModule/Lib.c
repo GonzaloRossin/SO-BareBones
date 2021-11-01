@@ -81,8 +81,8 @@ int kill(pid_t pid){//syscall 21
    return sys_call(21,pid,0,0,0,0);
 }
 
-void nice(pid_t pid, unsigned int priority){//syscall 22
-   sys_call(22, pid, priority, 0, 0,0);
+int nice(pid_t pid, unsigned int priority){//syscall 22
+   return sys_call(22, pid, priority, 0, 0,0);
 }
 
 int block(pid_t pid, unsigned int new_status){//syscall 23

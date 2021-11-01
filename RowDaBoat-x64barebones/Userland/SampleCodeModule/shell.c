@@ -185,7 +185,25 @@ int loopMain() {
 
 void loop(int nada, int nada2, uint64_t fd[2]) {
     main_func_t proc2 = {loopMain, NULL, NULL};
-    int aux = exec(&proc2, "test Process", 0, fd);
+    int aux = exec(&proc2, "Loop", 0, fd);
+    print("Process created ");
+    print_num(aux, 0);
+}
+
+int blockableLoopMain() {
+    int pid = getPid();
+    for (unsigned int i = 0; 1; i++) {
+        sleep(1);
+        print("hola soy pid: "); print_num(pid, 0); newLine();
+    }
+    newLine();
+    put_char('>');
+    return 0;
+}
+
+void blockableLoop(int nada, int nada2, uint64_t fd[2]) {
+    main_func_t proc2 = {blockableLoopMain, NULL, NULL};
+    int aux = exec(&proc2, "Blockable loop", 0, fd);
     print("Process created ");
     print_num(aux, 0);
 }
@@ -330,6 +348,13 @@ static void test_process(int nada, int nada2, uint64_t fd[2]){
     put_char('>'); 
 } 
 
+static void test_priority(int nada, int nada2, uint64_t fd[2]){ 
+    main_func_t aux = {main_test_prior, 0, NULL}; 
+    int pid = exec(&aux, "test prior", 0, fd); 
+    newLine(); 
+    put_char('>'); 
+} 
+
 void printProcesses(void) {
     process_info info[50];
     int amount = ps(info, 50);
@@ -375,10 +400,12 @@ void fillCommandList()
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &pNice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("loop",": testea la creacion de un proceso", &loop, 0);
+    fillCommand("loop",": imprime su id con un saludo cada un segundo", &loop, 0);
+    fillCommand("blockableLoop",": genera un loop bloqueable", &blockableLoop, 0);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
     fillCommand("test_process",": realiza el test de procesos de la catedra", &test_process, 0);
+    fillCommand("test_prior",": realiza el test de prioridades de la catedra", &test_priority, 0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
     fillCommand("phylo",": ejecuta el problema de los filosofos", &execute_phylo, 0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);

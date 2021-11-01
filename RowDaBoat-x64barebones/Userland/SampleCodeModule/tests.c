@@ -300,3 +300,122 @@ int main_test_no_sync(int argc, char **argv){
   test_no_sync();
   return 0;
 }
+
+//////////////////////////////////
+// Test prior ////////////////////
+//////////////////////////////////
+
+#define MINOR_WAIT 1000000                              // TODO: To prevent a process from flooding the screen
+#define WAIT      100000000                           // TODO: Long enough to see theese processes beeing run at least twice
+
+static void bussy_wait1(uint64_t n);
+static int endless_loop1(int argc, char ** argv);
+static void test_prio(void);
+
+static uint64_t my_getpid1(){
+  uint64_t pid; 
+  pid = getPid();  
+  return pid;
+}
+
+static int my_create_process1(char * name){
+  int pid; 
+  main_func_t test_ps = {endless_loop1, 0, NULL};
+  pid = exec( &test_ps, name, 0, NULL);
+  return pid; 
+}
+
+static uint64_t my_nice1(uint64_t pid, uint64_t newPrio) {
+  return (nice(pid, (unsigned int) newPrio) == 0)? 0: 1;
+}
+
+static uint64_t my_kill1(uint64_t pid){
+  return (kill(pid) == 0)? 0: 1;
+}
+
+static uint64_t my_block1(uint64_t pid){
+  return (block(pid, BLOCKED) == 0)? 0: 1;
+}
+
+static uint64_t my_unblock1(uint64_t pid){
+  return (block(pid, READY) == 0)? 0: 1;
+}
+
+static void bussy_wait1(uint64_t n){
+  uint64_t i;
+  for (i = 0; i < n; i++);
+}
+
+static int endless_loop1(int argc, char ** argv){
+  int pid = my_getpid1();
+
+  while(1){
+    print_num(pid, 0);
+    bussy_wait1(MINOR_WAIT);
+  }
+  return 0;
+}
+
+#define TOTAL_PROCESSES 3
+
+static void test_prio(void){
+  uint64_t pids[TOTAL_PROCESSES];
+  uint64_t i;
+
+  for(i = 0; i < TOTAL_PROCESSES; i++)
+    pids[i] = my_create_process1("endless_loop");
+
+  bussy_wait1(WAIT);
+  print("\nCHANGING PRIORITIES...\n");
+
+  for(i = 0; i < TOTAL_PROCESSES; i++){
+    switch (i % 3){
+      case 0:
+        my_nice1(pids[i], 0); //highest priority 
+        break;
+      case 1:
+        my_nice1(pids[i], 3); //medium priority
+        break;
+      case 2:
+        my_nice1(pids[i], 6); //low priority
+        break;
+    }
+  }
+
+  bussy_wait1(WAIT);
+  print("\nBLOCKING...\n");
+
+  for(i = 0; i < TOTAL_PROCESSES; i++)
+    my_block1(pids[i]);
+
+  print("CHANGING PRIORITIES WHILE BLOCKED...\n");
+  for(i = 0; i < TOTAL_PROCESSES; i++){
+    switch (i % 3){
+      case 0:
+        my_nice1(pids[i], 6); //lowest priority 
+        break;
+      case 1:
+        my_nice1(pids[i], 3); //medium priority
+        break;
+      case 2:
+        my_nice1(pids[i], 0); //highest priority
+        break;
+    }
+  }
+
+  print("UNBLOCKING...\n");
+
+  for(i = 0; i < TOTAL_PROCESSES; i++)
+    my_unblock1(pids[i]);
+
+  bussy_wait1(WAIT);
+  print("\nKILLING...\n");
+
+  for(i = 0; i < TOTAL_PROCESSES; i++)
+    my_kill1(pids[i]);
+}
+
+int main_test_prior(int argc, char ** argv){
+  test_prio();
+  return 0;
+}

@@ -74,7 +74,7 @@ uint64_t int80Dispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx,
 		return process_kill((int)rsi);
 		break;
 	case 22:
-		nice((int)rsi, (unsigned int)rdx);
+		return nice((int)rsi, (unsigned int)rdx);
 		break;
 	case 23:
 		return block((int)rsi, (unsigned int) rdx);
@@ -237,8 +237,8 @@ int process_kill(int pid){
 	return kill(pid);
 }
 //SYS_CALL 22
-void nice(int pid, unsigned int priority) {
-	changePriority(pid, priority);
+int nice(int pid, unsigned int priority) {
+	return changePriority(pid, priority);
 }
 // //SYS_CALL 23
 int block(int pid, unsigned int new_status){
