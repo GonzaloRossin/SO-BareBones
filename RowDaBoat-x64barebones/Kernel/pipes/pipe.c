@@ -84,7 +84,7 @@ static uint64_t createPipe(char *name){
 
 //si no existe retorna -1, si existe retorna la posición
 static uint64_t findPipe(char *name){
-    for (int i = 1; i < MAX_SEM; i++){
+    for (int i = 1; i < MAX_PIPES; i++){
         if (pipes[i].available == FALSE && Strcmp(name, pipes[i].pipe.name)){
             return i;
         }
@@ -128,7 +128,7 @@ uint64_t pipeOpen(char *name){
 
 //returns TRUE if pipe exists and is being used by someone
 static uint64_t validIndex(uint64_t pipeIndex){
-    if(pipeIndex < 0 || pipeIndex > MAX_PIPES){
+    if(pipeIndex < 0 || pipeIndex > (MAX_PIPES-1)){
         printf("invalid pipe index\n");
         return FALSE;
     } else if (pipes[pipeIndex].available){
