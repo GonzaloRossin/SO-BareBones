@@ -3,12 +3,12 @@
 #include <stdint.h>
 #include "../drivers/video_driver.h"
 #include "../include/process.h"
-//#include "../pipes/pipe.h" //includear esto acá tira error falopa, debe haber include loop en algun lado
+//#include "../pipes/pipe.h" //includear esto acá tira error
 
 
 #define NULL ((void *)0)
 
-#define MAX_NAME_LENGTH 50
+#define MAX_NAME_LENGTH 51
 #define TRUE 1
 #define FALSE 0
 

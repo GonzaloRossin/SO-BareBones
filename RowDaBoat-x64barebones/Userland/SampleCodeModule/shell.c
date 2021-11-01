@@ -177,7 +177,7 @@ void get_mem_info(){
 int loopMain() {
     int pid = getPid();
     for (unsigned int i = 0; 1; i++) {
-        wait(1000);
+        wait(2000);
         print("hola soy pid: "); print_num(pid, 0); newLine();
     }
     newLine();
@@ -219,7 +219,17 @@ static void pKill(char* pid_char){
 static void pNice(char* pid_char, char* priority_char){
     int pid = strToInt(pid_char);
     int priority = strToInt(priority_char);
-    nice((pid_t)pid,(unsigned int)priority);
+    int aux = nice((pid_t)pid,(unsigned int)priority);
+    if(aux == -1){
+        print("error in priority value, must be from 0 to 6");
+    } else if(aux == -2){
+        print("error, process is dead");
+    } else if(aux == -3){
+        print("error, process does not exist");
+    } else {
+        print("priority changed to ");
+        print_num(priority, 0);
+    }
 }
 static void test_mem(){
     main_func_t aux = {main_test_memory, 0, NULL};
@@ -363,8 +373,8 @@ void printProcesses(void) {
         print(""); print_num(info[i].pid, 0); print(" \t");
         print(""); print_num(info[i].ppid, 0); print(" \t");
         print(""); print_num(info[i].priority, 0); print(" \t");
-        print("  "); print_num(info[i].rbp, 0); print("  ");
-        print(""); print_num(info[i].rsp, 0); print(" \t");
+        print("  "); print_num((int)info[i].rbp, 0); print("  ");
+        print(""); print_num((int)info[i].rsp, 0); print(" \t");
         print(""); print_num(info[i].status, 0); print(" \t");
         print(""); print_num(info[i].foreground, 0); print(" \t");
         print(""); print_num(info[i].given_time, 0); print(" ticks \t");
@@ -398,7 +408,7 @@ void fillCommandList()
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &pNice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("loop",": imprime su id con un saludo cada un segundo", &loop, 0);
+    fillCommand("loop",": imprime su id con un saludo cada dos segundos", &loop, 0);
     fillCommand("blockableLoop",": genera un loop bloqueable", &blockableLoop, 0);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
@@ -416,7 +426,7 @@ int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX
 	int params_read = 0, j = 0, i = 0;
 
     //building command
-	while(potentialCommand[i] != '\0' && potentialCommand[i] != ' ' && i < BUFFER_SIZE){
+	while(i < BUFFER_SIZE && potentialCommand[i] != '\0' && potentialCommand[i] != ' ' ){
 		command[i] = potentialCommand[i];
 		i++;
 	}
@@ -430,7 +440,7 @@ int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX
 		i++;
 	}
 	//building params
-	while(potentialCommand[i] != '\0' && params_read <= MAX_ARGS){
+	while(potentialCommand[i] != '\0' && params_read < MAX_ARGS){
 		if(potentialCommand[i] != ' '){
 			args[params_read][j++] = potentialCommand[i];
 		}else{
@@ -469,10 +479,10 @@ static void CommandHandler()
         if (strcmp(command, commandList[i].command_name))
         {
             if(strcmp(args[0], ".")){//ej.. ps | cat    cat | loop
-                uint64_t pipeId = (int)p_open("|");
+                uint64_t pipeId = p_open("|");
                 //print(" id: ");
                 //print_num(pipeId,0);
-                if(pipeId < 0){
+                if(pipeId == 0){
                     print("error abriendo pipe |\n");
                 } else {
                    // print("\nusing pipe ");
@@ -564,7 +574,6 @@ void initializeOS(){
 
 void shell()
 {
-    nice(getPid(), 0);
     fillCommandList();
     initializeOS();
     while(1){

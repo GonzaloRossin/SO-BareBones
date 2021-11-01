@@ -55,12 +55,12 @@ void test_mm(){
       if (mm_rqs[i].address != NULL)
         if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
           print("ERROR!\n"); // TODO: Port this call as required
-      for (i = 0; i < rq; i++){
+    }
+    for (i = 0; i < rq; i++){
         if (mm_rqs[i].address != NULL){
             Mfree(mm_rqs[i].address);  // TODO: Port this call as required
         }
-      }
-    }
+     }
     get_mem_info();
 }
 
@@ -114,7 +114,9 @@ static void slowInc(uint64_t *p, int inc) {
   uint64_t aux = *p;
   aux += inc;
   //wait(10);
-  for(int i = 0; i < 100; i++);
+  for(int i = 0; i < 100; i++){
+    //espera activa;
+  }
   *p = aux;  
 }
 
@@ -122,7 +124,7 @@ static int my_process_inc(int argc, char ** argv) {
   uint64_t i;
   uint64_t sem;
 
-  if ((sem = my_sem_open(SEM_NAME,1)) < 0) {
+  if ((int)(sem = my_sem_open(SEM_NAME,1)) < 0) {
     print("ERROR OPENING SEM\n");
     return -1;
   }
@@ -143,7 +145,7 @@ static int my_process_dec(int argc, char ** argv){
   uint64_t i;
   uint64_t sem;
 
-  if ((sem = my_sem_open(SEM_NAME, 1)) < 0){
+  if ((int)(sem = my_sem_open(SEM_NAME, 1)) < 0){
     print("ERROR OPENING SEM\n");
     return -1;
   }

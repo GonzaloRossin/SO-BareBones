@@ -35,7 +35,7 @@ static uint64_t findAvailable(){
             return i;
         }
     }
-    return -1; // están todos ocupados
+    return 0; // están todos ocupados
 }
 
 //Retorna el id del pipe en caso de exito, -1 si se encontro algun tipo de error
@@ -44,14 +44,14 @@ static uint64_t createPipe(char *name){
     //printf(name);
 
     int len = Strlen(name);
-    if (len <= 0 || len >= MAX_NAME_LENGTH)
+    if (len <= 0 || len >= (MAX_NAME_LENGTH-1))
     {
         printf("Nombre del pipe es demasiado largo\n");
-        return -1;
+        return 0;
     }
 
     uint64_t pos;
-    if ((pos = findAvailable()) != -1)    {
+    if ((pos = findAvailable()) != 0)    {
         pipe_t *newPipe = &pipes[pos].pipe;
         // Inicializamos la estructura
         memcpy(newPipe->name, name, len);
@@ -73,7 +73,7 @@ static uint64_t createPipe(char *name){
 
         if (semRead == -1 || semWrite == -1)        {
             printf("Error en los sem del pipe");
-            return -1;
+            return 0;
         }
         newPipe->semRead = semRead;
         newPipe->semWrite = semWrite;
@@ -89,18 +89,18 @@ static uint64_t findPipe(char *name){
             return i;
         }
     }
-    return -1;
+    return 0;
 }
 
 //retorna -1 en caso de error
 uint64_t pipeOpen(char *name){
     if (semWait(semPipeManager)){
         printf("error semWait abriendo el pipe\n");
-        return -1;
+        return 0;
     }
 
     int id = findPipe(name);
-    if (id == -1){
+    if (id == 0){
         //Si no existe un pipe con ese nombre
         id = createPipe(name);
         //printf("\ncreated pipe ");
@@ -113,14 +113,14 @@ uint64_t pipeOpen(char *name){
     }
     
     //si el create dió error, id sigue en -1
-    if (id == -1){
+    if (id == 0){
         printf("error en pipeOpen, id=-1\n");
         semPost(semPipeManager);
-        return -1;
+        return 0;
     }
     if (semPost(semPipeManager)){
         printf("error semPost abriendo el pipe\n");
-        return -1;
+        return 0;
     }
     pipes[id].pipe.amountProcesses++;
     return id;
@@ -128,7 +128,7 @@ uint64_t pipeOpen(char *name){
 
 //returns TRUE if pipe exists and is being used by someone
 static uint64_t validIndex(uint64_t pipeIndex){
-    if(pipeIndex < 0 || pipeIndex > (MAX_PIPES-1)){
+    if(pipeIndex <= 0 || pipeIndex > (MAX_PIPES-1)){
         printf("invalid pipe index\n");
         return FALSE;
     } else if (pipes[pipeIndex].available){
@@ -143,11 +143,11 @@ static uint64_t validIndex(uint64_t pipeIndex){
 uint64_t pipeClose(uint64_t pipeIndex){
     if (!validIndex(pipeIndex)){
         printf("invalid pipe to close\n");
-        return -1;
+        return 0;
     }
     if (semWait(semPipeManager) == -1){
         printf("error semWait en pipeClose\n");
-        return -1;
+        return 0;
     }
 
     pipes[pipeIndex].available = TRUE;
@@ -156,31 +156,31 @@ uint64_t pipeClose(uint64_t pipeIndex){
 
     if (closeRead == -1 || closeWrite == -1){
         printf("error en los sem close del pipe\n");
-        return -1;
+        return 0;
     }
 
     if (semPost(semPipeManager) == -1){
         printf("error semPost en pipeClose\n");
-        return -1;
+        return 0;
     }
     return 1;
 }
 
 uint64_t writeChar(uint64_t pipeIndex, char c){
     if (!validIndex(pipeIndex))
-        return -1;
+        return 0;
 
     pipe_t * pipe = &pipes[pipeIndex].pipe;
 
     if (semWait(pipe->semWrite) == -1){
         printf("Error semWait en writeChar\n");
-        return -1;
+        return 0;
     }
     pipe->buffer[pipe->wIndex % PIPE_BUFFER_SIZE] = c;
     pipe->wIndex++;
     if (semPost(pipe->semRead) == -1){
         printf("Error semPost en writeChar\n");
-        return -1;
+        return 0;
     }
     return 1;
 }
@@ -193,7 +193,7 @@ uint64_t writePipe(uint64_t pipeIndex, char *string){
         return -1;
 
     while (*string != 0){
-        if ((writeChar(pipeIndex, *string++)) == -1)
+        if ((writeChar(pipeIndex, *string++)) == 0)
             return -1;
     }
     return 0;

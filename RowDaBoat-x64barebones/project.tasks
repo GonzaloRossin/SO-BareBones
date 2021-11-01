@@ -1,0 +1,45 @@
+pvs-studio.com/en/docs/warnings/	1	err	Help: The documentation for all analyzer warnings is available here: https://pvs-studio.com/en/docs/warnings/.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Bootloader/BMFS/bmfs.c	552	err	V595 The 'disk' pointer was utilized before it was verified against nullptr. Check lines: 552, 575.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Bootloader/BMFS/bmfs.c	638	warn	V1032 The pointer 'dir_copy' is cast to a more strictly aligned pointer type.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Bootloader/BMFS/bmfs.c	694	warn	V1032 The pointer 'Directory' is cast to a more strictly aligned pointer type.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/drivers/keyboard_driver.c	92	warn	V557 Array overrun is possible. The value of 'code' index could reach 127.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/drivers/keyboard_driver.c	108	warn	V557 Array overrun is possible. The value of 'code' index could reach 127.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/drivers/keyboard_driver.c	120	warn	V557 Array overrun is possible. The value of 'code' index could reach 127.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/drivers/video_driver.c	57	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with zeros.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/drivers/video_driver.c	64	err	V647 The value of 'unsigned int' type is assigned to the pointer of 'char' type.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/font.c	4	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/interrupts/Interrupt_routines.c	139	err	V529 Odd semicolon ';' after 'if' operator.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/interrupts/int80.c	227	warn	V512 A call of the 'pCreate' function will lead to overflow of the buffer 'r9'.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/memory/buddy.c	152	err	V629 Consider inspecting the '1 << bucket' expression. Bit shifting of the 32-bit value with a subsequent expansion to the 64-bit type.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/naiveConsole.c	7	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with zeros.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/pipes/pipe.c	57	warn	V512 A call of the 'memcpy' function will lead to overflow of the buffer 'newPipe->name'.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/pipes/pipe.c	64	warn	V557 Array overrun is possible. The value of 'len + 1' index could reach 50.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Kernel/pipes/pipe.c	71	warn	V557 Array overrun is possible. The value of 'len + 1' index could reach 50.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Include/structs.h	22	warn	V677 Custom declaration of a standard 'size_t' type. The declaration from system header files should be used instead.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Lib.c	68	warn	V601 Pointer is implicitly cast to an integer type. Inspect the sixth argument.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Lib.c	115	warn	V601 Pointer is implicitly cast to an integer type. Inspect the second argument.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Lib.c	115	warn	V601 Pointer is implicitly cast to an integer type. Inspect the third argument.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Lib.c	119	warn	V601 Pointer is implicitly cast to an integer type. Inspect the second argument.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Lib.c	123	warn	V601 Pointer is implicitly cast to an integer type. Inspect the second argument.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Lib.c	191	warn	V560 A part of conditional expression is always true: !errorFlag.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	102	warn	V557 Array overrun is possible. The value of 'pIndex' index could reach 15.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	103	warn	V557 Array overrun is possible. The value of 'pIndex' index could reach 15.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	111	warn	V557 Array overrun is possible. The value of 'pIndex' index could reach 15.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	114	warn	V557 Array overrun is possible. The value of 'pIndex' index could reach 15.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	114	err	V547 Expression is always false. Unsigned type value is never < 0.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	200	warn	V557 Array overrun is possible. The value of 'pIndex' index could reach 15.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	201	warn	V557 Array overrun is possible. The value of 'pIndex' index could reach 15.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	203	warn	V557 Array overrun is possible. The value of 'pIndex' index could reach 15.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/phylo.c	204	warn	V560 A part of conditional expression is always true: pIndex.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/shell.c	74	err	V609 Divide by zero.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/shell.c	366	warn	V601 Pointer is implicitly cast to an integer type. Inspect the first argument.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/shell.c	367	warn	V601 Pointer is implicitly cast to an integer type. Inspect the first argument.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/shell.c	419	err	V781 The value of the 'i' index is checked after it was used. Perhaps there is a mistake in program logic.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/shell.c	435	warn	V557 Array overrun is possible. The value of 'params_read' index could reach 3.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/shell.c	437	warn	V557 Array overrun is possible. The value of 'params_read ++' index could reach 3.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/shell.c	475	err	V547 Expression 'pipeId < 0' is always false. Unsigned type value is never < 0.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/tests.c	58	err	V535 The variable 'i' is being used for this loop and for the outer loop. Check lines: 54, 58.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/tests.c	117	err	V529 Odd semicolon ';' after 'for' operator.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/tests.c	125	err	V547 Expression '(sem = my_sem_open("sem", 1)) < 0' is always false. Unsigned type value is never < 0.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/tests.c	146	err	V547 Expression '(sem = my_sem_open("sem", 1)) < 0' is always false. Unsigned type value is never < 0.
+/mnt/c/Users/uriel/Desktop/tpe arqui/SO-BareBones/RowDaBoat-x64barebones/Userland/SampleCodeModule/Include/lib.h	2	err	V1049 The 'LIB_H' include guard is already defined in the 'Lib.h' header. The 'lib.h' header will be excluded from compilation.

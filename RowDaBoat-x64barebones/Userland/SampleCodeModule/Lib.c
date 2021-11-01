@@ -64,8 +64,8 @@ mm_stat Mmem(){//syscall17
 }
 
 pid_t exec(main_func_t *func, char* name, int rcx, uint64_t fd[2]){ //syscall 18
-int pid;
-   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid, fd);
+   int pid;
+   sys_call(18, (uint64_t)(void*)func, (uint64_t)(void*)name, (uint64_t)(void*)rcx, (uint64_t)(void *)&pid, (uint64_t)fd);
    return pid;
 }
 
@@ -112,15 +112,15 @@ void list_sem(){
    sys_call(24,5,0,0,0,0);
 }
 int getProcessStatus(int pid, unsigned int * status) {//syscall 25
-   return (int) sys_call(25, (void *)(uint64_t)pid, (void *)status, 0, 0,0);
+   return (int) sys_call(25, (uint64_t)pid, (uint64_t)status, 0, 0,0);
 }
 int getPid(void) {
    int pid;
-   sys_call(26, (void* )&pid, 0, 0, 0,0);
+   sys_call(26, (uint64_t)&pid, 0, 0, 0,0);
    return pid;
 }
 void wait(unsigned int millis) {
-   sys_call(27,(void *)(uint64_t) millis, 0, 0, 0,0);
+   sys_call(27,(uint64_t) millis, 0, 0, 0,0);
 }
 
 uint64_t p_open(char* name){
@@ -198,9 +198,9 @@ uint8_t* strToNumHex(char * str){
 			number += (*str - 'a');
 		str++;
 		len++;
+      if(len > 16)
+		   errorFlag = 1;
 	}
-	if(len > 16)
-		errorFlag = 1;
 	return (uint8_t *)number;
 }
 int strToInt(char* str)

@@ -10,6 +10,7 @@
 
 
 int main() {
+    nice(getPid(), 0);
     shell();    
     return 0;
 }

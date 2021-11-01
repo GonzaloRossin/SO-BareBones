@@ -54,14 +54,14 @@ int marginRight=SCREEN_WIDTH;
 static int aux_x = 0;
 static int aux_y = 0;
 static uint32_t valueToBase(uint64_t value, char * buffer, uint32_t base);
-char buffer[10] = { '0' };
+char buffer[10];
 
 char * get_pixel(unsigned int x, unsigned int y){
 	return screendata->framebuffer+((y*screendata->width)+x)*3;
 }
 
 void draw_pixel(unsigned int x,unsigned int y,int color){
-    char * curpos = screendata->framebuffer+((y*screendata->width)+x)*3;
+    char * curpos = (char *)(screendata->framebuffer+((y*screendata->width)+x)*3);
     int b= color & 0x0000FF;
     int g= (color >> 8) &  0x0000FF;
     int r= (color >> 16) &  0x0000FF;

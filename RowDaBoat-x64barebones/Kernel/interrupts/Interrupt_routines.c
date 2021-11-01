@@ -136,6 +136,7 @@ void wait(unsigned int millis) {
 	int pid;
 	getPid(&pid);
 
-	if (addTimer(pid, millis) == 0);
+	if (addTimer(pid, millis) == 0)
 		changeStatus(pid, BLOCKED); // No corre mas.
+
 }

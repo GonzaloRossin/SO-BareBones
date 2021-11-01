@@ -223,8 +223,8 @@ void mem(mm_stat* rsi){
 	getMMStats(rsi);
 }
 //SYS_CALL 18
-int exec(main_func_t *rsi, char* rdx, int rcx, int * r8, int* r9){
-	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx, (int *) r8, (int *) r9);
+int exec(main_func_t *rsi, char* rdx, int rcx, int * r8, uint64_t* r9){
+	return pCreate((main_func_t *) rsi, (char *) rdx, (int)(uint64_t) rcx, (int *) r8, (uint64_t *) r9);
 }
 //SYS_CALL 19
 int ps(process_info *rsi, unsigned int rdx, unsigned int* rcx) {

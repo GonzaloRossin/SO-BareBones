@@ -92,7 +92,7 @@ void phylo(int argc, char **argv)
  * Retorna -1 en caso de error.
  */
 int addPhylo(int pIndex){
-    if (pIndex > MAX_PHYL || pIndex < 0)
+    if (pIndex >= MAX_PHYL || pIndex < 0)
     {
         return -1;
     }
@@ -111,7 +111,7 @@ int addPhylo(int pIndex){
     phylos[pIndex].state = THINKING;
     int currseated=seated;
     main_func_t aux = {phyloProcess, currseated, NULL}; 
-    if ((phylos[pIndex].pid = exec(&aux,phylos[pIndex].semName , BACKGROUND, NULL)) < 0) //TODO Cambiar al implementar pipes
+    if ((phylos[pIndex].pid = exec(&aux,phylos[pIndex].semName , BACKGROUND, NULL)) < 0)
     {
         print("Error creating philosopher process");
         return -1;
@@ -193,7 +193,7 @@ void update(int pIndex)
  */
 static int removePhylo(int pIndex)
 {
-    if (pIndex > MAX_PHYL || pIndex < MIN_PHYL)
+    if (pIndex >= MAX_PHYL || pIndex < MIN_PHYL)
         return -1;
     s_wait(sem);
     seated--;
@@ -201,7 +201,7 @@ static int removePhylo(int pIndex)
     if (s_close(phylos[pIndex].semName) == -1)
         print("Error in closing phylo's sem.\n");
     kill(phylos[pIndex].pid);
-    if (eats && pIndex)
+    if (eats)
     {
         update(pIndex - 1);
         update(0);

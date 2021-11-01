@@ -273,14 +273,16 @@ int changePriority(int pid, unsigned int new_priority) {
         for (int i = 0; i < processes_size; i++) {
             if (processes[i].pid == pid) {
                 if (processes[i].status == KILLED)
-                    return -1;
+                    return -2;
                 processes[i].priority = new_priority;
-
                 return 0;
             }
         }
     }
-    return -1;
+    if(new_priority < MIN_PRIORITY || new_priority > MAX_PRIORITY){
+        return -1;
+    }
+    return -3;
 }
 
 int changeStatus(int pid, unsigned int new_status) {

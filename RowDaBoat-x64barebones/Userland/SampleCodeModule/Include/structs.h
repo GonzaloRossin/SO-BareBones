@@ -19,40 +19,9 @@ typedef struct mm_stat {
     uint64_t successful_allocs;
     uint64_t successful_frees;
 } mm_stat;
-typedef unsigned long size_t;
-typedef void* address_t;
+
 typedef int pid_t;
 typedef enum {READY = 0, BLOCKED, KILLED} pStatus;
-
-typedef struct {
-    address_t base;
-    size_t size;
-} memoryBlock;
-
-typedef struct{
-    char** argv;
-    int argc;
-} argument;
-
-typedef struct process_t{
-    pid_t pid;
-    char *process_name;
-    pStatus status;
-    unsigned int given_time;
-    unsigned int aging;
-    unsigned int priority;
-    memoryBlock heap;
-    memoryBlock stack;
-    void * rbp;
-    void * rsp;
-    struct process_t * next_in_queue;    
-} process_t;
-
-typedef struct QUEUE_HD {
-    unsigned int quantum;
-    struct process_t * first;
-    struct process_t * last;
-} QUEUE_HD;
 
 typedef struct main_func_t {
     int (*f)(int, char **);

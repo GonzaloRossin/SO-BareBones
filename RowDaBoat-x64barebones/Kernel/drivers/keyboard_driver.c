@@ -15,8 +15,8 @@ static int processWaiting = 0;
 #define KEYS 59
 #define END_OF_PRESSING_KEYS 0x80
 
-#define toLowerCase(c) (c >= 'A' && c<= 'Z'? c +'a' - 'A' : c)
-#define toUpperCase(c) (c >= 'a' && c<= 'z'? c -'a' + 'A' : c)
+#define toLowerCase(c) ((c) >= 'A' && c<= 'Z'? c +'a' - 'A' : c)
+#define toUpperCase(c) ((c) >= 'a' && c<= 'z'? c -'a' + 'A' : c)
 
 //Buffer for all the codes
 static uint8_t buffer[BUFFER_SIZE] = {0};
@@ -89,7 +89,8 @@ void keyboard_handler(uint8_t code)
 		//Add the letter based on the state of our special letters
 		if (LSHIFT_LCKD || RSHIFT_LCKD)
 		{
-			charToAdd = asciiMap[code][1];
+			if(code < KEYS)
+				charToAdd = asciiMap[code][1];
 			if (charToAdd != 0)
 			{ //If it is a valid letter.
 				if (CAPS_LCKD)
@@ -105,7 +106,8 @@ void keyboard_handler(uint8_t code)
 		}
 		else if (CAPS_LCKD)
 		{
-			charToAdd =asciiMap[code][0];
+			if(code < KEYS)
+				charToAdd =asciiMap[code][0];
 			if (charToAdd != 0)
 			{
 				addToBuffer(toUpperCase(charToAdd));
@@ -117,7 +119,8 @@ void keyboard_handler(uint8_t code)
 		//Standard case, just adding the letter.
 		else
 		{
-			charToAdd = asciiMap[code][0];
+			if(code < KEYS)
+				charToAdd = asciiMap[code][0];
 			if (charToAdd != 0)
 			{
 				addToBuffer(charToAdd);
