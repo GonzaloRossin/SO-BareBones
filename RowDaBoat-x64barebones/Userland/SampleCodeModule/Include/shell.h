@@ -11,5 +11,6 @@ void shell();
 void get_mem_info();
 void sleep(int seg);
 void blockProcess(char* pid_char);
+void printProcesses(void);
 
 #endif

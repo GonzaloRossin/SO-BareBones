@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include <stdint.h>
 #include <keyboard_driver.h>
 #include <int80.h>
@@ -146,10 +148,10 @@ void addToBuffer(char charToAdd)
 	buffer[endPosition] = charToAdd;
 	endPosition = (endPosition + 1) % BUFFER_SIZE; //As its cyclic iterator
 	size++;
-	if (processWaiting) {
-		processWaiting = 0;
-		changeStatus(waiting_pid, READY);
-    }
+	// if (processWaiting) {
+	// 	processWaiting = 0;
+	// 	changeStatus(waiting_pid, READY);
+    // }
 }
 
 //Function to return a uint8 from the buffer and delete it. Return 0 if empty
@@ -162,13 +164,13 @@ uint8_t getChar()
 	} else {
 		if (size <= 0)
 		{ //Nada en el buffer
-			int pid;
-			getPid(&pid);
-			if (isCurrentForeground()) {
-				processWaiting = 1;
-				waiting_pid = pid;
-			}
-			changeStatus(pid, BLOCKED);
+		// 	int pid;
+		// 	getPid(&pid);
+		// 	if (isCurrentForeground()) {
+		// 		processWaiting = 1;
+		// 		waiting_pid = pid;
+		// 	}
+		// 	changeStatus(pid, BLOCKED);
 			return 0;
 		}
 		else

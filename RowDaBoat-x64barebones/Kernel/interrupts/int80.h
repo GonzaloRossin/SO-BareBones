@@ -46,7 +46,7 @@ int exec(main_func_t * rsi, char* rdx, int rcx, int * r8, int* r9); //18
 void pYield();
 int ps(process_info * rsi, unsigned int rdx, unsigned int * rcx);// sys call 19
 int process_kill(int rsi);// sys call 21
-void nice(int rsi, unsigned int rdx);// sys call 22
+int nice(int rsi, unsigned int rdx);// sys call 22
 int block(int rsi, unsigned int rdx);// sys call 23
 uint64_t sys_sem(int rsi,uint64_t rdx,uint64_t rcx);//syscall 24
 int get_process_status(int rsi, unsigned int *rdx);//syscall 25

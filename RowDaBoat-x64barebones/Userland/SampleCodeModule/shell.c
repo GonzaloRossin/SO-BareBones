@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "Include/shell.h"
 #include "Include/Lib.h"
 #include "phylo.h"
@@ -27,6 +29,8 @@ static int commandsSize = 0;
 //Buffer to store the input from the keyboard.
 static char terminalBuffer[BUFFER_SIZE + 1] = {0}; //Non cyclic buffer
 int buffersize;
+
+static int foreground = 1;
 
 
 static void inforeg(){
@@ -170,22 +174,37 @@ void get_mem_info(){
     newLine();
 }
 
-int loopMain(int argc, char ** argv) {
+int loopMain() {
     int pid = getPid();
-
     for (unsigned int i = 0; 1; i++) {
-        //sleep(argc);
-        wait(argc * 1000);
+        wait(1000);
+        print("hola soy pid: "); print_num(pid, 0); newLine();
+    }
+    newLine();
+    put_char('>');
+    return 0;
+}
+
+void loop(int nada, int nada2, uint64_t fd[2]) {
+    main_func_t proc2 = {loopMain, NULL, NULL};
+    int aux = exec(&proc2, "Loop", 0, fd);
+    print("Process created ");
+    print_num(aux, 0);
+}
+
+int blockableLoopMain() {
+    int pid = getPid();
+    for (unsigned int i = 0; 1; i++) {
+        sleep(1);
         print("hola soy pid: "); print_num(pid, 0); newLine();
     }
     newLine();
     return 0;
 }
 
-void loop(char* a1_char, int nada, uint64_t fd[2]) {
-    int a1 = strToInt(a1_char);
-    main_func_t proc2 = {loopMain, a1, NULL};
-    int aux = exec(&proc2, "test Process", 0, fd);
+void blockableLoop(int nada, int nada2, uint64_t fd[2]) {
+    main_func_t proc2 = {blockableLoopMain, NULL, NULL};
+    int aux = exec(&proc2, "Blockable loop", 0, fd);
     print("Process created ");
     print_num(aux, 0);
 }
@@ -318,9 +337,24 @@ void blockProcess(char* pid_char) {
 }
 void execute_phylo(int nada, int nada2, uint64_t fd[2]){
     main_func_t aux = {phylo, 0, NULL}; 
-    int pid = exec(&aux, "phylo", 1, fd);
+    int pid = exec(&aux, "phylo", foreground, fd);
     newLine();
 }
+
+static void test_process(int nada, int nada2, uint64_t fd[2]){ 
+    main_func_t aux = {test_processes, 0, NULL}; 
+    int pid = exec(&aux, "test processes", 0, fd); 
+    newLine(); 
+    put_char('>'); 
+} 
+
+static void test_priority(int nada, int nada2, uint64_t fd[2]){ 
+    main_func_t aux = {main_test_prior, 0, NULL}; 
+    int pid = exec(&aux, "test prior", 0, fd); 
+    newLine(); 
+    put_char('>'); 
+} 
+
 void printProcesses(void) {
     process_info info[50];
     int amount = ps(info, 50);
@@ -366,11 +400,14 @@ void fillCommandList()
     fillCommand("nice", ": Cambia la prioridad de un proceso dado su ID y la nueva prioridad", &pNice, 2);
     fillCommand("block", ": Cambia el estado de un proceso entre bloqueado y listo dado su ID", &blockProcess, 1);
     fillCommand("mem",": muestra el estado de la memoria heap (bytes libres respecto del total)", &get_mem_info, 0);
-    fillCommand("loop",": testea la creacion de un proceso", &loop, 1);
+    fillCommand("loop",": imprime su id con un saludo cada un segundo", &loop, 0);
+    fillCommand("blockableLoop",": genera un loop bloqueable", &blockableLoop, 0);
     fillCommand("test_no_sync",": realiza el segundo test de sincronizacion de semaforos de la catedra",&test_sync2,0);
     fillCommand("test_sync",": realiza el test de sincronizacion de semaforos de la catedra",&test_sync1,0);
+    fillCommand("test_process",": realiza el test de procesos de la catedra", &test_process, 0);
+    fillCommand("test_prior",": realiza el test de prioridades de la catedra", &test_priority, 0);
     fillCommand("sem",": enlista los semaforos abiertos en ese momento",&list_semaphores,0);
-    fillCommand("phylo",": ejecuta el problema de los filosofos",&execute_phylo,0);
+    fillCommand("phylo",": ejecuta el problema de los filosofos", &execute_phylo, 0);
     fillCommand("pipe",": Imprime la lista de todos los pipes con sus propiedades",&list_pipes,0);
     fillCommand("cat",": Imprime el input",&cat,0);
     fillCommand("wc",": Cuenta la cantidad de lineas del input",&wc,0);
@@ -417,6 +454,7 @@ int parse_command(char* potentialCommand, char* command, char args[MAX_ARGS][MAX
 }
 static void CommandHandler()
 {
+    foreground = 1;
     char potentialCommand[MAX_COMDESC] = {0};
     strncpy(terminalBuffer, potentialCommand,0, buffersize);
     char command[MAX_COMDESC];
@@ -473,36 +511,11 @@ static void CommandHandler()
 
                 newLine();
 
-
-            } else if (strcmp(args[1], ".")){//ej  loop 2 | filter
-                uint64_t pipeId = p_open("|2");
-                if(pipeId < 0){
-                    print("error abriendo pipe |2 \n");
-                }
-                //en args[2] está el segundo comando
-                uint64_t fd[2] = {0, pipeId};
-                (commandList[i].cmdptr)(args[0],0,fd);
-                //ahora voy a buscar el segundo command
-                char* str = "\t";
-                p_write(pipeId, str);
-                int found = 0;
-                for (int j = 0; j < commandsSize; j++){
-                    if (strcmp(args[2], commandList[j].command_name)){
-                        uint64_t fd2[2] = {pipeId,0};
-
-                        (commandList[j].cmdptr)(0,0,fd2);   
-                        found = 1;
-                    }
-                }
-                if(!found){
-                    print("comando ");
-                    print(args[1]);
-                    print(" no encontrado\n");
-                } else { return; }
-
-                newLine();
-
-            } else {
+            } else if(strcmp(args[0], "&")) {
+                foreground = 0;
+                (commandList[i].cmdptr)(0,0,NULL);
+                return;
+            } else {                
                 if(args_q_read != commandList[i].arg_q){
                     newLine();
                     print("Cantidad invalida de argumentos para el comando: ");
@@ -553,6 +566,7 @@ void initializeOS(){
 
 void shell()
 {
+    nice(getPid(), 0);
     fillCommandList();
     initializeOS();
     while(1){
