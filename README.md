@@ -61,19 +61,35 @@ IPC:
 
 ## Testeos PVS y CPP
 
-Para el testeo con tanto **PVS-Studio** y **Cppcheck** se debe primero instalar **PVS-Studio** de no tenerlo, de la siguiente manera en su contenedor de *docker*.
+Para el testeo con **PVS-Studio** se debe primero instalar **PVS-Studio** de no tenerlo, de la siguiente manera en su contenedor de *docker*.
 ```bash
 apt-get update
 apt-get install pvs-studio
 pvs-studio-analyzer credentials "PVS-Studio Free" "FREE-FREE-FREE-FREE"
 ```
-Luego correr el siguiente comando:
-```bash
- make test
-```
-Los resultados se encontrarán de la siguiente manera:
 
- - **PVS-Studio:** report.tasks
- - **Cppcheck:** cppoutput.cppOut
+Luego es muy recomendable instalar y utilizar la herramienta **Bear** para correctamente configurar las instrucciones de compilación que utilizará el **PVS-Studio**
 
-Para remover los mismos, correr el comando `make cleanTest` en el mismo directorio donde fue realizada la compilación.
+  ```bash
+  apt-get install bear
+  bear make
+  ```
+
+  Y finalmente podrá ejecutar el **PVS-Studio**. Este anda mejor si realiza un `make clean` antes de ejecutarse:
+
+  ``pvs-studio-analizer analyze -o project.log``
+
+  Este generará un informe con el nombre **project.log**, pero para que sea legible por el usuario cosidere:
+
+  ``plog-converter -a GA:1,2 -t tasklist -o project.tasks project.log``
+
+  Ahora con un simple ``cat project.tasks`` podrá visualizar los resultados del testeo con **PVS-Studio**
+
+
+Y para **Cppcheck**
+
+``apt-get update``
+
+``apt-get install cppcheck``
+
+y luego ``cppcheck ./`` parado en el directorio base.
