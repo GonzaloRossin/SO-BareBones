@@ -45,7 +45,7 @@ IPC:
 
 - ***phylo:*** Dilema de los filosofos comiendo, inicia con 5 filosofos, más indiaciones son dadas al ejecutarlo.
 
-- Para ```pipear``` la salida de un comando hacia la entrada de otro se utiliza el ***.***, por ejemplo ***wc . filter***, al finalizar la ejecución del comando ***wc*** se mostrará su salida sin las vocales.
+- Para ```pipear``` la salida de un comando hacia la entrada de otro se utiliza el "***.***" , por ejemplo ***wc . filter***, al finalizar la ejecución del comando ***wc*** se mostrará su salida sin las vocales.
 
 
 ----------------------------------
