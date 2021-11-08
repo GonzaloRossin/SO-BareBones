@@ -59,8 +59,10 @@ void * scheduler(void * rsp) {
                     // set new priority
                     changePriority(curr_process->pid, (prior < MAX_PRIOR)? prior+1 : prior);
                 #endif
-                if(curr_process->status != BLOCKED)
+                if(curr_process->status != BLOCKED){
                     enqueueProcess(curr_process);
+                }
+                    
             } else {
                 return rsp;
             }
@@ -177,6 +179,12 @@ int pCreate(main_func_t * main_f, char *name, int foreground, int * pid, uint64_
         processes[i].next_in_queue = NULL;
         processes[i].aging = 0;
         processes[i].given_time = quantum[BASE_PRIORITY];
+
+        processes[i].address_index = 0;
+
+        for(int k = 0; k < 5; k++) {
+            processes[i].address[k] = NULL;
+        }
 
         processes[i].stack = MyMalloc(MAX_STACK);
 
@@ -319,6 +327,9 @@ int changeStatus(int pid, unsigned int new_status) {
                 processes_alive--;
                 if (last_status == READY)
                     processes_ready--;
+
+                freeMyMallocs();
+
                 if (curr_process != NULL && curr_process->pid == pid) {
                     updateProcess(&(processes[i]));
                     curr_process = NULL;
@@ -333,6 +344,18 @@ int changeStatus(int pid, unsigned int new_status) {
         }
     }
     return -1;
+}
+
+process_t * getCurrentProcess() {
+    return curr_process;
+}
+
+int freeMyMallocs(){
+    int i;
+    for(i = 0 ; i < 5; i++) {
+        MyFree(curr_process->address[i]);
+    }
+    return 0;
 }
 
 int changeForegorundStatus(int pid, unsigned int status) {

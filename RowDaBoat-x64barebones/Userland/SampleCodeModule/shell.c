@@ -157,12 +157,14 @@ void get_mem_info(){
     print("total memory: ");
     print_num((int)(aux.total),0);
     newLine();
-    print("memory ocuppied: ");
-    print_num((int)(aux.occupied),0);
-    newLine();
     print("free memory: ");
     print_num((int)(aux.free),0);
     newLine();
+
+    print("memory ocuppied: ");
+    print_num((int)(aux.occupied),0);
+    newLine();
+
     print("number of allocations: ");
     print_num((int)(aux.successful_allocs),0);
     newLine();
@@ -176,6 +178,7 @@ void get_mem_info(){
 
 int loopMain() {
     int pid = getPid();
+    Mmalloc(100);
     for (unsigned int i = 0; 1; i++) {
         wait(2000);
         print("hola soy pid: "); print_num(pid, 0); newLine();

@@ -208,7 +208,10 @@ void sys_getCoords(int* rsi){
 }
 //SYS_CALL 14
 void* MyMalloc(uint64_t rsi){
-	return (void*)RTOSMalloc(rsi);
+	process_t * curr_process;
+	curr_process = getCurrentProcess();
+	curr_process->address[curr_process->address_index++] = (void*)RTOSMalloc(rsi);
+	return curr_process->address[curr_process->address_index - 1];
 }
 //SYS_CALL 15
 void MyFree(void* rsi){

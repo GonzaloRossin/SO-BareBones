@@ -60,7 +60,9 @@ typedef struct process_t {
     void * rsp;
     struct process_t * next_in_queue;   
     uint64_t fdIn;
-    uint64_t fdOut; 
+    uint64_t fdOut;
+    void * address[5];
+    int address_index;
 } process_t;
 
 typedef struct QUEUE_HD {
@@ -104,6 +106,8 @@ int changeStatus(int pid, unsigned int new_status);
 int getProcessStatus(int pid, unsigned int * status);
 int changeForegroundStatus(int pid, unsigned int status);
 int isCurrentForeground(void);
+int freeMyMallocs();
+process_t * getCurrentProcess();
 extern void forceTimer();
 void yield();
 void PS();
